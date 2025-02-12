@@ -1,0 +1,90 @@
+---
+#
+# postfix relay variables
+#
+postfix_relay_sasl_passwd: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          33333364343533393336343539613663333033343063313430376138666361613035343738343232
+          6233613130306239316432336666316236383561643064330a666565383235666138656534393437
+          34316530356232396139666636373162336162393936626562616164656532356232613030343266
+          3530363030346463370a326464656232633933623664393964343765663334376130636231373139
+          66623163326637666334376265663462313831373563646630353063653562333432643931356565
+          31383831643735306463613639366464666466353734633166643431663361366237393634326663
+          393436616165613564353166323131386463
+
+#
+# overrides for CIS hardening role
+#
+rhel9cis_set_boot_pass: false  # FIXME: we should do this
+rhel9cis_ipv6_required: false  # FIXME: we should do this too
+rhel9cis_config_aide: false  # TODO: maybe??
+rhel9cis_nis_server: false
+rhel9cis_syslog: journald
+rhel9cis_crypto_policy: 'FUTURE'
+rhel9cis_inactivelock:
+  lock_days: 180
+rhel9cis_auditd_extra_conf_usage: true
+rhel9cis_auditd_extra_conf:
+  admin_space_left: '20%'  # give more time to get in to fix the issue
+update_audit_template: true
+rhel9cis_journal_upload_url: null
+rhel9cis_journal_upload_serverkeyfile: null
+rhel9cis_journal_servercertificatefile: null
+rhel9cis_journal_trustedcertificatefile: null
+rhel9cis_authselect_custom_profile_name: mapletree_moe
+# yamllint disable-line rule:line-length
+rhel9cis_authselect_default_profile_to_copy: minimal --symlink-meta --symlink-pam
+
+
+#
+# disable specific rules
+#
+
+## filesystems
+# /tmp
+rhel9cis_rule_1_1_2_1_1: true
+rhel9cis_rule_1_1_2_1_2: true
+rhel9cis_rule_1_1_2_1_3: true
+rhel9cis_rule_1_1_2_1_4: true
+# /home
+rhel9cis_rule_1_1_2_3_1: true
+rhel9cis_rule_1_1_2_3_2: true
+rhel9cis_rule_1_1_2_3_3: true
+# /var
+rhel9cis_rule_1_1_2_4_1: true
+rhel9cis_rule_1_1_2_4_2: true
+rhel9cis_rule_1_1_2_4_3: true
+# /var/tmp
+rhel9cis_rule_1_1_2_5_1: true
+rhel9cis_rule_1_1_2_5_2: true
+rhel9cis_rule_1_1_2_5_3: true
+rhel9cis_rule_1_1_2_5_4: true
+# /var/log
+rhel9cis_rule_1_1_2_6_1: true
+rhel9cis_rule_1_1_2_6_2: true
+rhel9cis_rule_1_1_2_6_3: true
+rhel9cis_rule_1_1_2_6_4: true
+# /var/log/audit
+rhel9cis_rule_1_1_2_7_1: true
+rhel9cis_rule_1_1_2_7_2: true
+rhel9cis_rule_1_1_2_7_3: true
+rhel9cis_rule_1_1_2_7_4: true
+
+#
+# privilege escalation
+#
+rhel9cis_rule_5_2_4: false  # we use nopasswd sudo for automation
+
+
+#
+# off site logging (not needed now)
+#
+rhel9cis_rule_6_2_2_1_1: false
+rhel9cis_rule_6_2_2_1_2: false
+rhel9cis_rule_6_2_2_1_3: false
+rhel9cis_rule_6_2_2_1_4: true  # ensure is not being used
+
+#
+# false positives
+#
+rule_5_4_2_5: false  # FIXME: false positive on root containing trailing :
