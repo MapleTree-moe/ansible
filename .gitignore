@@ -1,0 +1,3 @@
+*.retry
+.env
+.vault_key

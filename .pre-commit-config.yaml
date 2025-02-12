@@ -1,0 +1,37 @@
+###
+### mapletree.moe - Standards & Formatting
+### enforce pre-commit hooks to check for errors and force standardized commits
+###
+---
+default_install_hook_types:
+  - pre-commit
+  - commit-msg
+
+repos:
+  # nice to have features
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  # enforce use of conventional commits messaging
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.0.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: [--verbose]
+
+  # lint ansible and by extension yaml
+  - repo: https://github.com/ansible/ansible-lint.git
+    rev: v25.1.2
+    hooks:
+      - id: ansible-lint
+        files: \.(yaml|yml)$
+        name: Ansible Lint
+        description: Run configurations on .ansible-lint file
+        verbose: true
+        # args: [-p, ./ansible/*]

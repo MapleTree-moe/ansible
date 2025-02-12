@@ -1,0 +1,54 @@
+---
+- name: Make sure 'postfix' and 'cyrus-sasl-plain' are installed
+  ansible.builtin.package:
+    name:
+      - postfix
+      - cyrus-sasl-plain
+    state: present
+
+- name: Copy sender_canonical_maps to system
+  ansible.builtin.copy:
+    content: "{{ sender_canonical_maps }}"
+    dest: /etc/postfix/sender_canonical_maps
+    owner: root
+    group: postfix
+    mode: '0644'
+
+- name: Copy smtp_header_checks to system
+  ansible.builtin.copy:
+    content: "{{ smtp_header_checks }}"
+    dest: /etc/postfix/smtp_header_checks
+    owner: root
+    group: postfix
+    mode: '0644'
+
+- name: Copy tls_policy to system
+  ansible.builtin.copy:
+    content: "{{ postfix_relay_tls_policy }}"
+    dest: /etc/postfix/tls_policy
+    owner: root
+    group: postfix
+    mode: '0644'
+  notify:
+    - postmap tls_policy
+    - restart postfix
+
+- name: Copy sasl_passwd to system
+  ansible.builtin.copy:
+    content: "{{ postfix_relay_sasl_passwd }}"
+    dest: /etc/postfix/sasl_passwd
+    owner: root
+    group: postfix
+    mode: '0600'
+  notify:
+    - postmap sasl_passwd
+    - restart postfix
+
+- name: Configure 'postfix' to be a null relay
+  ansible.builtin.lineinfile:
+    dest: /etc/postfix/main.cf
+    line: "{{ item.key }} = {{ item.value }}"
+    regexp: "^{{ item.key }} ="
+  loop: "{{ postfix_relay_config | dict2items }}"
+  notify:
+    - restart postfix
