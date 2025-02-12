@@ -1,0 +1,42 @@
+###
+### mapletree.moe - system configuration management
+### standard_users - module tasks
+###
+---
+- name: Ensure groups [ admin, users, containers, wheel ] exist
+  ansible.builtin.group:
+    name:
+      - admin
+      - containers
+      - users
+      - wheel
+    state: present
+
+- name: Ensure group "docker" exists with correct gid
+  ansible.builtin.group:
+    name: docker
+    state: present
+    gid: 1750
+
+- name: Ensure user "admin" exists with correct group membership and uid
+  ansible.builtin.user:
+    name: admin
+    comment: Mapletree.moe Administrator
+    uid: 1001
+    group: admin
+    groups: admin,docker,users,wheel
+
+- name: Ensure user "containers" exists with correct group membership and uid
+  ansible.builtin.user:
+    name: containers
+    comment: Container User
+    uid: 1000
+    group: containers
+    groups: containers,docker,user
+
+- name: Set up authorized_keys for user "admin"
+  ansible.posix.authorized_key:
+    user: admin
+    state: present
+    key: '{{ item }}'
+  loop: "{{ standard_users_admin_authorized_keys }}"

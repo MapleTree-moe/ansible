@@ -1,3 +1,7 @@
+###
+### mapletree.moe - system configuration management
+### ansible inventory
+###
 ---
 servers:
   hosts:

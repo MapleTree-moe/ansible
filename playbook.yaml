@@ -1,3 +1,7 @@
+###
+### mapletree.moe - system configuration management
+### core ansible playbook
+###
 ---
 - name: Run standardized server configuration.
   hosts: servers
@@ -7,4 +11,6 @@
     - role: rhel9-cis
       become: true
     - role: postfix_relay
+      become: true
+    - role: standard_users
       become: true

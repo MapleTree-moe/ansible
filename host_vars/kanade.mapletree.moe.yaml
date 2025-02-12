@@ -1,3 +1,7 @@
+###
+### mapletree.moe - system configuration management
+### ansible host variables - kanade.mapletree.moe
+###
 ---
 #
 # postfix settings
