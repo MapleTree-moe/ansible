@@ -1,0 +1,10 @@
+---
+- name: Run standardized server configuration.
+  hosts: servers
+  roles:
+    # the hardening role takes an absurdly long time to process. it may be wise
+    # to disable this on normal runs.
+    - role: rhel9-cis
+      become: true
+    - role: postfix_relay
+      become: true

@@ -1,0 +1,18 @@
+---
+postfix_relay_tls_policy: "[mail.smtp2go.com]:587 encrypt"
+postfix_relay_sasl_passwd: "CHANGEME"
+postfix_relay_sender_canonical_maps: "/.+/ admin@example.com"
+postfix_relay_smtp_header_checks: "/^From:.*/ REPLACE From: admin@example.com"
+postfix_relay_config:
+  inet_interfaces: "loopback-only"
+  mydestination: ""
+  relayhost: "[mail.smtp2go.com]:587"
+  smtp_use_tls: "yes"
+  smtp_sasl_auth_enable: "yes"
+  smtp_sasl_password_maps: "hash:/etc/postfix/sasl_passwd"
+  smtp_sasl_security_options: "noanonymous"
+  smtp_sasl_tls_security_options: "noanonymous"
+  sender_canonical_classes: "envelope_sender, header_sender"
+  sender_canonical_maps: "regexp:/etc/postfix/sender_canonical_maps"
+  smtp_header_checks: "regexp:/etc/postfix/smtp_header_checks"
+  smtp_tls_policy_maps: "hash:/etc/postfix/tls_policy"
