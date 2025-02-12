@@ -1,6 +1,20 @@
+###
+### mapletree.moe - system configuration management
+### ansible group variables
+###
 ---
 #
-# postfix relay variables
+# standard_users variables
+#
+standard_users_root_password: USE_ANSIBLE_VAULT
+standard_users_admin_password: USE_ANSIBLE_VAULT
+standard_users_containers_password: USE_ANSIBLE_VAULT
+standard_users_admin_authorized_keys:
+  # yamllint disable-line rule:line-length
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEYfs1EndYHRh5WcW+jkuD7IKSvZZHM+OTqDX0RuYlY5 yuki@murasame
+
+#
+# postfix_relay variables
 #
 postfix_relay_sasl_passwd: !vault |
           $ANSIBLE_VAULT;1.1;AES256
@@ -71,6 +85,13 @@ rhel9cis_rule_1_1_2_7_3: true
 rhel9cis_rule_1_1_2_7_4: true
 
 #
+# AIDE checks (the main disable above seems to miss some things)
+#
+rhel9cis_rule_6_1_1: false
+rhel9cis_rule_6_1_2: false
+rhel9cis_rule_6_1_3: false
+
+#
 # privilege escalation
 #
 rhel9cis_rule_5_2_4: false  # we use nopasswd sudo for automation
@@ -82,9 +103,9 @@ rhel9cis_rule_5_2_4: false  # we use nopasswd sudo for automation
 rhel9cis_rule_6_2_2_1_1: false
 rhel9cis_rule_6_2_2_1_2: false
 rhel9cis_rule_6_2_2_1_3: false
-rhel9cis_rule_6_2_2_1_4: true  # ensure is not being used
+rhel9cis_rule_6_2_2_1_4: false
 
 #
 # false positives
 #
-rule_5_4_2_5: false  # FIXME: false positive on root containing trailing :
+rhel9cis_rule_5_4_2_5: false  # FIXME: false positive on root_path
