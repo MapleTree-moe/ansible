@@ -12,7 +12,7 @@
 
 - name: Copy sender_canonical_maps to system
   ansible.builtin.copy:
-    content: "{{ sender_canonical_maps }}"
+    content: "{{ postfix_relay_sender_canonical_maps }}"
     dest: /etc/postfix/sender_canonical_maps
     owner: root
     group: postfix
@@ -20,7 +20,7 @@
 
 - name: Copy smtp_header_checks to system
   ansible.builtin.copy:
-    content: "{{ smtp_header_checks }}"
+    content: "{{ postfix_relay_smtp_header_checks }}"
     dest: /etc/postfix/smtp_header_checks
     owner: root
     group: postfix
