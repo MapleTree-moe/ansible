@@ -3,13 +3,24 @@
 ### standard_users - module tasks
 ###
 ---
-- name: Ensure groups [ admin, users, containers, wheel ] exist
+- name: Ensure group 'admin' exists
   ansible.builtin.group:
-    name:
-      - admin
-      - containers
-      - users
-      - wheel
+    name: admin
+    state: present
+
+- name: Ensure group 'user' exists
+  ansible.builtin.group:
+    name: containers
+    state: present
+
+- name: Ensure group 'containers' exists
+  ansible.builtin.group:
+    name: users
+    state: present
+
+- name: Ensure group 'wheel' exists
+  ansible.builtin.group:
+    name: wheel
     state: present
 
 - name: Ensure group "docker" exists with correct gid
@@ -32,7 +43,7 @@
     comment: Container User
     uid: 1000
     group: containers
-    groups: containers,docker,user
+    groups: containers,docker,users
 
 - name: Set up authorized_keys for user "admin"
   ansible.posix.authorized_key:
