@@ -8,9 +8,9 @@
   roles:
     # the hardening role takes an absurdly long time to process. it may be wise
     # to disable this on normal runs.
-    # - role: rhel9-cis
+    # - role: rhel9_cis
     #   become: true
     - role: postfix_relay
       become: true
-    - role: standard_users
+    - role: users
       become: true

@@ -7,6 +7,6 @@ collections:
   - name: ansible.posix
 
 roles:
-  - name: rhel9-cis
+  - name: rhel9_cis
     src: https://github.com/ansible-lockdown/RHEL9-CIS
     version: devel  # FIXME: when 2.0 goes live change this
