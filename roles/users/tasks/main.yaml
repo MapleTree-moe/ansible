@@ -50,4 +50,4 @@
     user: admin
     state: present
     key: '{{ item }}'
-  loop: "{{ standard_users_admin_authorized_keys }}"
+  with_items: "{{ users_admin_authorized_keys }}"
