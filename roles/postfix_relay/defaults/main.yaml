@@ -20,3 +20,4 @@ postfix_relay_config:
   sender_canonical_maps: "regexp:/etc/postfix/sender_canonical_maps"
   smtp_header_checks: "regexp:/etc/postfix/smtp_header_checks"
   smtp_tls_policy_maps: "hash:/etc/postfix/tls_policy"
+  smtpd_client_restrictions: "permit_mynetworks,reject"
