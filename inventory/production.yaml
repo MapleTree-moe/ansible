@@ -1,9 +1,0 @@
-###
-### mapletree.moe - system configuration management
-### ansible inventory
-###
----
-servers:
-  hosts:
-    kanade.mapletree.moe:
-      ansible_host: 188.245.212.25
