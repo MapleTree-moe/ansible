@@ -51,3 +51,10 @@
     state: present
     key: '{{ item }}'
   with_items: "{{ create_users_admin_authorized_keys }}"
+
+- name: Enable linger for "containers" user
+  ansible.builtin.command:
+    cmd: "loginctl enable-linger containers"
+    creates: "/var/lib/systemd/linger/containers"
+  notify:
+    - Reboot System
