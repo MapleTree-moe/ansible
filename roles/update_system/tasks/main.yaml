@@ -22,7 +22,7 @@
   ansible.builtin.command:
     cmd: needs-restarting -r
   register: reboot_required
-  changed_when: "'changed' in script_res.stdout"
+  changed_when: true
   failed_when: reboot_required.rc not in [0, 1]
 
 - name: Reboot server if needed
