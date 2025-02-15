@@ -6,11 +6,17 @@
 - name: Run standardized server configuration.
   hosts: servers
   roles:
+    - role: update_system
+      become: true
+    - role: infra.convert2rhel.convert
+      become: true
     # the hardening role takes an absurdly long time to process. it may be wise
     # to disable this on normal runs.
     - role: rhel9_cis
       become: true
     - role: postfix_relay
       become: true
-    - role: users
+    - role: create_users
+      become: true
+    - role: general_config
       become: true

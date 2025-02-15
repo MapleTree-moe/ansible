@@ -1,0 +1,9 @@
+###
+### mapletree.moe - system configuration management
+### general_config - role handlers
+###
+---
+- name: Reload NetworkManager
+  ansible.builtin.service:
+    name: NetworkManager
+    state: reloaded

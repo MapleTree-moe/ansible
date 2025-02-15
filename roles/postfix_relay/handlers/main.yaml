@@ -1,6 +1,6 @@
 ###
 ### mapletree.moe - system configuration management
-### postfix_relay - module handlers
+### postfix_relay - role handlers
 ###
 ---
 - name: Hash sasl_passwd file with postmap
