@@ -3,3 +3,6 @@
 ### update_system - role handlers
 ###
 ---
+- name: Reboot System
+  ansible.builtin.reboot:
+    reboot_timeout: 600
