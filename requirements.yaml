@@ -6,6 +6,7 @@
 collections:
   - name: ansible.posix
   - name: community.general
+  - name: hetzner.hcloud
   - name: infra.convert2rhel
 
 roles:
