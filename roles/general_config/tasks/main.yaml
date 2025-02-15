@@ -1,0 +1,75 @@
+###
+### mapletree.moe - system configuration management
+### general_config - role tasks
+###
+---
+# This file should contain things that will apply to ALL hosts.
+
+#
+# enable automatic updates
+#
+- name: Install dnf-automatic
+  ansible.builtin.package:
+    name: dnf-automatic
+
+- name: Configure automatic updates
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/automatic.conf
+    regexp: '^{{ item.key }}'
+    line: '{{ item.key }} = {{ item.val }}'
+  loop:
+    - key: upgrade_type
+      val: security
+    - key: download_updates
+      val: 'yes'
+    - key: apply_updates
+      val: 'yes'
+    - key: reboot
+      val: 'when-needed'
+
+- name: Enable automatic updates
+  ansible.builtin.service:
+    name: dnf-automatic.timer
+    state: started
+    enabled: true
+
+#
+# general system config
+#
+- name: Disable NetworkManager DNS Autoconfiguration
+  community.general.ini_file:
+    path: /etc/NetworkManager/NetworkManager.conf
+    state: present
+    no_extra_spaces: true
+    section: main
+    option: dns
+    value: none
+    owner: root
+    group: root
+    mode: "0644"
+    backup: true
+  notify:
+    - Reload NetworkManager
+
+- name: Apply DNS Configuration
+  ansible.builtin.copy:
+    content: "{{ general_config_dns_servers }}"
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Reload NetworkManager
+
+#
+# podman
+#
+- name: Ensure Podman is installed
+  ansible.builtin.package:
+    name: podman
+    state: present
+
+- name: Ensure Podman is installed
+  ansible.builtin.package:
+    name: container-selinux
+    state: present

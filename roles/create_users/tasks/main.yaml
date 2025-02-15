@@ -1,6 +1,6 @@
 ###
 ### mapletree.moe - system configuration management
-### standard_users - module tasks
+### create_users - role tasks
 ###
 ---
 - name: Ensure group 'admin' exists
@@ -29,7 +29,7 @@
     state: present
     gid: 1750
 
-- name: Ensure user "admin" exists with correct group membership and uid
+- name: Ensure user "admin" exists and is correct
   ansible.builtin.user:
     name: admin
     comment: Mapletree.moe Administrator
@@ -37,7 +37,7 @@
     group: admin
     groups: admin,docker,users,wheel
 
-- name: Ensure user "containers" exists with correct group membership and uid
+- name: Ensure user "containers" exists and is correct
   ansible.builtin.user:
     name: containers
     comment: Container User
@@ -50,4 +50,4 @@
     user: admin
     state: present
     key: '{{ item }}'
-  with_items: "{{ users_admin_authorized_keys }}"
+  with_items: "{{ create_users_admin_authorized_keys }}"

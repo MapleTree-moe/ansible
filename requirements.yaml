@@ -5,6 +5,8 @@
 ---
 collections:
   - name: ansible.posix
+  - name: community.general
+  - name: infra.convert2rhel
 
 roles:
   - name: rhel9_cis
