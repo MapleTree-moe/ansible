@@ -1,9 +1,9 @@
 ###
 ### mapletree.moe - system configuration management
-### postfix_relay - module tasks
+### postfix_relay - role tasks
 ###
 ---
-- name: Make sure 'postfix' and 'cyrus-sasl-plain' are installed
+- name: Install Packages [postfix, cyrus-sasl-plain]
   ansible.builtin.package:
     name:
       - postfix

@@ -1,6 +1,6 @@
 ###
 ### mapletree.moe - system configuration management
-### postfix_relay - module variables
+### postfix_relay - role variables
 ###
 ---
 postfix_relay_tls_policy: "[mail.smtp2go.com]:587 encrypt"
