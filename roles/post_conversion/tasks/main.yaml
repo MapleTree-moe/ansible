@@ -1,0 +1,15 @@
+###
+### mapletree.moe - system configuration management
+### force setup again
+###
+---
+- name: Remove AlmaLinux GPG Key
+  ansible.builtin.rpm_key:
+    key: http://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux-9
+    state: absent
+- name: Install correct RHEL Key
+  ansible.builtin.rpm_key:
+    key: https://security.access.redhat.com/data/fd431d51.txt
+    state: present
+- name: Update Ansible Facts
+  ansible.builtin.setup:
