@@ -23,19 +23,16 @@
     name: wheel
     state: present
 
-- name: Ensure group "docker" exists with correct gid
-  ansible.builtin.group:
-    name: docker
-    state: present
-    gid: 1750
-
 - name: Ensure user "admin" exists and is correct
   ansible.builtin.user:
     name: admin
     comment: Mapletree.moe Administrator
     uid: 1001
     group: admin
-    groups: admin,docker,users,wheel
+    # yamllint disable-line rule:line-length
+    password: "{{ create_users_admin_password | password_hash('sha512', create_users_password_salt) }}"
+    groups: admin,users,wheel
+    state: present
 
 - name: Ensure user "containers" exists and is correct
   ansible.builtin.user:
@@ -43,7 +40,16 @@
     comment: Container User
     uid: 1000
     group: containers
-    groups: containers,docker,users
+    # yamllint disable-line rule:line-length
+    password: "{{ create_users_containers_password | password_hash('sha512', create_users_password_salt) }}"
+    groups: containers,users
+    state: present
+
+- name: Set root Password
+  ansible.builtin.user:
+    name: root
+    # yamllint disable-line rule:line-length
+    password: "{{ create_users_root_password | password_hash('sha512', create_users_password_salt) }}"
 
 - name: Set up authorized_keys for user "admin"
   ansible.posix.authorized_key:
@@ -58,24 +64,3 @@
     creates: "/var/lib/systemd/linger/containers"
   notify:
     - Reboot System
-
-- name: Set root password
-  ansible.builtin.expect:
-    command: passwd root
-    responses:
-      (?i)password: '{{ create_users_root_password }}'
-  no_log: true
-
-- name: Set admin password
-  ansible.builtin.expect:
-    command: passwd admin
-    responses:
-      (?i)password: '{{ create_users_admin_password }}'
-  no_log: true
-
-- name: Set containers password
-  ansible.builtin.expect:
-    command: passwd containers
-    responses:
-      (?i)password: '{{ create_users_containers_password }}'
-  no_log: true
