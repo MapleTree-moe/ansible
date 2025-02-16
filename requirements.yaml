@@ -10,6 +10,6 @@ collections:
   - name: infra.convert2rhel
 
 roles:
-  - name: rhel9_cis
+  - name: rhel9-cis
     src: https://github.com/ansible-lockdown/RHEL9-CIS
     version: devel  # FIXME: when 2.0 goes live change this

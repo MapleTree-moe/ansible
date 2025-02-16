@@ -16,11 +16,14 @@
     - role: infra.convert2rhel.convert
       become: true
       when: ansible_distribution != "RedHat"
+    - role: post_conversion
+      become: true
+      when: ansible_distribution != "RedHat"
     # the hardening role takes an absurdly long time to process. it may be wise
     # to disable this on normal runs.
-    - role: rhel9_cis
+    - role: rhel9-cis
       become: true
-      when: run_security
+      when: lookup('env', "RUN_SECURITY")
     - role: postfix_relay
       become: true
     - role: create_users
