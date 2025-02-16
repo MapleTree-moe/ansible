@@ -4,6 +4,7 @@
 ###
 ---
 postfix_relay_tls_policy: "[mail.smtp2go.com]:587 encrypt"
+postfix_relay_root_email: "root:    admin@example.com"
 postfix_relay_sasl_passwd: "CHANGEME"
 postfix_relay_sender_canonical_maps: "/.+/ admin@example.com"
 postfix_relay_smtp_header_checks: "/^From:.*/ REPLACE From: admin@example.com"
