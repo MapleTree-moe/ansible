@@ -1,0 +1,14 @@
+###
+### mapletree.moe - system configuration management
+### update system configuration
+###
+---
+- name: Run standardized server configuration.
+  hosts: all
+  roles:
+    - role: postfix_relay
+      become: true
+    - role: create_users
+      become: true
+    - role: general_config
+      become: true

@@ -4,6 +4,11 @@
 ###
 ---
 #
+# rhel-cis settings
+#
+rhel9cis_legacy_boot: true # hetzner uses bios
+
+#
 # postfix settings
 #
 postfix_relay_sender_canonical_maps: "/.+/ kanade@mapletree.moe"

@@ -6,16 +6,17 @@
 - name: Hash sasl_passwd file with postmap
   ansible.builtin.command: postmap /etc/postfix/sasl_passwd
   changed_when: true
-  listen: postmap sasl_passwd
 
 - name: Hash tls_policy file with postmap
   ansible.builtin.command: postmap /etc/postfix/tls_policy
   changed_when: true
-  listen: postmap tls_policy
+
+- name: Update alias database in Postfix
+  ansible.builtin.command: postalias /etc/aliases
+  changed_when: true
 
 - name: Restart Postfix to apply changes
   ansible.builtin.service:
     name: postfix
     state: restarted
-  listen: restart postfix
   when: service_default_state | default('started') == 'started'

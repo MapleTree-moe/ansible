@@ -12,22 +12,19 @@ convert_gpg_key_remove: true
 convert_convert2rhel_repo_remove: true
 convert_convert2rhel_package_remove: true
 convert_reboot_requested: true
-rhsm_activation_key: "convert2rhel_ansible"
-rhsm_username:
+rhsm_activation_key:
   # yamllint disable-line rule:line-length
-  "{{ lookup('ansible.builtin.unvault', 'group_vars/vault/rhsm_username') | string | trim }}"
-rhsm_password:
+  "{{ lookup('ansible.builtin.unvault', 'group_vars/vault/rhsm_activation_key') | string | trim }}"
+rhsm_org:
   # yamllint disable-line rule:line-length
-  "{{ lookup('ansible.builtin.unvault', 'group_vars/vault/rhsm_password') | string | trim }}"
-rhsm_org: "17594423"
+  "{{ lookup('ansible.builtin.unvault', 'group_vars/vault/rhsm_org') | string | trim }}"
 
 #
 # rhc variables
 #
 rhc_auth:
-  login:
-    username: "{{ rhsm_username }}"
-    password: "{{ rhsm_password }}"
+  activation_keys:
+    keys: [" {{ rhsm_activation_key }} "]
 rhc_organization: "{{ rhsm_org }}"
 
 #
@@ -49,6 +46,10 @@ create_users_admin_authorized_keys:
 #
 # postfix_relay variables
 #
+postfix_relay_root_email:
+  # "root:    admin@example.com"
+  # yamllint disable-line rule:line-length
+  "{{ lookup('ansible.builtin.unvault', 'group_vars/vault/postfix_relay_root_email') | string | trim }}"
 postfix_relay_sasl_passwd:
   # yamllint disable-line rule:line-length
   "{{ lookup('ansible.builtin.unvault', 'group_vars/vault/postfix_relay_sasl_passwd') | string | trim }}"
@@ -60,10 +61,13 @@ rhel9cis_set_boot_pass: false  # FIXME: we should do this
 rhel9cis_ipv6_required: false  # FIXME: we should do this too
 rhel9cis_config_aide: false  # TODO: maybe??
 rhel9cis_nis_server: false
+rhel9cis_sshd_clientalivecountmax: 0
+rhel9cis_sshd_clientaliveinterval: 300
+rhel9cis_ssh_loglevel: VERBOSE
+rhel9cis_force_user_maxdays: true
+rhel9cis_force_user_mindays: true
+rhel9cis_force_user_warnage: true
 rhel9cis_syslog: journald
-rhel9cis_crypto_policy: 'FUTURE'
-rhel9cis_inactivelock:
-  lock_days: 180
 rhel9cis_auditd_extra_conf_usage: true
 rhel9cis_auditd_extra_conf:
   admin_space_left: '20%'  # give more time to get in to fix the issue
@@ -72,7 +76,11 @@ rhel9cis_journal_upload_url: null
 rhel9cis_journal_upload_serverkeyfile: null
 rhel9cis_journal_servercertificatefile: null
 rhel9cis_journal_trustedcertificatefile: null
-rhel9cis_authselect_custom_profile_name: mapletree_moe
+rhel9cis_authselect_custom_profile_name: mapletree
+rhel9cis_authselect_custom_profile_create: true
+rhel9cis_authselect_pkg_update: true
+rhel9cis_disruption_high: true
+rhel9cis_dotperm_ansiblemanaged: true
 # yamllint disable-line rule:line-length
 rhel9cis_authselect_default_profile_to_copy: minimal --symlink-meta --symlink-pam
 ### disable specific rules

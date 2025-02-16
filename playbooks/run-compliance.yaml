@@ -1,0 +1,10 @@
+###
+### mapletree.moe - system configuration management
+### run security compliance task
+###
+---
+- name: Run standardized server configuration.
+  hosts: all
+  roles:
+    - role: rhel9-cis
+      become: true
