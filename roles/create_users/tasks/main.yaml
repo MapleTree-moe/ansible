@@ -58,3 +58,24 @@
     creates: "/var/lib/systemd/linger/containers"
   notify:
     - Reboot System
+
+- name: Set root password
+  ansible.builtin.expect:
+    command: passwd root
+    responses:
+      (?i)password: '{{ create_users_root_password }}'
+  no_log: true
+
+- name: Set admin password
+  ansible.builtin.expect:
+    command: passwd admin
+    responses:
+      (?i)password: '{{ create_users_admin_password }}'
+  no_log: true
+
+- name: Set containers password
+  ansible.builtin.expect:
+    command: passwd containers
+    responses:
+      (?i)password: '{{ create_users_containers_password }}'
+  no_log: true

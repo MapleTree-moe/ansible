@@ -4,11 +4,6 @@
 ###
 ---
 #
-# environmental variables
-#
-run_security: "{{ lookup('ansible.builtin.env', 'RUN_SECURITY') }}"
-
-#
 # convert2rhel variables
 #
 # yamllint disable-line rule:line-length
@@ -24,14 +19,29 @@ rhsm_username:
 rhsm_password:
   # yamllint disable-line rule:line-length
   "{{ lookup('ansible.builtin.unvault', 'group_vars/vault/rhsm_password') | string | trim }}"
-rhsm_org: 17594423
+rhsm_org: "17594423"
+
+#
+# rhc variables
+#
+rhc_auth:
+  login:
+    username: "{{ rhsm_username }}"
+    password: "{{ rhsm_password }}"
+rhc_organization: "{{ rhsm_org }}"
 
 #
 # create_users variables
 #
-create_users_root_password: USE_ANSIBLE_VAULT
-create_users_admin_password: USE_ANSIBLE_VAULT
-create_users_containers_password: USE_ANSIBLE_VAULT
+create_users_root_password:
+  # yamllint disable-line rule:line-length
+  "{{ lookup('ansible.builtin.unvault', 'group_vars/vault/create_users_root_password') | string | trim }}"
+create_users_admin_password:
+  # yamllint disable-line rule:line-length
+  "{{ lookup('ansible.builtin.unvault', 'group_vars/vault/create_users_admin_password') | string | trim }}"
+create_users_containers_password:
+  # yamllint disable-line rule:line-length
+  "{{ lookup('ansible.builtin.unvault', 'group_vars/vault/create_users_containers_password') | string | trim }}"
 create_users_admin_authorized_keys:
   # yamllint disable-line rule:line-length
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEYfs1EndYHRh5WcW+jkuD7IKSvZZHM+OTqDX0RuYlY5 yuki@murasame"
@@ -108,3 +118,4 @@ rhel9cis_rule_6_2_2_1_3: false
 rhel9cis_rule_6_2_2_1_4: false
 ## false positives
 rhel9cis_rule_5_4_2_5: false  # FIXME: false positive on root_path
+rhel9cis_rule_1_2_1_1: false # FIXME: Bug opened on this, #292
