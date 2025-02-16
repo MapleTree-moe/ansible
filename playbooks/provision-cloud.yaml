@@ -1,6 +1,6 @@
 ###
 ### mapletree.moe - system configuration management
-### core ansible playbook
+### provision new cloud servers
 ###
 ---
 - name: Run standardized server configuration.
@@ -20,15 +20,4 @@
       become: true
       when: ansible_distribution != "RedHat"
     - role: linux-system-roles.rhc
-      become: true
-    # the hardening role takes an absurdly long time to process. it may be wise
-    # to disable this on normal runs.
-    - role: rhel9-cis
-      become: true
-      when: lookup('env', "RUN_SECURITY")
-    - role: postfix_relay
-      become: true
-    - role: create_users
-      become: true
-    - role: general_config
       become: true

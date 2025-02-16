@@ -35,8 +35,8 @@
     group: postfix
     mode: '0644'
   notify:
-    - postmap tls_policy
-    - restart postfix
+    - Hash tls_policy file with postmap
+    - Restart Postfix to apply changes
 
 - name: Copy sasl_passwd to system
   ansible.builtin.copy:
@@ -46,8 +46,8 @@
     group: postfix
     mode: '0600'
   notify:
-    - postmap sasl_passwd
-    - restart postfix
+    - Hash sasl_passwd file with postmap
+    - Restart Postfix to apply changes
 
 - name: Configure 'postfix' to be a null relay
   ansible.builtin.lineinfile:
@@ -56,4 +56,13 @@
     regexp: "^{{ item.key }} ="
   loop: "{{ postfix_relay_config | dict2items }}"
   notify:
-    - restart postfix
+    - Restart Postfix to apply changes
+
+- name: Redirect all root email to administrator
+  ansible.builtin.lineinfile:
+    dest: /etc/aliases
+    line: "{{ postfix_relay_root_email }}"
+    regexp: "^root:"
+  notify:
+    - Update alias database in Postfix
+    - Restart Postfix to apply changes
