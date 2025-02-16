@@ -6,5 +6,6 @@
 create_users_root_password: USE_ANSIBLE_VAULT
 create_users_admin_password: USE_ANSIBLE_VAULT
 create_users_containers_password: USE_ANSIBLE_VAULT
+create_users_password_salt: USE_ANSIBLE_VAULT
 create_users_admin_authorized_keys:
   - REPLACE_ME

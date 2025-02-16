@@ -5,6 +5,8 @@
 ---
 - name: Run standardized server configuration.
   hosts: all
+  vars:
+    profile: virtual-guest
   roles:
     - role: update_system
       become: true
@@ -20,4 +22,6 @@
       become: true
       when: ansible_distribution != "RedHat"
     - role: linux-system-roles.rhc
+      become: true
+    - role: linux-system-roles.tuned
       become: true
