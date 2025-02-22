@@ -1,0 +1,95 @@
+###
+### mapletree.moe - system configuration management
+### ansible group variables
+###
+---
+#
+# convert2rhel variables
+#
+# yamllint disable-line rule:line-length
+convert2rhel_repofile_url: "https://cdn-public.redhat.com/content/public/repofiles/convert2rhel-for-rhel-9-x86_64.repo"
+rhsm_activation_key: "{{ vault_rhsm_activation_key }}"
+rhsm_org: "17594423"
+
+#
+# create_users variables
+#
+create_users_root_password: "{{ vault_create_users_root_password }}"
+create_users_admin_password: "{{ vault_create_users_admin_password }}"
+create_users_containers_password: "{{ vault_create_users_container_password }}"
+create_users_password_salt: "{{ vault_create_users_password_salt }}"
+create_users_admin_authorized_keys:
+  # yamllint disable-line rule:line-length
+  - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEYfs1EndYHRh5WcW+jkuD7IKSvZZHM+OTqDX0RuYlY5 yuki@murasame"
+
+#
+# postfix_relay variables
+#
+postfix_relay_root_email: "{{ vault_postfix_relay_root_email }}"
+postfix_relay_sasl_passwd: " {{ vault_postfix_relay_sasl_passwd }}"
+
+#
+# overrides for CIS hardening role
+#
+rhel9cis_set_boot_pass: false  # FIXME: we should do this
+rhel9cis_ipv6_required: false  # FIXME: we should do this too
+rhel9cis_nis_server: false
+rhel9cis_crypto_policy: 'FUTURE' # use stricter, "future proof" algorithms
+rhel9cis_sshd_clientalivecountmax: 1
+rhel9cis_sshd_clientaliveinterval: 300
+rhel9cis_ssh_loglevel: VERBOSE # this is required by the CIS spec
+rhel9cis_force_user_maxdays: true
+rhel9cis_force_user_mindays: true
+rhel9cis_force_user_warnage: true
+rhel9cis_syslog: journald # rsyslog is preferred, journald is already built in
+rhel9cis_auditd_extra_conf_usage: true
+rhel9cis_auditd_extra_conf:
+  admin_space_left: '20%'  # give more time to get in to fix the issue
+update_audit_template: true
+rhel9cis_authselect_custom_profile_name: mapletree # required by automation role
+rhel9cis_authselect_custom_profile_create: true # required by automation role
+rhel9cis_authselect_pkg_update: true
+rhel9cis_disruption_high: true # this role should only run on fresh servers
+rhel9cis_dotperm_ansiblemanaged: true
+rhel9cis_sudoers_exclude_nopasswd_list:
+  - admin # this user is used for automation & maintenance
+# yamllint disable-line rule:line-length
+rhel9cis_authselect_default_profile_to_copy: minimal --symlink-meta --symlink-pam
+### disable specific rules
+## filesystems
+# /tmp - don't use dedicated mount
+rhel9cis_rule_1_1_2_1_1: false
+rhel9cis_rule_1_1_2_1_2: false
+rhel9cis_rule_1_1_2_1_3: false
+rhel9cis_rule_1_1_2_1_4: false
+# /home - don't use dedicated mount
+rhel9cis_rule_1_1_2_3_1: false
+rhel9cis_rule_1_1_2_3_2: false
+rhel9cis_rule_1_1_2_3_3: false
+# /var - don't use dedicated mount
+rhel9cis_rule_1_1_2_4_1: false
+rhel9cis_rule_1_1_2_4_2: false
+rhel9cis_rule_1_1_2_4_3: false
+# /var/tmp - don't use dedicated mount
+rhel9cis_rule_1_1_2_5_1: false
+rhel9cis_rule_1_1_2_5_2: false
+rhel9cis_rule_1_1_2_5_3: false
+rhel9cis_rule_1_1_2_5_4: false
+# /var/log - don't use dedicated mount
+rhel9cis_rule_1_1_2_6_1: false
+rhel9cis_rule_1_1_2_6_2: false
+rhel9cis_rule_1_1_2_6_3: false
+rhel9cis_rule_1_1_2_6_4: false
+# /var/log/audit - don't use dedicated mount
+rhel9cis_rule_1_1_2_7_1: false
+rhel9cis_rule_1_1_2_7_2: false
+rhel9cis_rule_1_1_2_7_3: false
+rhel9cis_rule_1_1_2_7_4: false
+## these configure offsite logging - off site logging (not needed now)
+rhel9cis_rule_6_2_2_1_1: false
+rhel9cis_rule_6_2_2_1_2: false
+rhel9cis_rule_6_2_2_1_3: false
+rhel9cis_rule_6_2_2_1_4: false
+## false positives
+rhel9cis_rule_5_4_2_5: false  # FIXME: false positive on root_path
+rhel9cis_rule_1_2_1_1: false # FIXME: Bug opened on this, #292
