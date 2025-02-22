@@ -4,6 +4,12 @@
 ###
 ---
 #
+# redhat
+#
+redhat_activation_key: "{{ vault_redhat_activation_key }}"
+redhat_organization: "{{ vault_redhat_organization }}"
+
+#
 # convert2rhel variables
 #
 # yamllint disable-line rule:line-length
@@ -26,7 +32,9 @@ create_users_admin_authorized_keys:
 # postfix_relay variables
 #
 postfix_relay_root_email: "{{ vault_postfix_relay_root_email }}"
-postfix_relay_sasl_passwd: " {{ vault_postfix_relay_sasl_passwd }}"
+postfix_relayhost: "[mail.smtp2go.com]:587"
+postfix_sasl_passwd: " {{ vault_postfix_relay_sasl_passwd }}"
+postfix_tls_policy: "[mail.smtp2go.com]:587 encrypt"
 
 #
 # overrides for CIS hardening role

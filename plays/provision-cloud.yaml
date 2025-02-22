@@ -10,6 +10,7 @@
     - name: Convert AlmaLinux to genuine RHEL
       when: ansible_distribution != "RedHat"
       vars:
+        # TODO: this was needed for one upgrade, is it still needed?
         # yamllint disable-line rule:line-length
         convert2rhel_repofile_url: "https://cdn-public.redhat.com/content/public/repofiles/convert2rhel-for-rhel-9-x86_64.repo"
       block:
@@ -22,14 +23,14 @@
           ansible.builtin.include_role:
             name: infra.convert2rhel.analysis
         - name: Run convert2rhel conversion script
-          ansible.builtin.include_role:
-            name: infra.convert2rhel.convert
           vars:
             # remove conversion tooling after successful conversion
             convert_gpg_key_remove: true
             convert_convert2rhel_repo_remove: true
             convert_convert2rhel_package_remove: true
             convert_reboot_requested: true
+          ansible.builtin.include_role:
+            name: infra.convert2rhel.convert
         - name: Remove AlmaLinux GPG key from RPM Key Registry
           ansible.builtin.rpm_key:
             key: http://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux-9
@@ -38,15 +39,3 @@
           ansible.builtin.rpm_key:
             key: https://security.access.redhat.com/data/fd431d51.txt
             state: present
-        - name: Ensure system is registered with RHEL but disable insights
-          # TODO: Shouldn't registration be part of a general playbook?
-          vars:
-            rhc_auth:
-              activation_keys:
-                keys:
-                  - "{{ rhsm_activation_key }}"
-            rhc_organization: "{{ rhsm_org }}"
-            rhc_insights:
-              state: absent
-          ansible.builtin.include_role:
-            name: linux-system-roles.rhc
