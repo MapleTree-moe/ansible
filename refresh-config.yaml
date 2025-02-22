@@ -3,6 +3,12 @@
 ### update system configuration
 ###
 ---
+# integrate this
+# - name: Ensure system is using proper tuned profile
+#   vars:
+#     profile: virtual-guest
+#   ansible.builtin.include_role:
+#     name: linux-system-roles.tuned
 - name: Run standardized server configuration.
   hosts: all
   roles:
