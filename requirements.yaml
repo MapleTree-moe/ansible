@@ -11,6 +11,7 @@ collections:
   - name: infra.convert2rhel
 
 roles:
+  - name: giovtorres.tuned
   - name: rhel9-cis
     src: https://github.com/ansible-lockdown/RHEL9-CIS
     version: 2.0.0
