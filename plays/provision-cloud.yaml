@@ -8,7 +8,7 @@
   hosts: all
   become: true
   tasks:
-    - name: Ensure AlmaLinux is fully updated
+    - name: Ensure RockyLinux is fully updated
       when: ansible_distribution != "RedHat"
       block:
         - name: Update all installed packages to the latest version in the repo
@@ -34,12 +34,13 @@
             reboot_timeout: 600
           when: reboot_required.rc == 1
 
-    - name: Convert AlmaLinux to genuine RHEL
+    - name: Convert RockyLinux to genuine RHEL
       when: ansible_distribution != "RedHat"
       vars:
-        # TODO: this was needed for one upgrade, is it still needed?
         # yamllint disable-line rule:line-length
         convert2rhel_repofile_url: "https://cdn-public.redhat.com/content/public/repofiles/convert2rhel-for-rhel-9-x86_64.repo"
+        rhsm_username: "{{ redhat_username }}"
+        rhsm_password: "{{ redhat_password }}"
         rhsm_activation_key: "{{ redhat_activation_key }}"
         rhsm_org: "{{ redhat_organization }}"
       block:
@@ -56,9 +57,9 @@
             convert_reboot_requested: true
           ansible.builtin.include_role:
             name: infra.convert2rhel.convert
-        - name: Remove AlmaLinux GPG key from RPM Key Registry
+        - name: Remove RockyLinux GPG key from RPM Key Registry
           ansible.builtin.rpm_key:
-            key: http://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux-9
+            key: https://dl.rockylinux.org/pub/rocky/RPM-GPG-KEY-Rocky-9
             state: absent
         - name: Ensure correct RHEL GPG key is present in RPM registry
           ansible.builtin.rpm_key:

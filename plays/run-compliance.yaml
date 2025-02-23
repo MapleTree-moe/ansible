@@ -4,6 +4,7 @@
 ###
 ---
 - name: Ensure system is compliant with CIS Server Level 2 Benchmark
+  hosts: all
   tasks:
     - name: Include variables for CIS Benchmark
       ansible.builtin.include_vars:
