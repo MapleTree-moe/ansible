@@ -8,7 +8,6 @@
     name:
       - container-selinux
       - dnf-automatic
-      - htop
       - podman
       - tmux
     state: present
