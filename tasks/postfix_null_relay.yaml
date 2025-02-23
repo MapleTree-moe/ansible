@@ -1,0 +1,41 @@
+###
+### mapletree.moe - system configuration management
+### postfix_null_relay configuration task
+###
+---
+- name: Ensure SMTP Authentication mechanisms are present for Postfix
+  ansible.builtin.package:
+    name: cyrus-sasl-plain # NOTE: smtp2go requirement, change for others
+    state: present
+- name: Ensure Postfix is installed and configured for mail forwarding
+  ansible.builtin.include_role:
+    name: fedora.linux_system_roles.postfix
+  vars:
+    postfix_conf:
+      inet_interfaces: "loopback-only"
+      mydestination: ""
+      relayhost: "{{ postfix_relayhost }}"
+      sender_canonical_classes: "envelope_sender, header_sender"
+      sender_canonical_maps: "regexp:/etc/postfix/sender_canonical_maps"
+      smtp_header_checks: "regexp:/etc/postfix/smtp_header_checks"
+      smtp_sasl_auth_enable: "yes"
+      smtp_sasl_password_maps: "hash:/etc/postfix/sasl_passwd"
+      smtp_sasl_security_options: "noanonymous"
+      smtp_sasl_tls_security_options: "noanonymous"
+      smtp_tls_policy_maps: "hash:/etc/postfix/tls_policy"
+      smtp_use_tls: "yes"
+      smtpd_client_restrictions: "permit_mynetworks,reject"
+      virtual_maps: "regexp:/etc/postfix/virtual_regexp"
+    postfix_files:
+      - name: sasl_passwd
+        content: "{{ postfix_sasl_passwd }}"
+        postmap: true
+      - name: sender_canonical_maps
+        content: "/.+/ {{ postfix_system_email }}"
+      - name: smtp_header_checks
+        content: "/^From:.*/ REPLACE From: {{ postfix_system_email }}"
+      - name: tls_policy
+        content: "{{ postfix_tls_policy }}"
+        postmap: true
+      - name: virtual_regexp
+        content: "/.+@.+/ {{ postfix_external_email }}"

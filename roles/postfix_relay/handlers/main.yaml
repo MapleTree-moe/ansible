@@ -1,9 +1,0 @@
-###
-### mapletree.moe - system configuration management
-### postfix_relay - role handlers
-###
----
-- name: Update Postfix alias database
-  ansible.builtin.command:
-    cmd: "postalias /etc/aliases"
-  changed_when: true
