@@ -29,12 +29,5 @@
           server:
             - 1.1.1.1
             - 1.0.0.1
-  block:
-    - name: Ensure NetworkManager is active
-      ansible.builtin.service:
-        name: NetworkManager
-        state: started
-        enabled: true
-    - name: Ensure network state matches intended settings
-      ansible.builtin.include_role:
-        name: fedora.linux_system_roles.network
+  ansible.builtin.include_role:
+    name: fedora.linux_system_roles.network
