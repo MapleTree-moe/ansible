@@ -7,8 +7,3 @@
 # tuned settings
 #
 tuned_active_builtin_profile: "throughput-performance"
-
-#
-# postfix settings
-#
-postfix_system_email: "maple@mapletree.moe"

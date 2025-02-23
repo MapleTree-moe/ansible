@@ -7,6 +7,32 @@
   hosts: all
   become: true
   tasks:
+    - name: Ensure AlmaLinux is fully updated
+      when: ansible_distribution != "RedHat"
+      block:
+        - name: Update all installed packages to the latest version in the repo
+          ansible.builtin.dnf:
+            name: '*'
+            state: latest # noqa package-latest
+            update_cache: true
+        - name: Install dnf-utils to check for restarts
+          ansible.builtin.dnf:
+            name: 'dnf-utils'
+            state: latest # noqa package-latest
+        - name: Remove any packages that have been orphaned by the update
+          ansible.builtin.dnf:
+            autoremove: true
+        - name: Check if a reboot is required before conversion
+          ansible.builtin.command:
+            cmd: needs-restarting -r
+          register: reboot_required
+          changed_when: true
+          failed_when: reboot_required.rc not in [0, 1]
+        - name: Reboot the server if required
+          ansible.builtin.reboot:
+            reboot_timeout: 600
+          when: reboot_required.rc == 1
+
     - name: Convert AlmaLinux to genuine RHEL
       when: ansible_distribution != "RedHat"
       vars:
@@ -16,10 +42,6 @@
         rhsm_activation_key: "{{ redhat_activation_key }}"
         rhsm_org: "{{ redhat_organization }}"
       block:
-        - name: Ensure AlmaLinux is fully updated and reboot if required
-          # conversion will fail if system outdated
-          ansible.builtin.include_role:
-            name: update_system
         - name: Run convert2rhel analysis
           # conversion will fail without analysis
           ansible.builtin.include_role:

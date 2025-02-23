@@ -1,0 +1,89 @@
+###
+### mapletree.moe - system configuration management
+### dedicated variable file for RHEL9-CIS
+###
+---
+## NOTE: the following file contains overrides for the defaults in the external
+##       `rhel9_cis` role imported from ansible lockdown. these shouldn't be
+##       changed unless you understand the impact it will have on your system.
+#
+## NOTE: this configuration will get the system over 90% compliance on `oscap`
+##       tests. however, this is not entirely accurate, and many deviations are
+##       intentional.
+#
+
+#
+# to-dos
+#
+rhel9cis_set_boot_pass: false  # FIXME: we should do this
+rhel9cis_ipv6_required: false  # FIXME: we should do this too
+
+#
+# policy configuration - these must be set
+#
+rhel9cis_authselect_custom_profile_name: mapletree
+# yamllint disable-line rule:line-length
+rhel9cis_authselect_default_profile_to_copy: minimal --symlink-meta --symlink-pam
+
+#
+# exclusions
+#
+rhel9cis_sudoers_exclude_nopasswd_list:
+  - admin # this user is used for automation & maintenance
+
+#
+# control how aggressive the role is
+#
+rhel9cis_authselect_pkg_update: true
+rhel9cis_disruption_high: true
+rhel9cis_dotperm_ansiblemanaged: true
+rhel9cis_flush_ipv4_route: true
+rhel9cis_flush_ipv6_route: false # FIXME: fix when ipv6 is enabled
+rhel9cis_sysctl_update: true
+
+#
+# services
+#
+rhel9cis_aide_scan: timer # use systemd timer
+rhel9cis_auditd_extra_conf_usage: true
+rhel9cis_auditd_extra_conf:
+  admin_space_left: '10%' # should never be hit, if so halt system
+  space_left: '20%'  # give more time to get in to clear space
+rhel9cis_auditd_space_left_action: rotate # rotate log files when space is low
+rhel9cis_journald_systemkeepfree: 20G
+rhel9cis_journald_runtimekeepfree: 20G
+rhel9cis_nis_server: false # recommend disabling unless needed
+rhel9cis_rpc_server: false # recommend disabling unless needed
+rhel9cis_syslog: journald # rsyslog is preferred, journald is already built in
+
+#
+# rule overrides
+#
+rhel9cis_rule_1_1_2_1_1: false # /tmp - don't use dedicated mount
+rhel9cis_rule_1_1_2_1_2: false # ''
+rhel9cis_rule_1_1_2_1_3: false # ''
+rhel9cis_rule_1_1_2_1_4: false # ''
+rhel9cis_rule_1_1_2_3_1: false # /home - don't use dedicated mount
+rhel9cis_rule_1_1_2_3_2: false # ''
+rhel9cis_rule_1_1_2_3_3: false # ''
+rhel9cis_rule_1_1_2_4_1: false # /var - don't use dedicated mount
+rhel9cis_rule_1_1_2_4_2: false # ''
+rhel9cis_rule_1_1_2_4_3: false # ''
+rhel9cis_rule_1_1_2_5_1: false # /var/tmp - don't use dedicated mount
+rhel9cis_rule_1_1_2_5_2: false # ''
+rhel9cis_rule_1_1_2_5_3: false # ''
+rhel9cis_rule_1_1_2_5_4: false # ''
+rhel9cis_rule_1_1_2_6_1: false # /var/log - don't use dedicated mount
+rhel9cis_rule_1_1_2_6_2: false # ''
+rhel9cis_rule_1_1_2_6_3: false # ''
+rhel9cis_rule_1_1_2_6_4: false # ''
+rhel9cis_rule_1_1_2_7_1: false # /var/log/audit - don't use dedicated mount
+rhel9cis_rule_1_1_2_7_2: false # ''
+rhel9cis_rule_1_1_2_7_3: false # ''
+rhel9cis_rule_1_1_2_7_4: false # ''
+rhel9cis_rule_1_2_1_1: false # FIXME: Bug opened on this, #292
+rhel9cis_rule_5_4_2_5: false  # FIXME: false positive on root_path
+rhel9cis_rule_6_2_2_1_1: false # disable offsite logging checks - not used
+rhel9cis_rule_6_2_2_1_2: false # ''
+rhel9cis_rule_6_2_2_1_3: false # ''
+rhel9cis_rule_6_2_2_1_4: false # ''
