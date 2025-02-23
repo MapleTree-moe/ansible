@@ -1,9 +1,9 @@
 ###
 ### mapletree.moe - system configuration management
-### network configuration task
+### configure network using `network_state` to allow for declarative format
 ###
 ---
-- name: Ensure system networking is properly configured
+- name: Ensure network uses DHCP on primary interface with static DNS servers
   vars:
     network_provider: nm
     network_state:
