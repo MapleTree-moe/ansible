@@ -1,0 +1,15 @@
+###
+### mapletree.moe - system configuration management
+### run security compliance task
+###
+---
+- name: Ensure server security is compliant with CIS Server - Level 2
+  hosts: all
+  become: true
+  tasks:
+    - name: Load rhel9_cis variables for policy configuration
+      ansible.builtin.include_vars:
+        file: ../vars/rhel9_cis_role.yaml
+    - name: Run compliance configuration (this will take a while)
+      ansible.builtin.include_role:
+        name: rhel9_cis
