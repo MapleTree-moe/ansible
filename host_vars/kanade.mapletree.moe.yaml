@@ -16,6 +16,4 @@ tuned_active_builtin_profile: "virtual-guest"
 #
 # postfix settings
 #
-postfix_relay_sender_canonical_maps: "/.+/ kanade@mapletree.moe"
-# yamllint disable-line rule:line-length
-postfix_relay_smtp_header_checks: "/^From:.*/ REPLACE From: kanade@mapletree.moe"
+postfix_system_email: "kanade@mapletree.moe"
