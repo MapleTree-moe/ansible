@@ -9,6 +9,8 @@ bootloader_password: "{{ vault_bootloader_password }}"
 ## redhat
 redhat_activation_key: "{{ vault_redhat_activation_key }}"
 redhat_organization: "{{ vault_redhat_organization }}"
+redhat_password: "{{ vault_redhat_password }}"
+redhat_username: "{{ vault_redhat_username }}"
 
 ## ssh keys
 admin_authorized_keys:
