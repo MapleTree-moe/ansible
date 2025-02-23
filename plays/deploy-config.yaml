@@ -26,6 +26,9 @@
     - name: Ensure Postfix is configured to act as a mail relay
       ansible.builtin.include_tasks:
         file: ../tasks/postfix_null_relay.yaml
+    - name: Ensure system has security hardening properly applied
+      ansible.builtin.include_tasks:
+        file: ../tasks/cis_compliance.yaml
 
 #   roles:
 #     - role: create_users

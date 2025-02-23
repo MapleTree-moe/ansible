@@ -12,8 +12,3 @@ rhel9cis_legacy_boot: true # hetzner uses bios
 # tuned settings
 #
 tuned_active_builtin_profile: "virtual-guest"
-
-#
-# postfix settings
-#
-postfix_system_email: "kanade@mapletree.moe"

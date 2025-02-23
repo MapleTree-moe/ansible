@@ -3,7 +3,7 @@
 ### general_config - role tasks
 ###
 ---
-# This file should contain things that will apply to ALL hosts.
+# NOTE: this file should contain things that will apply to ALL hosts.
 
 #
 # enable automatic updates

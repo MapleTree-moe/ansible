@@ -31,9 +31,10 @@
         content: "{{ postfix_sasl_passwd }}"
         postmap: true
       - name: sender_canonical_maps
-        content: "/.+/ {{ postfix_system_email }}"
+        content: "/.+/ {{ ansible_hostname }}@{{ ansible_domain }}"
       - name: smtp_header_checks
-        content: "/^From:.*/ REPLACE From: {{ postfix_system_email }}"
+        # yamllint disable-line rule:line-length
+        content: "/^From:.*/ REPLACE From: {{ ansible_hostname }}@{{ ansible_domain }}"
       - name: tls_policy
         content: "{{ postfix_tls_policy }}"
         postmap: true
