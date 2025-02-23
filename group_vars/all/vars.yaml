@@ -10,13 +10,9 @@ redhat_activation_key: "{{ vault_redhat_activation_key }}"
 redhat_organization: "{{ vault_redhat_organization }}"
 
 #
-# create_users variables
+# ssh keys
 #
-create_users_root_password: "{{ vault_create_users_root_password }}"
-create_users_admin_password: "{{ vault_create_users_admin_password }}"
-create_users_containers_password: "{{ vault_create_users_container_password }}"
-create_users_password_salt: "{{ vault_create_users_password_salt }}"
-create_users_admin_authorized_keys:
+admin_authorized_keys:
   # yamllint disable-line rule:line-length
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEYfs1EndYHRh5WcW+jkuD7IKSvZZHM+OTqDX0RuYlY5 yuki@murasame"
 

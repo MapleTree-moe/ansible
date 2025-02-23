@@ -7,6 +7,9 @@
   hosts: all
   become: true
   tasks:
+    - name: Ensure system networking is properly configured
+      ansible.builtin.include_tasks:
+        file: ../tasks/configure_network.yaml
     - name: Ensure system is registered with RedHat but disable Insights
       vars:
         rhc_auth:
@@ -23,9 +26,15 @@
       # set profile in system's host variables
       ansible.builtin.include_role:
         name: giovtorres.tuned
+    - name: Ensure user configuration matches policy
+      ansible.builtin.include_tasks:
+        file: ../tasks/configure_users.yaml
     - name: Ensure Postfix is configured to act as a mail relay
       ansible.builtin.include_tasks:
         file: ../tasks/postfix_null_relay.yaml
+    - name: Ensure Automatic Updates are enabled on host
+      ansible.builtin.include_tasks:
+        file: ../tasks/automatic_updates.yaml
     - name: Ensure system has security hardening properly applied
       ansible.builtin.include_tasks:
         file: ../tasks/cis_compliance.yaml
