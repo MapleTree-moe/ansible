@@ -1,6 +1,6 @@
 ###
 ### mapletree.moe - system configuration management
-### postfix_null_relay configuration task
+### configure postfix to act as a simple local mail forwarder
 ###
 ---
 - name: Ensure SMTP Authentication mechanisms are present for Postfix
@@ -8,13 +8,12 @@
     name: cyrus-sasl-plain # NOTE: smtp2go requirement, change for others
     state: present
 - name: Ensure Postfix is installed and configured for mail forwarding
-  ansible.builtin.include_role:
-    name: fedora.linux_system_roles.postfix
   vars:
     postfix_conf:
-      inet_interfaces: "loopback-only"
-      mydestination: ""
-      relayhost: "{{ postfix_relayhost }}"
+      # NOTE: these may need to be changed according to relayhost requirements
+      inet_interfaces: "loopback-only" # do not allow external connections
+      mydestination: "" # null configuration, handle routing with virtual maps
+      relayhost: "{{ postfix_relayhost }}" # send all mail through external srvr
       sender_canonical_classes: "envelope_sender, header_sender"
       sender_canonical_maps: "regexp:/etc/postfix/sender_canonical_maps"
       smtp_header_checks: "regexp:/etc/postfix/smtp_header_checks"
@@ -28,15 +27,21 @@
       virtual_maps: "regexp:/etc/postfix/virtual_regexp"
     postfix_files:
       - name: sasl_passwd
+        # username and password to access smtp relay
         content: "{{ postfix_sasl_passwd }}"
         postmap: true
       - name: sender_canonical_maps
+        # rewrites sender address to allow for mail to pass through relayhost
         content: "/.+/ {{ ansible_hostname }}@{{ ansible_domain }}"
       - name: smtp_header_checks
+        # rewrites headers to make mail appear to genuinely be from sender addr
         # yamllint disable-line rule:line-length
         content: "/^From:.*/ REPLACE From: {{ ansible_hostname }}@{{ ansible_domain }}"
       - name: tls_policy
         content: "{{ postfix_tls_policy }}"
         postmap: true
       - name: virtual_regexp
+        # rewrite the "TO:" address of all emails to point towards administrator
         content: "/.+@.+/ {{ postfix_external_email }}"
+  ansible.builtin.include_role:
+    name: fedora.linux_system_roles.postfix

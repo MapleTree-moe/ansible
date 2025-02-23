@@ -1,0 +1,33 @@
+###
+### mapletree.moe - system configuration management
+### enable automated security updates and also install general use software
+###
+---
+- name: Ensure desired packages are installed on the system
+  ansible.builtin.package:
+    name:
+      - container-selinux
+      - dnf-automatic
+      - htop
+      - podman
+      - tmux
+    state: present
+- name: Ensure dnf-automatic will fetch and install security updates
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/automatic.conf
+    regexp: '^{{ item.name }}'
+    line: '{{ item.name }} = {{ item.value }}'
+  with_items:
+    - name: upgrade_type
+      value: security
+    - name: download_updates
+      value: 'yes'
+    - name: apply_updates
+      value: 'yes'
+    - name: reboot
+      value: 'when-needed'
+- name: Ensure dnf-automatic systemd timer is enabled
+  ansible.builtin.service:
+    name: dnf-automatic.timer
+    state: started
+    enabled: true

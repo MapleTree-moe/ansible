@@ -3,12 +3,4 @@
 ### ansible host variables - kanade.mapletree.moe
 ###
 ---
-#
-# rhel-cis settings
-#
-rhel9cis_legacy_boot: true # hetzner uses bios
-
-#
-# tuned settings
-#
 tuned_active_builtin_profile: "virtual-guest"
