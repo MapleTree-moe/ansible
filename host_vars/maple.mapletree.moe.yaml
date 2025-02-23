@@ -3,7 +3,4 @@
 ### ansible host variables - maple.mapletree.moe
 ###
 ---
-#
-# tuned settings
-#
 tuned_active_builtin_profile: "throughput-performance"

@@ -11,9 +11,11 @@
       # NOTE: password is set in group_vars
       ansible.builtin.include_role:
         name: fedora.linux_system_roles.bootloader
+
     - name: Ensure system networking is properly configured
       ansible.builtin.include_tasks:
-        file: ../tasks/configure_network.yaml
+        file: ../tasks/network.yaml
+
     - name: Ensure system is registered with RedHat but disable Insights
       vars:
         rhc_auth:
@@ -26,25 +28,24 @@
           remediation: absent
       ansible.builtin.include_role:
         name: fedora.linux_system_roles.rhc
+
     - name: Ensure system is using proper tuned profile
       # set profile in system's host variables
       ansible.builtin.include_role:
         name: giovtorres.tuned
-    - name: Ensure user configuration matches policy
+
+    - name: Ensure user configuration has been completed
       ansible.builtin.include_tasks:
-        file: ../tasks/configure_users.yaml
+        file: ../tasks/users.yaml
+
     - name: Ensure Postfix is configured to act as a mail relay
       ansible.builtin.include_tasks:
-        file: ../tasks/postfix_null_relay.yaml
-    - name: Ensure Automatic Updates are enabled on host
-      ansible.builtin.include_tasks:
-        file: ../tasks/automatic_updates.yaml
-    - name: Ensure CIS Server Level 2 Benchmark Compliance
-      ansible.builtin.include_tasks:
-        file: ../tasks/compliance_configuration.yaml
+        file: ../tasks/postfix.yaml
 
-#   roles:
-#     - role: create_users
-#       become: true
-#     - role: general_config
-#       become: true
+    - name: Ensure package manager is configured and tools are installed
+      ansible.builtin.include_tasks:
+        file: ../tasks/packages.yaml
+
+    - name: Ensure Compliance with CIS Server - Level 2 Benchmark
+      ansible.builtin.include_tasks:
+        file: ../tasks/compliance.yaml
