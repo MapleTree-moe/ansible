@@ -14,6 +14,9 @@ redhat_organization: "{{ vault_redhat_organization }}"
 admin_authorized_keys:
   # yamllint disable-line rule:line-length
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEYfs1EndYHRh5WcW+jkuD7IKSvZZHM+OTqDX0RuYlY5 yuki@murasame"
+podman_authorized_keys:
+  # yamllint disable-line rule:line-length
+  - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEYfs1EndYHRh5WcW+jkuD7IKSvZZHM+OTqDX0RuYlY5 yuki@murasame"
 
 ## postfix variables
 postfix_relayhost: "[mail.smtp2go.com]:587"
