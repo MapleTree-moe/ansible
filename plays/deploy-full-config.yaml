@@ -39,3 +39,6 @@
     - name: Ensure package manager is configured and tools are installed
       ansible.builtin.include_tasks:
         file: ../tasks/packages.yaml
+    - name: Ensure Compliance with CIS Server - Level 2 Benchmark
+      ansible.builtin.include_tasks:
+        file: ../tasks/compliance.yaml
