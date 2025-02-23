@@ -1,8 +1,0 @@
-###
-### mapletree.moe - system configuration management
-### general_config - role variables
-###
----
-general_config_dns_servers:
-  - 1.1.1.1
-  - 1.0.0.1

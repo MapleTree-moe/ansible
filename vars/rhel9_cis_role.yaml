@@ -52,8 +52,6 @@ rhel9cis_auditd_extra_conf:
 rhel9cis_auditd_space_left_action: rotate # rotate log files when space is low
 rhel9cis_journald_systemkeepfree: 20G
 rhel9cis_journald_runtimekeepfree: 20G
-rhel9cis_nis_server: false # recommend disabling unless needed
-rhel9cis_rpc_server: false # recommend disabling unless needed
 rhel9cis_syslog: journald # rsyslog is preferred, journald is already built in
 
 #
