@@ -11,5 +11,4 @@ tuned_active_builtin_profile: "throughput-performance"
 #
 # postfix settings
 #
-postfix_relay_sender_canonical_maps: "/.+/ maple@mapletree.moe"
-postfix_relay_smtp_header_checks: "/^From:.*/ REPLACE From: maple@mapletree.moe"
+postfix_system_email: "maple@mapletree.moe"

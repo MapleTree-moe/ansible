@@ -13,6 +13,6 @@
     # to disable this on normal runs.
     - role: rhel9-cis
       when: lookup('env', "RUN_SECURITY")
-    - role: postfix_relay
+    # - role: postfix_relay
     - role: create_users
     - role: general_config

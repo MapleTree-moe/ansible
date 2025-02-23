@@ -24,8 +24,8 @@
       ansible.builtin.include_role:
         name: giovtorres.tuned
     - name: Ensure Postfix is configured to act as a mail relay
-      ansible.builtin.include_role:
-        name: postfix_relay
+      ansible.builtin.include_tasks:
+        file: ../tasks/postfix_null_relay.yaml
 
 #   roles:
 #     - role: create_users
