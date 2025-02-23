@@ -13,6 +13,8 @@
         # TODO: this was needed for one upgrade, is it still needed?
         # yamllint disable-line rule:line-length
         convert2rhel_repofile_url: "https://cdn-public.redhat.com/content/public/repofiles/convert2rhel-for-rhel-9-x86_64.repo"
+        rhsm_activation_key: "{{ redhat_activation_key }}"
+        rhsm_org: "{{ redhat_organization }}"
       block:
         - name: Ensure AlmaLinux is fully updated and reboot if required
           # conversion will fail if system outdated

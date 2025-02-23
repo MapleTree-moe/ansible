@@ -10,14 +10,6 @@ redhat_activation_key: "{{ vault_redhat_activation_key }}"
 redhat_organization: "{{ vault_redhat_organization }}"
 
 #
-# convert2rhel variables
-#
-# yamllint disable-line rule:line-length
-convert2rhel_repofile_url: "https://cdn-public.redhat.com/content/public/repofiles/convert2rhel-for-rhel-9-x86_64.repo"
-rhsm_activation_key: "{{ vault_rhsm_activation_key }}"
-rhsm_org: "17594423"
-
-#
 # create_users variables
 #
 create_users_root_password: "{{ vault_create_users_root_password }}"
@@ -29,12 +21,12 @@ create_users_admin_authorized_keys:
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEYfs1EndYHRh5WcW+jkuD7IKSvZZHM+OTqDX0RuYlY5 yuki@murasame"
 
 #
-# postfix_relay variables
+# postfix variables
 #
+postfix_relay_relayhost: "[mail.smtp2go.com]:587"
 postfix_relay_root_email: "{{ vault_postfix_relay_root_email }}"
-postfix_relayhost: "[mail.smtp2go.com]:587"
-postfix_sasl_passwd: " {{ vault_postfix_relay_sasl_passwd }}"
-postfix_tls_policy: "[mail.smtp2go.com]:587 encrypt"
+postfix_relay_sasl_passwd: " {{ vault_postfix_relay_sasl_passwd }}"
+postfix_relay_tls_policy: "[mail.smtp2go.com]:587 encrypt"
 
 #
 # overrides for CIS hardening role
