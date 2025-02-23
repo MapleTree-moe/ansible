@@ -3,22 +3,19 @@
 ### ansible group variables
 ###
 ---
-#
-# redhat
-#
+## general
+bootloader_password: "{{ vault_bootloader_password }}"
+
+## redhat
 redhat_activation_key: "{{ vault_redhat_activation_key }}"
 redhat_organization: "{{ vault_redhat_organization }}"
 
-#
-# ssh keys
-#
+## ssh keys
 admin_authorized_keys:
   # yamllint disable-line rule:line-length
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEYfs1EndYHRh5WcW+jkuD7IKSvZZHM+OTqDX0RuYlY5 yuki@murasame"
 
-#
-# postfix variables
-#
+## postfix variables
 postfix_relayhost: "[mail.smtp2go.com]:587"
 postfix_external_email: "{{ vault_postfix_external_email }}"
 postfix_sasl_passwd: "{{ vault_postfix_sasl_passwd }}"

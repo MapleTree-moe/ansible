@@ -7,6 +7,10 @@
   hosts: all
   become: true
   tasks:
+    - name: Ensure bootloader password is set
+      # NOTE: password is set in group_vars
+      ansible.builtin.include_role:
+        name: fedora.linux_system_roles.bootloader
     - name: Ensure system networking is properly configured
       ansible.builtin.include_tasks:
         file: ../tasks/configure_network.yaml
@@ -35,9 +39,9 @@
     - name: Ensure Automatic Updates are enabled on host
       ansible.builtin.include_tasks:
         file: ../tasks/automatic_updates.yaml
-    - name: Ensure system has security hardening properly applied
+    - name: Ensure CIS Server Level 2 Benchmark Compliance
       ansible.builtin.include_tasks:
-        file: ../tasks/cis_compliance.yaml
+        file: ../tasks/compliance_configuration.yaml
 
 #   roles:
 #     - role: create_users
