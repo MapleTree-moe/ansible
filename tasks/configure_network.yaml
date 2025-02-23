@@ -1,0 +1,40 @@
+###
+### mapletree.moe - system configuration management
+### network configuration task
+###
+---
+- name: Ensure system networking is properly configured
+  vars:
+    network_provider: nm
+    network_state:
+      interfaces:
+        - name: "{{ ansible_default_ipv4.interface }}"
+          type: ethernet
+          state: up
+          ipv4:
+            enabled: true
+            auto-dns: false
+            auto-gateway: true
+            auto-routes: true
+            dhcp: true
+          ipv6:
+            enabled: false # FIXME: enable ipv6
+            auto-dns: false
+            auto-gateway: false
+            auto-routes: false
+            autoconf: false
+            dhcp: false
+      dns-resolver:
+        config:
+          server:
+            - 1.1.1.1
+            - 1.0.0.1
+  block:
+    - name: Ensure NetworkManager is active
+      ansible.builtin.service:
+        name: NetworkManager
+        state: started
+        enabled: true
+    - name: Ensure network state matches intended settings
+      ansible.builtin.include_role:
+        name: fedora.linux_system_roles.network
