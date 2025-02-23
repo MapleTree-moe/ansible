@@ -52,7 +52,20 @@
     state: present
     key: '{{ item }}'
   with_items: "{{ admin_authorized_keys }}"
+- name: Set up ssh authorized_keys for user "podman"
+  ansible.posix.authorized_key:
+    user: admin
+    state: present
+    key: '{{ item }}'
+  with_items: "{{ podman_authorized_keys }}"
 - name: Enable systemd linger for "podman" user to allow containers to run
   ansible.builtin.command:
     cmd: "loginctl enable-linger podman"
     creates: "/var/lib/systemd/linger/podman"
+- name: Set variables for subuid users
+  ansible.builtin.set_fact:
+    subid_users:
+      - podman
+- name: Generate subuids & subgids
+  ansible.builtin.include_role:
+    name: subuid_subgid

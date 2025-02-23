@@ -1,0 +1,13 @@
+###
+### mapletree.moe - system configuration management
+### perform compliance configuration for server
+###
+---
+- name: Ensure system is compliant with CIS Server Level 2 Benchmark
+  tasks:
+    - name: Include variables for CIS Benchmark
+      ansible.builtin.include_vars:
+        file: ../vars/rhel9_cis_role.yaml
+    - name: Run CIS Benchmark
+      ansible.builtin.include_role:
+        name: rhel9-cis

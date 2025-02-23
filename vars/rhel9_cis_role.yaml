@@ -9,7 +9,7 @@
 #
 ## NOTE: this configuration will get the system over 90% compliance on `oscap`
 ##       tests. however, this is not entirely accurate, and many deviations are
-##       intentional.
+##       intentional. it is likely closer to 95% accounting for false positives
 #
 
 #
@@ -17,6 +17,13 @@
 #
 rhel9cis_set_boot_pass: false  # FIXME: we should do this
 rhel9cis_ipv6_required: false  # FIXME: we should do this too
+
+#
+# overrides
+#
+rhel9cis_sshd_allowusers:
+  - admin
+  - podman
 
 #
 # policy configuration - these must be set
