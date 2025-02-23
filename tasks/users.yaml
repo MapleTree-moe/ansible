@@ -69,3 +69,6 @@
 - name: Generate subuids & subgids
   ansible.builtin.include_role:
     name: subuid_subgid
+- name: Reboot the server to apply lingering
+  ansible.builtin.reboot:
+    reboot_timeout: 600
