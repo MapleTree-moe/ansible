@@ -7,97 +7,27 @@
   hosts: all
   become: true
   tasks:
-    - name: Include variables for Compliance Benchmark
-      ansible.builtin.include_vars:
-        file: ../vars/compliance.yaml
-#    - name: Run Ansible-Lockdown CIS Server Level 2 Benchmark
-#      ansible.builtin.include_role:
-#        name: rhel9-cis
-    - name: Update GRUB with compliance settings and kernel hardening
-      vars:
-        bootloader_settings:
-          - kernel: ALL
-            options: "{{ grub_cmdline_options }}"
-      ansible.builtin.include_role:
-        name: fedora.linux_system_roles.bootloader # set password in group_vars
-    - name: Remove kernel modules with vulnerabilities from the kernel
-      block:
-        - name: Ensure uneeded kernel modules are unavailable (compliance.yaml)
-          ansible.builtin.lineinfile:
-            path: /etc/modprobe.d/CIS.conf
-            regexp: "^(#)?install {{ item }}(\\s|$)"
-            line: "install {{ item }} /bin/true"
-            create: true
-            mode: 'go-rwx'
-          with_items: "{{ kernel_blacklist }}"
-        - name: Blacklist uneeded kernel modules (compliance.yaml)
-          community.general.kernel_blacklist:
-            name: "{{ item }}"
-          with_items: "{{ kernel_blacklist }}"
-        - name: Disable uneeded kernel modules (compliance.yaml)
-          community.general.modprobe:
-            name: "{{ item }}"
-            state: absent
-          with_items: "{{ kernel_blacklist }}"
-    - name: Ensure GPG check Enabled for Local Packages (dnf)
-      community.general.ini_file:
-        dest: "/etc/dnf/dnf.conf"
-        section: main
-        option: localpkg_gpgcheck
-        value: 1
-        no_extra_spaces: true
-        create: true
-        mode: "0644"
-    - name: Disable unneeded systemd services
-      ansible.builtin.systemd_service:
-        name: "{{ item }}"
-        state: stopped
-        enabled: false
-        force: true
-        masked: true
-      with_items: "{{ systemd_blacklist }}"
-    - name: Disable Ctrl-Alt-Del Burst Action
-      ansible.builtin.lineinfile:
-        dest: /etc/systemd/system.conf
-        state: present
-        regexp: ^CtrlAltDelBurstAction
-        line: CtrlAltDelBurstAction=none
-        create: true
-        mode: "0644"
-    - name: Require Authentication for Single User Mode
-      community.general.ini_file:
-        path: /etc/systemd/system/rescue.service.d/10-oscap.conf
-        section: Service
-        option: ExecStart
-        value: -/usr/lib/systemd/systemd-sulogin-shell rescue
-        mode: "0644"
-    - name: Ensure compliance packages are installed on the system
-      ansible.builtin.package:
-        name: "{{ compliance_packages }}"
-        state: present
-    - name: Ensure cockpit & dhcpv6-client service are not in firewall
-      vars:
-        firewall:
-          - service: cockpit
-            state: disabled
-            permanent: true
-          - service: dhcpv6-client
-            state: disabled
-            permanent: true
-        firewall_disable_conflicting_services: true
-        firewall_transactional_update_reboot_ok: true
-      ansible.builtin.include_role:
-        name: fedora.linux_system_roles.firewall
-    - name: Enable more restrictive permissions on files
-      ansible.builtin.file:
-        path: "{{ item }}"
-        owner: root
-        group: root
-        mode: '0600'
-      with_items: "{{ restricted_files }}"
-    - name: Harden Linux Kernel
-      ansible.builtin.include_role:
-        name: fedora.linux_system_roles.kernel_settings
-    - name: Reboot the server to apply compliance
+    - name: COMPLIANCE | BENCHMARK | Run ansible-lockdown CIS benchmark
+      ansible.builtin.include_tasks:
+        file: ../tasks/compliance_benchmark.yaml
+    - name: COMPLIANCE | Configure bootloader
+      ansible.builtin.include_tasks:
+        file: ../tasks/compliance_bootloader.yaml
+    - name: COMPLIANCE | Configure chrony and system timekeeping
+      ansible.builtin.include_tasks:
+        file: ../tasks/compliance_timesync.yaml
+    - name: COMPLIANCE | Configure firewall
+      ansible.builtin.include_tasks:
+        file: ../tasks/compliance_firewalld.yaml
+    - name: COMPLIANCE | Configure kernel and kernel modules
+      ansible.builtin.include_tasks:
+        file: ../tasks/compliance_kernel.yaml
+    - name: COMPLIANCE | Configure package manager and packages
+      ansible.builtin.include_tasks:
+        file: ../tasks/compliance_packages.yaml
+    - name: COMPLIANCE | Configure system services and features
+      ansible.builtin.include_tasks:
+        file: ../tasks/compliance_system.yaml
+    - name: COMPLIANCE | Reboot the server to apply compliance
       ansible.builtin.reboot:
         reboot_timeout: 600

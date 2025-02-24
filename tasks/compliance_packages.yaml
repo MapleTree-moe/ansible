@@ -1,0 +1,27 @@
+###
+### mapletree.moe - system configuration management
+### compliance playbook - configure rpm security and install packages
+###
+---
+- name: COMPLIANCE | PACKAGES | Enable local package gpg key verification
+  community.general.ini_file:
+    dest: "/etc/dnf/dnf.conf"
+    section: main
+    option: localpkg_gpgcheck
+    value: 1
+    no_extra_spaces: true
+    create: true
+    mode: "0644"
+- name: COMPLIANCE | PACKAGES | Install packages needed for compliance
+  ansible.builtin.package:
+    name:
+      - audispd-plugins
+      - gnutls-utils
+      - libreswan
+      - nss-tools
+      - policycoreutils-python-utils
+      - rng-tools
+      - rsyslog-gnutls
+      - s-nail
+      - systemd-journal-remote
+    state: present

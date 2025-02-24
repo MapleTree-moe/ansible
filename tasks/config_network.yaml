@@ -1,6 +1,6 @@
 ###
 ### mapletree.moe - system configuration management
-### configure network using `network_state` to allow for declarative format
+### configuration playbook - deploy network configuration
 ###
 ---
 - name: Ensure network uses DHCP on primary interface with static DNS servers

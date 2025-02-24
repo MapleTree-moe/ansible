@@ -1,0 +1,50 @@
+###
+### mapletree.moe - system configuration management
+### compliance playbook - configure systemd services and restrictions
+###
+---
+- name: COMPLIANCE | SYSTEM | Disable unneeded systemd services and mask
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+    force: true
+    masked: true
+  with_items:
+    - ctrl-alt-del.target
+    - debug-shell.service
+    - kdump.service
+    - lvm2-monitor.service
+    - lvm2-lvmpolld.socket
+    - nis-domainname.service
+    - rngd.service
+    - rsyslog.service
+    - sssd.service
+    - sssd-kcm.socket
+    - systemd-coredump.socket
+    - NetworkManager-dispatcher.service
+- name: COMPLIANCE | SYSTEM | Disable Ctrl-Alt-Del Burst Action
+  ansible.builtin.lineinfile:
+    dest: /etc/systemd/system.conf
+    state: present
+    regexp: ^CtrlAltDelBurstAction
+    line: CtrlAltDelBurstAction=none
+    create: true
+    mode: "0644"
+- name: COMPLIANCE | SYSTEM | Require Authentication for Single User Mode
+  community.general.ini_file:
+    path: /etc/systemd/system/rescue.service.d/10-oscap.conf
+    section: Service
+    option: ExecStart
+    value: -/usr/lib/systemd/systemd-sulogin-shell rescue
+    mode: "0644"
+- name: COMPLIANCE | SYSTEM | Enable restrictive permissions on critical files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    mode: '0600'
+  with_items:
+    - "/boot/grub2/grub.cfg"
+    - "/etc/at.allow"
+    - "/etc/cron.allow"

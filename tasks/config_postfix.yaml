@@ -1,6 +1,6 @@
 ###
 ### mapletree.moe - system configuration management
-### configure postfix to act as a simple local mail forwarder
+### configuration playbook - deploy null relay postfix configuration
 ###
 ---
 - name: Ensure SMTP Authentication mechanisms are present for Postfix
