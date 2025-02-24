@@ -13,10 +13,25 @@
     - name: Ensure bootloader password is set
       ansible.builtin.include_role:
         name: fedora.linux_system_roles.bootloader # set password in group_vars
-    - name: Blacklist uneeded kernel modules (check compliance.yaml)
-      community.general.kernel_blacklist:
-        name: "{{ item }}"
-      with_items: "{{ kernel_blacklist }}"
+    - name: Remove kernel modules with vulnerabilities from the kernel
+      block:
+        - name: Ensure uneeded kernel modules are unavailable (compliance.yaml)
+          ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/CIS.conf
+            regexp: "^(#)?install {{ item }}(\\s|$)"
+            line: "install {{ item }} /bin/true"
+            create: true
+            mode: 'go-rwx'
+          with_items: "{{ kernel_blacklist }}"
+        - name: Blacklist uneeded kernel modules (compliance.yaml)
+          community.general.kernel_blacklist:
+            name: "{{ item }}"
+          with_items: "{{ kernel_blacklist }}"
+        - name: Disable uneeded kernel modules (compliance.yaml)
+          community.general.modprobe:
+            name: "{{ item }}"
+            state: absent
+          with_items: "{{ kernel_blacklist }}"
     - name: Ensure cockpit & dhcpv6-client service are not in firewall
       vars:
         firewall:
@@ -33,6 +48,13 @@
     - name: Run Ansible-Lockdown CIS Server Level 2 Benchmark
       ansible.builtin.include_role:
         name: rhel9-cis
+    - name: Enable more restrictive permissions on files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        owner: root
+        group: root
+        mode: '0600'
+      with_items: "{{ restricted_files }}"
     - name: Reboot the server to apply compliance
       ansible.builtin.reboot:
         reboot_timeout: 600
