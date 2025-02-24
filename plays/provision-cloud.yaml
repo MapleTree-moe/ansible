@@ -8,15 +8,15 @@
   hosts: all
   become: true
   tasks:
-    - name: Ensure packages on conversions target have been updated to latest
+    - name: PROVISION | Upgrade target systems to latest
       ansible.builtin.include_tasks:
         file: ../tasks/provision_update.yaml
       when: ansible_distribution != "RedHat"
-    - name: Perform analysis and conversion of target systems to genuine RHEL
+    - name: PROVISION | Deploy `infra.convert2rhel`
       ansible.builtin.include_tasks:
         file: ../tasks/provision_convert.yaml
       when: ansible_distribution != "RedHat"
-    - name: Run post-conversion cleanup on target systems
+    - name: PROVISION | Run post-conversion cleanup on target systems
       ansible.builtin.include_tasks:
         file: ../tasks/provision_post.yaml
       when: ansible_distribution != "RedHat"
