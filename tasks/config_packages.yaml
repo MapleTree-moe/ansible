@@ -1,6 +1,6 @@
 ###
 ### mapletree.moe - system configuration management
-### enable automated security updates and also install general use software
+### configuration playbook - deploy system packages
 ###
 ---
 - name: Ensure desired packages are installed on the system

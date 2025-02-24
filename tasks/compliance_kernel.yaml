@@ -1,0 +1,67 @@
+###
+### mapletree.moe - system configuration management
+### compliance playbook - kernel and kernel module configuration
+###
+---
+- name: COMPLIANCE | KERNEL | Configure kernel modules
+  vars:
+    compliance_kernel_blacklist:
+      # uneeded filesystems
+      - cachefiles
+      - erofs
+      - exfat
+      - fscache
+      - fuse
+      - isofs
+      - netfs
+      - smb
+      # nfs stuff
+      - lockd
+      - nfs_common
+      - nfs
+      - nfsd
+      # cluster filesystems
+      - ceph
+      - dlm
+      - gfs2
+      # unused connection protocols
+      - atm
+      - can
+      - firewire-core
+      - bluetooth
+  block:
+    - name: COMPLIANCE | KERNEL | MODULES | Assign modules to /bin/true
+      ansible.builtin.lineinfile:
+        path: /etc/modprobe.d/CIS.conf
+        regexp: "^(#)?install {{ item }}(\\s|$)"
+        line: "install {{ item }} /bin/true"
+        create: true
+        mode: 'go-rwx'
+      with_items: "{{ compliance_kernel_blacklist }}"
+    - name: COMPLIANCE | KERNEL | MODULES | Blacklist kernel modules
+      community.general.kernel_blacklist:
+        name: "{{ item }}"
+      with_items: "{{ compliance_kernel_blacklist }}"
+    - name: COMPLIANCE | KERNEL | MODULES | Disable modules
+      community.general.modprobe:
+        name: "{{ item }}"
+        state: absent
+      with_items: "{{ compliance_kernel_blacklist }}"
+- name: COMPLIANCE | KERNEL | Configure restrictive kernel sysctl values
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_file: /etc/sysctl.d/60-kernel_sysctl.conf
+    state: present
+    reload: true
+  with_items:
+    - name: kernel.core_pattern
+      value: "|/bin/false"
+    - name: kernel.dmesg_restrict
+      value: 1
+    - name: kernel.kexec_load_disabled
+      value: 1
+    - name: kernel.perf_event_paranoid
+      value: 2
+    - name: kernel.unprivileged_bpf_disabled
+      value: 1
