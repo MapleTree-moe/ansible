@@ -3,7 +3,7 @@
 ### provisioning playbook - run analysis and conversion from clone to genuine
 ###
 ---
-- name: Convert target system to genuine RHEL using `infra.convert2rhel`
+- name: PROVISION | CONVERSION | Deploy `convert2rhel` script
   vars:
     # yamllint disable-line rule:line-length
     convert2rhel_repofile_url: "https://cdn-public.redhat.com/content/public/repofiles/convert2rhel-for-rhel-9-x86_64.repo"
@@ -12,11 +12,11 @@
     rhsm_activation_key: "{{ redhat_activation_key }}"
     rhsm_org: "{{ redhat_organization }}"
   block:
-    - name: Run convert2rhel analysis
+    - name: PROVISION | CONVERSION | ANALYSIS | Run convert2rhel analysis
       # conversion will fail without analysis
       ansible.builtin.include_role:
         name: infra.convert2rhel.analysis
-    - name: Run convert2rhel conversion script
+    - name: PROVISION | CONVERSION | CONVERT | Run convert2rhel conversion
       vars:
         # remove conversion tooling after successful conversion
         convert_gpg_key_remove: true
