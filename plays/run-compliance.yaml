@@ -28,6 +28,7 @@
     - name: COMPLIANCE | Configure system services and features
       ansible.builtin.include_tasks:
         file: ../tasks/compliance_system.yaml
+    # FIXME: use a handler
     - name: COMPLIANCE | Reboot the server to apply compliance
       ansible.builtin.reboot:
         reboot_timeout: 600
