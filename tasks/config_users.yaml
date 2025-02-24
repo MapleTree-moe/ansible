@@ -1,9 +1,8 @@
 ###
 ### mapletree.moe - system configuration management
-### configure all groups and users that will exist on host
+### configuration playbook - deploy users and groups and configure settings
 ###
 ---
-# TODO: subuid configuration for podman
 - name: Ensure 'admin' group exists with GID '1001'
   ansible.builtin.group:
     name: admin

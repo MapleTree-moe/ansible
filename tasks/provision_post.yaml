@@ -1,0 +1,20 @@
+###
+### mapletree.moe - system configuration management
+### provisioning playbook - GPG key cleanup and prune orphaned packages
+###
+---
+- name: Remove AlmaLinux GPG key from RPM Key Registry
+  ansible.builtin.rpm_key:
+    key: http://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux-9
+    state: absent
+- name: Remove RockyLinux GPG key from RPM Key Registry
+  ansible.builtin.rpm_key:
+    key: https://dl.rockylinux.org/pub/rocky/RPM-GPG-KEY-Rocky-9
+    state: absent
+- name: Ensure correct RHEL GPG key is present in RPM registry
+  ansible.builtin.rpm_key:
+    key: https://security.access.redhat.com/data/fd431d51.txt
+    state: present
+- name: Remove any packages that have been orphaned by the conversion
+  ansible.builtin.dnf:
+    autoremove: true

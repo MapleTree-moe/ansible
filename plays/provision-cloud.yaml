@@ -8,60 +8,15 @@
   hosts: all
   become: true
   tasks:
-    - name: Ensure RockyLinux is fully updated
+    - name: Ensure packages on conversions target have been updated to latest
+      ansible.builtin.include_tasks:
+        file: ../tasks/provision_update.yaml
       when: ansible_distribution != "RedHat"
-      block:
-        - name: Update all installed packages to the latest version in the repo
-          ansible.builtin.package:
-            name: '*'
-            state: latest # noqa package-latest
-            update_cache: true
-        - name: Install dnf-utils to check for restarts
-          ansible.builtin.dnf:
-            name: 'dnf-utils'
-            state: latest # noqa package-latest
-        - name: Remove any packages that have been orphaned by the update
-          ansible.builtin.dnf:
-            autoremove: true
-        - name: Check if a reboot is required before conversion
-          ansible.builtin.command:
-            cmd: needs-restarting -r
-          register: reboot_required
-          changed_when: true
-          failed_when: reboot_required.rc not in [0, 1]
-        - name: Reboot the server if required
-          ansible.builtin.reboot:
-            reboot_timeout: 600
-          when: reboot_required.rc == 1
-
-    - name: Convert RockyLinux to genuine RHEL
+    - name: Perform analysis and conversion of target systems to genuine RHEL
+      ansible.builtin.include_tasks:
+        file: ../tasks/provision_convert.yaml
       when: ansible_distribution != "RedHat"
-      vars:
-        # yamllint disable-line rule:line-length
-        convert2rhel_repofile_url: "https://cdn-public.redhat.com/content/public/repofiles/convert2rhel-for-rhel-9-x86_64.repo"
-        rhsm_username: "{{ redhat_username }}"
-        rhsm_password: "{{ redhat_password }}"
-        rhsm_activation_key: "{{ redhat_activation_key }}"
-        rhsm_org: "{{ redhat_organization }}"
-      block:
-        - name: Run convert2rhel analysis
-          # conversion will fail without analysis
-          ansible.builtin.include_role:
-            name: infra.convert2rhel.analysis
-        - name: Run convert2rhel conversion script
-          vars:
-            # remove conversion tooling after successful conversion
-            convert_gpg_key_remove: true
-            convert_convert2rhel_repo_remove: true
-            convert_convert2rhel_package_remove: true
-            convert_reboot_requested: true
-          ansible.builtin.include_role:
-            name: infra.convert2rhel.convert
-        - name: Remove RockyLinux GPG key from RPM Key Registry
-          ansible.builtin.rpm_key:
-            key: https://dl.rockylinux.org/pub/rocky/RPM-GPG-KEY-Rocky-9
-            state: absent
-        - name: Ensure correct RHEL GPG key is present in RPM registry
-          ansible.builtin.rpm_key:
-            key: https://security.access.redhat.com/data/fd431d51.txt
-            state: present
+    - name: Run post-conversion cleanup on target systems
+      ansible.builtin.include_tasks:
+        file: ../tasks/provision_post.yaml
+      when: ansible_distribution != "RedHat"

@@ -15,55 +15,6 @@
 #
 # custom compliance rules - these are separate from rhel9-cis
 #
-# kernel modules to blacklist
-compliance_packages:
-  - audispd-plugins
-  - gnutls-utils
-  - nss-tools
-  - policycoreutils-python-utils
-  - rng-tools
-  - s-nail
-grub_cmdline_options:
-  - name: slub_debug
-    value: P
-  - name: page_poison
-    value: 1
-  - name: vsyscall
-    value: none
-kernel_blacklist:
-  - cachefiles
-  - erofs
-  - exfat
-  - fscache
-  - fuse
-  - isofs
-  - netfs
-  - smb
-  # nfs stuff
-  - lockd
-  - nfs_common
-  - nfs
-  - nfsd
-  # cluster filesystems
-  - ceph
-  - dlm
-  - gfs2
-  # unused connection protocols
-  - atm
-  - can
-  - firewire-core
-  - bluetooth
-kernel_settings_sysctl:
-  - name: kernel.core_pattern
-    value: "|/bin/false"
-  - name: kernel.dmesg_restrict
-    value: 1
-  - name: kernel.kexec_load_disabled
-    value: 1
-  - name: kernel.perf_event_paranoid
-    value: 2
-  - name: kernel.unprivileged_bpf_disabled
-    value: 1
 restricted_files:
   - "/boot/grub2/grub.cfg"
   - "/etc/at.allow"
@@ -72,7 +23,15 @@ systemd_blacklist:
   - ctrl-alt-del.target
   - debug-shell.service
   - kdump.service
+  - lvm2-monitor.service
+  - lvm2-lvmpolld.socket
+  - nis-domainname.service
+  - rngd.service
+  - rsyslog.service
+  - sssd.service
+  - sssd-kcm.socket
   - systemd-coredump.socket
+  - NetworkManager-dispatcher.service
 
 #
 # rhel9-cis compliance configuration

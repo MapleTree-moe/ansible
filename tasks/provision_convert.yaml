@@ -1,0 +1,27 @@
+###
+### mapletree.moe - system configuration management
+### provisioning playbook - run analysis and conversion from clone to genuine
+###
+---
+- name: Convert target system to genuine RHEL using `infra.convert2rhel`
+  vars:
+    # yamllint disable-line rule:line-length
+    convert2rhel_repofile_url: "https://cdn-public.redhat.com/content/public/repofiles/convert2rhel-for-rhel-9-x86_64.repo"
+    rhsm_username: "{{ redhat_username }}"
+    rhsm_password: "{{ redhat_password }}"
+    rhsm_activation_key: "{{ redhat_activation_key }}"
+    rhsm_org: "{{ redhat_organization }}"
+  block:
+    - name: Run convert2rhel analysis
+      # conversion will fail without analysis
+      ansible.builtin.include_role:
+        name: infra.convert2rhel.analysis
+    - name: Run convert2rhel conversion script
+      vars:
+        # remove conversion tooling after successful conversion
+        convert_gpg_key_remove: true
+        convert_convert2rhel_repo_remove: true
+        convert_convert2rhel_package_remove: true
+        convert_reboot_requested: true
+      ansible.builtin.include_role:
+        name: infra.convert2rhel.convert

@@ -1,0 +1,21 @@
+###
+### mapletree.moe - system configuration management
+### compliance playbook - configure system firewall according to baseline policy
+###
+---
+- name: COMPLIANCE | FIREWALLD | Ensure firewall meets baseline policy
+  vars:
+    firewall:
+      - service: cockpit
+        state: disabled
+        permanent: true
+      - service: dhcpv6-client
+        state: disabled
+        permanent: true
+      - service: ssh
+        state: enabled
+        permanent: true
+    firewall_disable_conflicting_services: true
+    firewall_transactional_update_reboot_ok: true
+  ansible.builtin.include_role:
+    name: fedora.linux_system_roles.firewall

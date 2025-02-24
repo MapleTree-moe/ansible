@@ -9,7 +9,7 @@
   tasks:
     - name: Ensure system networking is properly configured
       ansible.builtin.include_tasks:
-        file: ../tasks/network.yaml
+        file: ../tasks/config_network.yaml
     - name: Ensure system is registered with RedHat but disable Insights
       vars:
         rhc_auth:
@@ -28,10 +28,10 @@
         name: giovtorres.tuned
     - name: Ensure user configuration has been completed
       ansible.builtin.include_tasks:
-        file: ../tasks/users.yaml
+        file: ../tasks/config_users.yaml
     - name: Ensure Postfix is configured to act as a mail relay
       ansible.builtin.include_tasks:
-        file: ../tasks/postfix.yaml
+        file: ../tasks/config_postfix.yaml
     - name: Ensure package manager is configured and tools are installed
       ansible.builtin.include_tasks:
-        file: ../tasks/packages.yaml
+        file: ../tasks/config_packages.yaml
