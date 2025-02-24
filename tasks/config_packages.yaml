@@ -3,7 +3,7 @@
 ### configuration playbook - deploy system packages
 ###
 ---
-- name: Ensure desired packages are installed on the system
+- name: CONFIGURE | PACKAGES | Install standard packages
   ansible.builtin.package:
     name:
       - container-selinux
@@ -12,7 +12,8 @@
       - podman
       - tmux
     state: present
-- name: Ensure dnf-automatic will fetch and install security updates
+    update_cache: true
+- name: CONFIGURE | PACKAGES | Configure automatic updates
   ansible.builtin.lineinfile:
     path: /etc/dnf/automatic.conf
     regexp: '^{{ item.name }}'
@@ -26,7 +27,7 @@
       value: 'yes'
     - name: reboot
       value: 'when-needed'
-- name: Ensure dnf-automatic systemd timer is enabled
+- name: CONFIGURE | PACKAGES | Enable automatic security updates
   ansible.builtin.service:
     name: dnf-automatic.timer
     state: started

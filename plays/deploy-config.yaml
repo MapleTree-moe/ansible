@@ -3,11 +3,11 @@
 ### update system configuration
 ###
 ---
-- name: Deploy server configuration
+- name: CONFIGURE | Deploy standard server configuration
   hosts: all
   become: true
   tasks:
-    - name: Ensure system networking is properly configured
+    - name: CONFIGURE | Deploy network configuration
       ansible.builtin.include_tasks:
         file: ../tasks/config_network.yaml
     - name: Ensure system is registered with RedHat but disable Insights
@@ -22,16 +22,16 @@
           remediation: absent
       ansible.builtin.include_role:
         name: fedora.linux_system_roles.rhc
-    - name: Ensure system is using proper tuned profile
+    - name: CONFIGURE | Deploy `tuned` daemon configuration
       # set profile in system's host variables
       ansible.builtin.include_role:
         name: giovtorres.tuned
-    - name: Ensure user configuration has been completed
+    - name: CONFIGURE | Deploy user and group configuration
       ansible.builtin.include_tasks:
         file: ../tasks/config_users.yaml
-    - name: Ensure Postfix is configured to act as a mail relay
+    - name: CONFIGURE | Deploy Postfix as a null-relay to forward mail
       ansible.builtin.include_tasks:
         file: ../tasks/config_postfix.yaml
-    - name: Ensure package manager is configured and tools are installed
+    - name: CONFIGURE | Configure package manager and install tools
       ansible.builtin.include_tasks:
         file: ../tasks/config_packages.yaml

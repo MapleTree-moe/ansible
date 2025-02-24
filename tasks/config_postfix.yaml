@@ -3,11 +3,11 @@
 ### configuration playbook - deploy null relay postfix configuration
 ###
 ---
-- name: Ensure SMTP Authentication mechanisms are present for Postfix
+- name: CONFIGURE | POSTFIX | Install smtp authentication mechanisms
   ansible.builtin.package:
     name: cyrus-sasl-plain # NOTE: smtp2go requirement, change for others
     state: present
-- name: Ensure Postfix is installed and configured for mail forwarding
+- name: CONFIGURE | POSTFIX | Install & Configure Postfix
   vars:
     postfix_conf:
       # NOTE: these may need to be changed according to relayhost requirements
