@@ -3,7 +3,7 @@
 ### configuration playbook - deploy network configuration
 ###
 ---
-- name: Ensure network uses DHCP on primary interface with static DNS servers
+- name: CONFIGURE | NETWORK | Enable DHCP and set static DNS servers
   vars:
     network_provider: nm
     network_state:
