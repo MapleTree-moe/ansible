@@ -10,7 +10,14 @@
     - name: Include variables for Compliance Benchmark
       ansible.builtin.include_vars:
         file: ../vars/compliance.yaml
-    - name: Ensure bootloader password is set
+#    - name: Run Ansible-Lockdown CIS Server Level 2 Benchmark
+#      ansible.builtin.include_role:
+#        name: rhel9-cis
+    - name: Update GRUB with compliance settings and kernel hardening
+      vars:
+        bootloader_settings:
+          - kernel: ALL
+            options: "{{ grub_cmdline_options }}"
       ansible.builtin.include_role:
         name: fedora.linux_system_roles.bootloader # set password in group_vars
     - name: Remove kernel modules with vulnerabilities from the kernel
@@ -32,6 +39,42 @@
             name: "{{ item }}"
             state: absent
           with_items: "{{ kernel_blacklist }}"
+    - name: Ensure GPG check Enabled for Local Packages (dnf)
+      community.general.ini_file:
+        dest: "/etc/dnf/dnf.conf"
+        section: main
+        option: localpkg_gpgcheck
+        value: 1
+        no_extra_spaces: true
+        create: true
+        mode: "0644"
+    - name: Disable unneeded systemd services
+      ansible.builtin.systemd_service:
+        name: "{{ item }}"
+        state: stopped
+        enabled: false
+        force: true
+        masked: true
+      with_items: "{{ systemd_blacklist }}"
+    - name: Disable Ctrl-Alt-Del Burst Action
+      ansible.builtin.lineinfile:
+        dest: /etc/systemd/system.conf
+        state: present
+        regexp: ^CtrlAltDelBurstAction
+        line: CtrlAltDelBurstAction=none
+        create: true
+        mode: "0644"
+    - name: Require Authentication for Single User Mode
+      community.general.ini_file:
+        path: /etc/systemd/system/rescue.service.d/10-oscap.conf
+        section: Service
+        option: ExecStart
+        value: -/usr/lib/systemd/systemd-sulogin-shell rescue
+        mode: "0644"
+    - name: Ensure compliance packages are installed on the system
+      ansible.builtin.package:
+        name: "{{ compliance_packages }}"
+        state: present
     - name: Ensure cockpit & dhcpv6-client service are not in firewall
       vars:
         firewall:
@@ -45,9 +88,6 @@
         firewall_transactional_update_reboot_ok: true
       ansible.builtin.include_role:
         name: fedora.linux_system_roles.firewall
-    - name: Run Ansible-Lockdown CIS Server Level 2 Benchmark
-      ansible.builtin.include_role:
-        name: rhel9-cis
     - name: Enable more restrictive permissions on files
       ansible.builtin.file:
         path: "{{ item }}"
@@ -55,6 +95,9 @@
         group: root
         mode: '0600'
       with_items: "{{ restricted_files }}"
+    - name: Harden Linux Kernel
+      ansible.builtin.include_role:
+        name: fedora.linux_system_roles.kernel_settings
     - name: Reboot the server to apply compliance
       ansible.builtin.reboot:
         reboot_timeout: 600

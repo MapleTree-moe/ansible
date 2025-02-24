@@ -16,6 +16,20 @@
 # custom compliance rules - these are separate from rhel9-cis
 #
 # kernel modules to blacklist
+compliance_packages:
+  - audispd-plugins
+  - gnutls-utils
+  - nss-tools
+  - policycoreutils-python-utils
+  - rng-tools
+  - s-nail
+grub_cmdline_options:
+  - name: slub_debug
+    value: P
+  - name: page_poison
+    value: 1
+  - name: vsyscall
+    value: none
 kernel_blacklist:
   - cachefiles
   - erofs
@@ -23,9 +37,7 @@ kernel_blacklist:
   - fscache
   - fuse
   - isofs
-  - jbd2
   - netfs
-  - pstore
   - smb
   # nfs stuff
   - lockd
@@ -36,10 +48,31 @@ kernel_blacklist:
   - ceph
   - dlm
   - gfs2
+  # unused connection protocols
+  - atm
+  - can
+  - firewire-core
+  - bluetooth
+kernel_settings_sysctl:
+  - name: kernel.core_pattern
+    value: "|/bin/false"
+  - name: kernel.dmesg_restrict
+    value: 1
+  - name: kernel.kexec_load_disabled
+    value: 1
+  - name: kernel.perf_event_paranoid
+    value: 2
+  - name: kernel.unprivileged_bpf_disabled
+    value: 1
 restricted_files:
   - "/boot/grub2/grub.cfg"
   - "/etc/at.allow"
   - "/etc/cron.allow"
+systemd_blacklist:
+  - ctrl-alt-del.target
+  - debug-shell.service
+  - kdump.service
+  - systemd-coredump.socket
 
 #
 # rhel9-cis compliance configuration
@@ -48,7 +81,7 @@ rhel9cis_set_boot_pass: false  # NOTE: handled in deploy-config.yaml playbook
 rhel9cis_ipv6_required: false  # FIXME: we should do this too
 rhel9cis_sshd_allowusers: "admin podman" # TODO: transition to group based
 # these are needed to ensure tests pass on evaluation
-rhel9cis_sshd_clientalivecountmax: 0
+rhel9cis_sshd_clientalivecountmax: 1
 rhel9cis_sshd_clientaliveinterval: 300
 rhel9cis_ssh_loglevel: VERBOSE
 
