@@ -62,5 +62,5 @@
     rhel9cis_rule_6_2_2_1_2: false # which we don't use
     rhel9cis_rule_6_2_2_1_3: false
     rhel9cis_rule_6_2_2_1_4: false
-  ansible.builtin.include_rule:
+  ansible.builtin.include_role:
     name: rhel9-cis
