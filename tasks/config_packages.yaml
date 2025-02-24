@@ -8,6 +8,7 @@
     name:
       - container-selinux
       - dnf-automatic
+      - dnf-utils
       - git
       - podman
       - tmux
