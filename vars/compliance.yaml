@@ -13,36 +13,9 @@
 #
 
 #
-# to-dos
-#
-rhel9cis_set_boot_pass: false  # NOTE: handled in deploy-config.yaml playbook
-rhel9cis_ipv6_required: false  # FIXME: we should do this too
-
-#
-# overrides
-#
-rhel9cis_sshd_allowusers: "admin podman" # TODO: transition to group based
-
-#
-# policy configuration - these must be set
-#
-rhel9cis_authselect_custom_profile_name: mapletree
-# yamllint disable-line rule:line-length
-rhel9cis_authselect_default_profile_to_copy: minimal --symlink-meta --symlink-pam
-
-#
-# control how aggressive the role is
-#
-rhel9cis_authselect_pkg_update: true
-rhel9cis_disruption_high: true
-rhel9cis_dotperm_ansiblemanaged: true
-rhel9cis_flush_ipv4_route: true
-rhel9cis_flush_ipv6_route: false # FIXME: fix when ipv6 is enabled
-rhel9cis_sysctl_update: true
-
+# custom compliance rules - these are separate from rhel9-cis
 #
 # kernel modules to blacklist
-#
 kernel_blacklist:
   - cachefiles
   - erofs
@@ -63,23 +36,47 @@ kernel_blacklist:
   - ceph
   - dlm
   - gfs2
+restricted_files:
+  - "/boot/grub2/grub.cfg"
+  - "/etc/at.allow"
+  - "/etc/cron.allow"
 
 #
-# services
+# rhel9-cis compliance configuration
 #
+rhel9cis_set_boot_pass: false  # NOTE: handled in deploy-config.yaml playbook
+rhel9cis_ipv6_required: false  # FIXME: we should do this too
+rhel9cis_sshd_allowusers: "admin podman" # TODO: transition to group based
+# these are needed to ensure tests pass on evaluation
+rhel9cis_sshd_clientalivecountmax: 0
+rhel9cis_sshd_clientaliveinterval: 300
+rhel9cis_ssh_loglevel: VERBOSE
+
+# these must be set or the role will fail to execute
+rhel9cis_authselect_custom_profile_name: mapletree
+# yamllint disable-line rule:line-length
+rhel9cis_authselect_default_profile_to_copy: minimal --symlink-meta --symlink-pam
+
+# control how aggressive the role is - we assume running on a fresh system
+rhel9cis_authselect_pkg_update: true
+rhel9cis_disruption_high: true
+rhel9cis_dotperm_ansiblemanaged: true
+rhel9cis_flush_ipv4_route: true
+rhel9cis_flush_ipv6_route: false # FIXME: fix when ipv6 is enabled
+rhel9cis_sysctl_update: true
+
+# configure compliance services
 rhel9cis_aide_scan: cron
 rhel9cis_auditd_extra_conf_usage: true
 rhel9cis_auditd_extra_conf:
   admin_space_left: '10%' # should never be hit, if so halt system
   space_left: '20%'  # give more time to get in to clear space
-rhel9cis_auditd_space_left_action: rotate # rotate log files when space is low
+rhel9cis_auditd_space_left_action: email # notify when space is low
 rhel9cis_journald_systemkeepfree: 20G
 rhel9cis_journald_runtimekeepfree: 20G
 rhel9cis_syslog: journald # rsyslog is preferred, journald is already built in
 
-#
 # rule overrides
-#
 rhel9cis_rule_1_1_2_1_1: false # /tmp - don't use dedicated mount
 rhel9cis_rule_1_1_2_1_2: false # ''
 rhel9cis_rule_1_1_2_1_3: false # ''
