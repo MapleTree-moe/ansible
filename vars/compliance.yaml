@@ -1,6 +1,6 @@
 ###
 ### mapletree.moe - system configuration management
-### dedicated variable file for RHEL9-CIS
+### dedicated variable file for Compliance Policy
 ###
 ---
 ## NOTE: the following file contains overrides for the defaults in the external
@@ -15,15 +15,13 @@
 #
 # to-dos
 #
-rhel9cis_set_boot_pass: false  # FIXME: we should do this
+rhel9cis_set_boot_pass: false  # NOTE: handled in deploy-config.yaml playbook
 rhel9cis_ipv6_required: false  # FIXME: we should do this too
 
 #
 # overrides
 #
-rhel9cis_sshd_allowusers:
-  - admin
-  - podman
+rhel9cis_sshd_allowusers: "admin podman" # TODO: transition to group based
 
 #
 # policy configuration - these must be set
@@ -41,6 +39,30 @@ rhel9cis_dotperm_ansiblemanaged: true
 rhel9cis_flush_ipv4_route: true
 rhel9cis_flush_ipv6_route: false # FIXME: fix when ipv6 is enabled
 rhel9cis_sysctl_update: true
+
+#
+# kernel modules to blacklist
+#
+kernel_blacklist:
+  - cachefiles
+  - erofs
+  - exfat
+  - fscache
+  - fuse
+  - isofs
+  - jbd2
+  - netfs
+  - pstore
+  - smb
+  # nfs stuff
+  - lockd
+  - nfs_common
+  - nfs
+  - nfsd
+  # cluster filesystems
+  - ceph
+  - dlm
+  - gfs2
 
 #
 # services

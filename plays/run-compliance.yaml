@@ -7,9 +7,32 @@
   hosts: all
   become: true
   tasks:
-    - name: Include variables for CIS Benchmark
+    - name: Include variables for Compliance Benchmark
       ansible.builtin.include_vars:
-        file: ../vars/rhel9_cis_role.yaml
-    - name: Run CIS Benchmark
+        file: ../vars/compliance.yaml
+    - name: Ensure bootloader password is set
+      ansible.builtin.include_role:
+        name: fedora.linux_system_roles.bootloader # set password in group_vars
+    - name: Blacklist uneeded kernel modules (check compliance.yaml)
+      community.general.kernel_blacklist:
+        name: "{{ item }}"
+      with_items: "{{ kernel_blacklist }}"
+    - name: Ensure cockpit & dhcpv6-client service are not in firewall
+      vars:
+        firewall:
+          - service: cockpit
+            state: disabled
+            permanent: true
+          - service: dhcpv6-client
+            state: disabled
+            permanent: true
+        firewall_disable_conflicting_services: true
+        firewall_transactional_update_reboot_ok: true
+      ansible.builtin.include_role:
+        name: fedora.linux_system_roles.firewall
+    - name: Run Ansible-Lockdown CIS Server Level 2 Benchmark
       ansible.builtin.include_role:
         name: rhel9-cis
+    - name: Reboot the server to apply compliance
+      ansible.builtin.reboot:
+        reboot_timeout: 600

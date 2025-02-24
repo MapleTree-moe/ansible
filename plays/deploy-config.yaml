@@ -7,10 +7,6 @@
   hosts: all
   become: true
   tasks:
-    - name: Ensure bootloader password is set
-      # NOTE: password is set in group_vars
-      ansible.builtin.include_role:
-        name: fedora.linux_system_roles.bootloader
     - name: Ensure system networking is properly configured
       ansible.builtin.include_tasks:
         file: ../tasks/network.yaml
