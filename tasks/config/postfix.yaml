@@ -42,6 +42,6 @@
         postmap: true
       - name: virtual_regexp
         # rewrite the "TO:" address of all emails to point towards administrator
-        content: "/.+@.+/ {{ postfix_external_email }}"
+        content: "/.+@.+/ admin@{{ ansible_domain }}"
   ansible.builtin.include_role:
     name: fedora.linux_system_roles.postfix

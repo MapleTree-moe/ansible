@@ -9,25 +9,25 @@
   tasks:
     - name: COMPLIANCE | BENCHMARK | Run ansible-lockdown CIS benchmark
       ansible.builtin.include_tasks:
-        file: ../tasks/compliance_benchmark.yaml
+        file: ../tasks/compliance/benchmark.yaml
     - name: COMPLIANCE | Configure bootloader
       ansible.builtin.include_tasks:
-        file: ../tasks/compliance_bootloader.yaml
+        file: ../tasks/compliance/bootloader.yaml
     - name: COMPLIANCE | Configure chrony and system timekeeping
       ansible.builtin.include_tasks:
-        file: ../tasks/compliance_timesync.yaml
+        file: ../tasks/compliance/timesync.yaml
     - name: COMPLIANCE | Configure firewall
       ansible.builtin.include_tasks:
-        file: ../tasks/compliance_firewalld.yaml
+        file: ../tasks/compliance/firewalld.yaml
     - name: COMPLIANCE | Configure kernel and kernel modules
       ansible.builtin.include_tasks:
-        file: ../tasks/compliance_kernel.yaml
+        file: ../tasks/compliance/kernel.yaml
     - name: COMPLIANCE | Configure package manager and packages
       ansible.builtin.include_tasks:
-        file: ../tasks/compliance_packages.yaml
+        file: ../tasks/compliance/packages.yaml
     - name: COMPLIANCE | Configure system services and features
       ansible.builtin.include_tasks:
-        file: ../tasks/compliance_system.yaml
+        file: ../tasks/compliance/system.yaml
     # FIXME: use a handler
     - name: COMPLIANCE | Reboot the server to apply compliance
       ansible.builtin.reboot:
