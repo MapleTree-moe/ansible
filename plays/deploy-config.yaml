@@ -9,7 +9,7 @@
   tasks:
     - name: CONFIGURE | Deploy network configuration
       ansible.builtin.include_tasks:
-        file: ../tasks/config_network.yaml
+        file: ../tasks/config/network.yaml
     - name: Ensure system is registered with RedHat but disable Insights
       vars:
         rhc_auth:
@@ -28,10 +28,10 @@
         name: giovtorres.tuned
     - name: CONFIGURE | Deploy user and group configuration
       ansible.builtin.include_tasks:
-        file: ../tasks/config_users.yaml
+        file: ../tasks/config/users.yaml
     - name: CONFIGURE | Deploy Postfix as a null-relay to forward mail
       ansible.builtin.include_tasks:
-        file: ../tasks/config_postfix.yaml
+        file: ../tasks/config/postfix.yaml
     - name: CONFIGURE | Configure package manager and install tools
       ansible.builtin.include_tasks:
-        file: ../tasks/config_packages.yaml
+        file: ../tasks/config/packages.yaml
