@@ -3,6 +3,7 @@
 ### provisioning playbook - GPG key cleanup and prune orphaned packages
 ###
 ---
+# TODO: this should be done by the convert2rhel script, why is it not?
 - name: PROVISION | POST | Remove AlmaLinux GPG key from RPM Key Registry
   ansible.builtin.rpm_key:
     key: http://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux-9
@@ -11,10 +12,6 @@
   ansible.builtin.rpm_key:
     key: https://dl.rockylinux.org/pub/rocky/RPM-GPG-KEY-Rocky-9
     state: absent
-- name: PROVISION | POST | Install RHEL GPG key is present in RPM registry
-  ansible.builtin.rpm_key:
-    key: https://security.access.redhat.com/data/fd431d51.txt
-    state: present
 - name: PROVISION | POST | Remove orphaned packages
   ansible.builtin.dnf:
     autoremove: true

@@ -22,6 +22,5 @@ podman_authorized_keys:
 
 ## postfix variables
 postfix_relayhost: "[mail.smtp2go.com]:587"
-postfix_external_email: "{{ vault_postfix_external_email }}"
 postfix_sasl_passwd: "{{ vault_postfix_sasl_passwd }}"
 postfix_tls_policy: "[mail.smtp2go.com]:587 encrypt"

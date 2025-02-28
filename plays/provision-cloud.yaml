@@ -10,13 +10,13 @@
   tasks:
     - name: PROVISION | Upgrade target systems to latest
       ansible.builtin.include_tasks:
-        file: ../tasks/provision_update.yaml
+        file: ../tasks/provision/update.yaml
       when: ansible_distribution != "RedHat"
     - name: PROVISION | Deploy `infra.convert2rhel`
       ansible.builtin.include_tasks:
-        file: ../tasks/provision_convert.yaml
+        file: ../tasks/provision/convert.yaml
       when: ansible_distribution != "RedHat"
     - name: PROVISION | Run post-conversion cleanup on target systems
       ansible.builtin.include_tasks:
-        file: ../tasks/provision_post.yaml
+        file: ../tasks/provision/post.yaml
       when: ansible_distribution != "RedHat"
