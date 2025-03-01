@@ -5,7 +5,7 @@
 ---
 - name: CONFIGURE | POSTFIX | Install smtp authentication mechanisms
   ansible.builtin.package:
-    name: cyrus-sasl-plain # NOTE: smtp2go requirement, change for others
+    name: "{{ smtp_relay_sasl_package }}"
     state: present
 - name: CONFIGURE | POSTFIX | Install & Configure Postfix
   vars:
@@ -13,7 +13,7 @@
       # NOTE: these may need to be changed according to relayhost requirements
       inet_interfaces: "loopback-only" # do not allow external connections
       mydestination: "" # null configuration, handle routing with virtual maps
-      relayhost: "{{ postfix_relayhost }}" # send all mail through external srvr
+      relayhost: "[{{ smtp_relay_host }}]:{{ smtp_relay_port }}"
       sender_canonical_classes: "envelope_sender, header_sender"
       sender_canonical_maps: "regexp:/etc/postfix/sender_canonical_maps"
       smtp_header_checks: "regexp:/etc/postfix/smtp_header_checks"
@@ -27,8 +27,8 @@
       virtual_maps: "regexp:/etc/postfix/virtual_regexp"
     postfix_files:
       - name: sasl_passwd
-        # username and password to access smtp relay
-        content: "{{ postfix_sasl_passwd }}"
+        # yamllint disable-line rule:line-length
+        content: "[{{ smtp_relay_host }}]:{{ smtp_relay_port }} {{ smtp_relay_user }}:{{ smtp_relay_pass }}"
         postmap: true
       - name: sender_canonical_maps
         # rewrites sender address to allow for mail to pass through relayhost
@@ -38,7 +38,8 @@
         # yamllint disable-line rule:line-length
         content: "/^From:.*/ REPLACE From: {{ ansible_hostname }}@{{ ansible_domain }}"
       - name: tls_policy
-        content: "{{ postfix_tls_policy }}"
+        # yamllint disable-line rule:line-length
+        content: "[{{ smtp_relay_host }}]:{{ smtp_relay_port }} {{ smtp_relay_tls }}"
         postmap: true
       - name: virtual_regexp
         # rewrite the "TO:" address of all emails to point towards administrator
