@@ -1,6 +1,6 @@
 ###
 ### mapletree.moe - system configuration management
-### ansible group variablesg
+### ansible group variables
 ###
 ---
 ## general
@@ -21,6 +21,10 @@ podman_authorized_keys:
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEYfs1EndYHRh5WcW+jkuD7IKSvZZHM+OTqDX0RuYlY5 yuki@murasame"
 
 ## postfix variables
-postfix_relayhost: "[mail.smtp2go.com]:587"
-postfix_sasl_passwd: "{{ vault_postfix_sasl_passwd }}"
-postfix_tls_policy: "[mail.smtp2go.com]:587 encrypt"
+# these smtp relay configuration settings should be taken from your provider
+smtp_relay_sasl_package: "cyrus-sasl-plain"
+smtp_relay_host: "mail.smtp2go.com"
+smtp_relay_port: "587"
+smtp_relay_tls: "encrypt"
+smtp_relay_user: "{{ vault_relay_user }}"
+smtp_relay_pass: "{{ vault_relay_pass }}"
