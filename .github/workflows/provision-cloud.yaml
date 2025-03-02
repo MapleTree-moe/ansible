@@ -1,0 +1,37 @@
+###
+### mapletree.moe - Automation
+### Run compliance playbook on github actions
+###
+---
+name: Run ansible cloud provisioning playbook
+
+# yamllint disable-line rule:truthy
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'play/provision-cloud.yaml'
+      - 'tasks/provision_*.yaml'
+
+env:
+  HCLOUD_TOKEN: ${{secrets.HCLOUD_TOKEN}}
+
+jobs:
+  run-compliance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Ansible
+        shell: bash
+        run: |
+          sudo apt update
+          sudo apt install -y ansible
+      - name: Run Ansible Playbook - provision-cloud.yaml
+        uses: dawidd6/action-ansible-playbook@v3
+        with:
+          playbook: plays/provision-cloud.yaml
+          key: ${{secrets.SSH_PRIVATE_KEY}}
+          vault_password: ${{secrets.VAULT_PASSWORD}}
+          requirements: requirements.yml
