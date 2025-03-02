@@ -3,32 +3,10 @@
 ### perform compliance configuration for server
 ###
 ---
-- name: Ensure system is compliant with CIS Server Level 2 Benchmark
+- name: PLAY | Run hardening role to apply compliance policy
   hosts: all
   become: true
   tasks:
-    - name: COMPLIANCE | BENCHMARK | Run ansible-lockdown CIS benchmark
-      ansible.builtin.include_tasks:
-        file: ../tasks/compliance_benchmark.yaml
-    - name: COMPLIANCE | Configure bootloader
-      ansible.builtin.include_tasks:
-        file: ../tasks/compliance_bootloader.yaml
-    - name: COMPLIANCE | Configure chrony and system timekeeping
-      ansible.builtin.include_tasks:
-        file: ../tasks/compliance_timesync.yaml
-    - name: COMPLIANCE | Configure firewall
-      ansible.builtin.include_tasks:
-        file: ../tasks/compliance_firewalld.yaml
-    - name: COMPLIANCE | Configure kernel and kernel modules
-      ansible.builtin.include_tasks:
-        file: ../tasks/compliance_kernel.yaml
-    - name: COMPLIANCE | Configure package manager and packages
-      ansible.builtin.include_tasks:
-        file: ../tasks/compliance_packages.yaml
-    - name: COMPLIANCE | Configure system services and features
-      ansible.builtin.include_tasks:
-        file: ../tasks/compliance_system.yaml
-    # FIXME: use a handler
-    - name: COMPLIANCE | Reboot the server to apply compliance
-      ansible.builtin.reboot:
-        reboot_timeout: 600
+    - name: HARDENING | Include hardening role
+      ansible.builtin.include_role:
+        name: hardening
