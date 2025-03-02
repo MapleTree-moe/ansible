@@ -19,7 +19,7 @@ env:
   HCLOUD_TOKEN: ${{secrets.HCLOUD_TOKEN}}
 
 jobs:
-  run-compliance:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -35,4 +35,4 @@ jobs:
           playbook: plays/run-compliance.yaml
           key: ${{secrets.SSH_PRIVATE_KEY}}
           vault_password: ${{secrets.VAULT_PASSWORD}}
-          requirements: requirements.yml
+          requirements: requirements.yaml
