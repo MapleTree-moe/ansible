@@ -1,0 +1,17 @@
+###
+### mapletree.moe - system configuration management
+### configuration playbook - deploy redhat centric configuration
+###
+---
+- name: CONFIGURE | REDHAT | Authenticate system with Redhat, Enable Insights
+  vars:
+    rhc_auth:
+      activation_keys:
+        keys:
+          - "{{ redhat_activation_key }}"
+    rhc_organization: "{{ redhat_organization }}"
+    rhc_insights:
+      state: present
+      remediation: absent
+  ansible.builtin.include_role:
+    name: fedora.linux_system_roles.rhc

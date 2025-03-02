@@ -57,7 +57,7 @@
     rhel9cis_rule_1_1_2_7_4: false
     rhel9cis_rule_1_2_1_1: false # FIXME: false positive, issue #292
     rhel9cis_rule_5_2_4: false  # rule 5.2.4 breaks w/NO_PASSWD + locked psswd
-    # rhel9cis_rule_5_4_2_5: false  # FIXME: false positive on root_path
+    rhel9cis_rule_5_4_2_5: false  # FIXME: false positive on root_path
     rhel9cis_rule_6_2_2_1_1: false # rules 6.2.2.1.x configures offsite logging
     rhel9cis_rule_6_2_2_1_2: false # which we don't use
     rhel9cis_rule_6_2_2_1_3: false

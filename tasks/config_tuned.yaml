@@ -1,0 +1,18 @@
+###
+### mapletree.moe - system configuration management
+### configuration playbook - deploy tuned configuration based on system
+###
+---
+- name: CONFIGURE | TUNED | Set tuned to 'virtual-guest' on virtualized systems
+  vars:
+    tuned_active_builtin_profile: "virtual-guest"
+  ansible.builtin.include_role:
+    name: giovtorres.tuned
+  when: ansible_virtualization_role == "guest"
+# yamllint disable-line rule:line-length
+- name: CONFIGURE | TUNED | Set tuned to 'throughput-performance' on bare metal systems
+  vars:
+    tuned_active_builtin_profile: "virtual-guest"
+  ansible.builtin.include_role:
+    name: giovtorres.tuned
+  when: ansible_virtualization_role != "guest"
