@@ -3,12 +3,25 @@
 ### ansible group variables
 ###
 ---
+#
+# common role configuration variables
+#
+# redhat credentials
+common_redhat_enabled: true
+common_redhat_key: "{{ vault_redhat_activation_key }}"
+common_redhat_org: "{{ vault_redhat_organization }}"
+# postfix null-relay configuration
+common_relay_sasl: "cyrus-sasl-plain"
+common_relay_host: "mail.smtp2go.com"
+common_relay_port: "587"
+common_relay_tls: "encrypt"
+common_relay_user: "{{ vault_relay_user }}"
+common_relay_pass: "{{ vault_relay_pass }}"
+
 ## general
 bootloader_password: "{{ vault_bootloader_password }}"
 
 ## redhat
-redhat_activation_key: "{{ vault_redhat_activation_key }}"
-redhat_organization: "{{ vault_redhat_organization }}"
 redhat_password: "{{ vault_redhat_password }}"
 redhat_username: "{{ vault_redhat_username }}"
 
@@ -23,12 +36,3 @@ podman_authorized_keys:
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKuYlqIG3fsTfKt5xmvbzgxIp1pzh2xiJXGtyBo41DJB nagato@mapletree.com"
   # yamllint disable-line rule:line-length
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEYfs1EndYHRh5WcW+jkuD7IKSvZZHM+OTqDX0RuYlY5 yuki@murasame"
-
-## postfix variables
-# these smtp relay configuration settings should be taken from your provider
-smtp_relay_sasl_package: "cyrus-sasl-plain"
-smtp_relay_host: "mail.smtp2go.com"
-smtp_relay_port: "587"
-smtp_relay_tls: "encrypt"
-smtp_relay_user: "{{ vault_relay_user }}"
-smtp_relay_pass: "{{ vault_relay_pass }}"

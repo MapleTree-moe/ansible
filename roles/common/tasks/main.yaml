@@ -4,7 +4,7 @@
 ###
 ---
 # disable cloud-init after first boot configuration
-- name: COMMON | CLOUD-INIT | Create file disabling cloud-init
+- name: CLOUD-INIT | Create file disabling cloud-init
   ansible.builtin.file:
     path: /etc/cloud/cloud-init.disabled
     state: touch
@@ -13,7 +13,7 @@
     mode: "0644"
 
 # set servers to use dhcp and static dns servers through networkmanager
-- name: COMMON | NETWORK | Enable DHCP and set static DNS servers
+- name: NETWORK | Enable DHCP and set static DNS servers
   vars:
     network_provider: nm
     network_state:
@@ -43,23 +43,24 @@
     name: fedora.linux_system_roles.network
 
 # FIXME: this is an ugly hack because we don't have ipv6
-- name: COMMON | NETWORK | Remove ipv6 localhost from /etc/hosts
+- name: NETWORK | Remove ipv6 localhost from /etc/hosts
   ansible.builtin.lineinfile:
     dest: /etc/hosts
     regexp: ^::1
     state: absent
 
 # install base packages and enable automated security updates
-- name: COMMON | PACKAGES | Install standard packages
+- name: PACKAGES | Install standard packages
   ansible.builtin.package:
     name:
+      - "{{ common_relay_sasl }}" # include postfix auth pkg in pkg installation
       - dnf-automatic
       - dnf-utils
       - git
       - tmux
     state: present
     update_cache: true
-- name: COMMON | PACKAGES | Configure automatic updates
+- name: PACKAGES | Configure automatic updates
   ansible.builtin.lineinfile:
     path: /etc/dnf/automatic.conf
     regexp: '^{{ item.name }}'
@@ -73,14 +74,71 @@
       value: 'yes'
     - name: reboot
       value: 'when-needed'
-- name: COMMON | PACKAGES | Enable automatic security updates
+- name: PACKAGES | Enable automatic security updates
   ansible.builtin.service:
     name: dnf-automatic.timer
     state: started
     enabled: true
 
+# configure postfix to act as a null relay
+- name: POSTFIX | Install & Configure Postfix
+  vars:
+    postfix_conf:
+      # NOTE: these may need to be changed according to relayhost requirements
+      inet_interfaces: "loopback-only" # do not allow external connections
+      inet_protocols: "ipv4" # FIXME: enable ipv6
+      mydestination: "" # null configuration, handle routing with virtual maps
+      relayhost: "[{{ common_relay_host }}]:{{ common_relay_port }}"
+      sender_canonical_classes: "envelope_sender, header_sender"
+      sender_canonical_maps: "regexp:/etc/postfix/sender_canonical_maps"
+      smtp_header_checks: "regexp:/etc/postfix/smtp_header_checks"
+      smtp_sasl_auth_enable: "yes"
+      smtp_sasl_password_maps: "hash:/etc/postfix/sasl_passwd"
+      smtp_sasl_security_options: "noanonymous"
+      smtp_sasl_tls_security_options: "noanonymous"
+      smtp_tls_policy_maps: "hash:/etc/postfix/tls_policy"
+      smtp_use_tls: "yes"
+      smtpd_client_restrictions: "permit_mynetworks,reject"
+      virtual_maps: "regexp:/etc/postfix/virtual_regexp"
+    postfix_files:
+      - name: sasl_passwd
+        # yamllint disable-line rule:line-length
+        content: "[{{ common_relay_host }}]:{{ common_relay_port }} {{ common_relay_user }}:{{ common_relay_pass }}"
+        postmap: true
+      - name: sender_canonical_maps
+        # rewrites sender address to allow for mail to pass through relayhost
+        content: "/.+/ {{ ansible_hostname }}@{{ ansible_domain }}"
+      - name: smtp_header_checks
+        # rewrites headers to make mail appear to genuinely be from sender addr
+        # yamllint disable-line rule:line-length
+        content: "/^From:.*/ REPLACE From: {{ ansible_hostname }}@{{ ansible_domain }}"
+      - name: tls_policy
+        # yamllint disable-line rule:line-length
+        content: "[{{ common_relay_host }}]:{{ common_relay_port }} {{ common_relay_tls }}"
+        postmap: true
+      - name: virtual_regexp
+        # rewrite the "TO:" address of all emails to point towards administrator
+        content: "/.+@.+/ admin@{{ ansible_domain }}"
+  ansible.builtin.include_role:
+    name: fedora.linux_system_roles.postfix
+
+# connect system to redhat, verify license, and install insights
+- name: REDHAT | Authenticate system with Redhat, Enable Insights
+  vars:
+    rhc_auth:
+      activation_keys:
+        keys:
+          - "{{ common_redhat_key }}"
+    rhc_organization: "{{ common_redhat_org }}"
+    rhc_insights:
+      state: present
+      remediation: absent
+  ansible.builtin.include_role:
+    name: fedora.linux_system_roles.rhc
+  when: common_redhat_enabled
+
 # configure system tuning daemon based on system type
-- name: COMMON | TUNED | Set tuned to 'virtual-guest' on virtual systems
+- name: TUNED | Set tuned to 'virtual-guest' on virtual systems
   vars:
     tuned_active_builtin_profile: "virtual-guest"
   ansible.builtin.include_role:
@@ -94,27 +152,27 @@
   when: ansible_virtualization_role != "guest"
 
 # configure standard users and groups
-- name: COMMON | GROUPS | Ensure group 'admin' - GID '1001' exists
+- name: GROUPS | Ensure group 'admin' - GID '1001' exists
   ansible.builtin.group:
     name: admin
     gid: 1001
     state: present
-- name: COMMON | GROUPS | Ensure group 'podman' - GID '1000' exists
+- name: GROUPS | Ensure group 'podman' - GID '1000' exists
   ansible.builtin.group:
     name: podman
     gid: 1000
     state: present
-- name: COMMON | GROUPS | Ensure group 'users' - GID '100' exists
+- name: GROUPS | Ensure group 'users' - GID '100' exists
   ansible.builtin.group:
     name: users
     gid: 100
     state: present
-- name: COMMON | GROUPS | Ensure group 'wheel' - GID '10' exists
+- name: GROUPS | Ensure group 'wheel' - GID '10' exists
   ansible.builtin.group:
     name: wheel
     gid: 10
     state: present
-- name: COMMON | USERS | Ensure user "admin" - UID '1001' - locked exists
+- name: USERS | Ensure user "admin" - UID '1001' - locked exists
   ansible.builtin.user:
     name: admin
     comment: Mapletree.moe Administrator
@@ -123,7 +181,7 @@
     password_lock: true
     groups: admin,users,wheel
     state: present
-- name: COMMON | USERS | Ensure user "podman" - UID '1000' - locked exists
+- name: USERS | Ensure user "podman" - UID '1000' - locked exists
   ansible.builtin.user:
     name: podman
     comment: Mapletree.moe Container User
@@ -132,33 +190,33 @@
     password_lock: true
     groups: podman,users
     state: present
-- name: COMMON | USERS | Ensure user "root" is locked to prevent login
+- name: USERS | Ensure user "root" is locked to prevent login
   ansible.builtin.user:
     name: root
     password_lock: true
-- name: COMMON | USERS | ADMIN | Set up ssh authorized_keys
+- name: USERS | ADMIN | Set up ssh authorized_keys
   ansible.posix.authorized_key:
     user: admin
     state: present
     key: '{{ item }}'
   with_items: "{{ admin_authorized_keys }}"
-- name: COMMON | USERS | PODMAN | Set up ssh authorized_keys
+- name: USERS | PODMAN | Set up ssh authorized_keys
   ansible.posix.authorized_key:
     user: admin
     state: present
     key: '{{ item }}'
   with_items: "{{ podman_authorized_keys }}"
-- name: COMMON | USERS | PODMAN | Enable systemd linger for user
+- name: USERS | PODMAN | Enable systemd linger for user
   ansible.builtin.command:
     cmd: "loginctl enable-linger podman"
     creates: "/var/lib/systemd/linger/podman"
-- name: CONFIGURE | USERS | PODMAN | Generate subuids
+- name: USERS | PODMAN | Generate subuids
   vars:
     subid_users: # noqa var-naming
       - podman
   ansible.builtin.include_role:
     name: subuid_subgid
 # FIXME: use a handler
-- name: COMMON | USERS | Reboot the server to apply lingering
+- name: USERS | Reboot the server to apply lingering
   ansible.builtin.reboot:
     reboot_timeout: 600
