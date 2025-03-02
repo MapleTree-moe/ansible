@@ -42,14 +42,6 @@
       community.general.kernel_blacklist:
         name: "{{ item }}"
       with_items: "{{ compliance_kernel_blacklist }}"
-    # FIXME: default install seems to be using fuse which breaks this, rebooting
-    #        would have the same effect and we reboot after applying compliance.
-    #        is this needed?
-    # - name: COMPLIANCE | KERNEL | MODULES | Disable modules
-    #   community.general.modprobe:
-    #     name: "{{ item }}"
-    #     state: absent
-    #   with_items: "{{ compliance_kernel_blacklist }}"
 - name: COMPLIANCE | KERNEL | Configure restrictive kernel sysctl values
   ansible.posix.sysctl:
     name: "{{ item.name }}"
