@@ -7,31 +7,24 @@
   hosts: all
   become: true
   tasks:
+    - name: CONFIGURE | Disable cloud-init after first boot
+      ansible.builtin.include_tasks:
+        file: ../tasks/config_cloudinit.yaml
     - name: CONFIGURE | Deploy network configuration
       ansible.builtin.include_tasks:
-        file: ../tasks/config/network.yaml
-    - name: Ensure system is registered with RedHat but disable Insights
-      vars:
-        rhc_auth:
-          activation_keys:
-            keys:
-              - "{{ redhat_activation_key }}"
-        rhc_organization: "{{ redhat_organization }}"
-        rhc_insights:
-          state: absent
-          remediation: absent
-      ansible.builtin.include_role:
-        name: fedora.linux_system_roles.rhc
+        file: ../tasks/config_network.yaml
+    - name: CONFIGURE | Deploy RedHat configuration
+      ansible.builtin.include_tasks:
+        file: ../tasks/config_redhat.yaml
     - name: CONFIGURE | Deploy `tuned` daemon configuration
-      # set profile in system's host variables
-      ansible.builtin.include_role:
-        name: giovtorres.tuned
+      ansible.builtin.include_tasks:
+        file: ../tasks/config_tuned.yaml
     - name: CONFIGURE | Deploy user and group configuration
       ansible.builtin.include_tasks:
-        file: ../tasks/config/users.yaml
+        file: ../tasks/config_users.yaml
     - name: CONFIGURE | Deploy Postfix as a null-relay to forward mail
       ansible.builtin.include_tasks:
-        file: ../tasks/config/postfix.yaml
+        file: ../tasks/config_postfix.yaml
     - name: CONFIGURE | Configure package manager and install tools
       ansible.builtin.include_tasks:
-        file: ../tasks/config/packages.yaml
+        file: ../tasks/config_packages.yaml
