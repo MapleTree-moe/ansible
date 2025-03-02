@@ -32,8 +32,8 @@
   ansible.builtin.include_role:
     name: fedora.linux_system_roles.network
 # FIXME: this is an ugly hack because we don't have ipv6
-# - name: CONFIGURE | NETWORK | Remove ipv6 localhost from /etc/hosts
-#   ansible.builtin.lineinfile:
-#     dest: /etc/hosts
-#     regexp: ^::1
-#     state: absent
+- name: CONFIGURE | NETWORK | Remove ipv6 localhost from /etc/hosts
+  ansible.builtin.lineinfile:
+    dest: /etc/hosts
+    regexp: ^::1
+    state: absent
