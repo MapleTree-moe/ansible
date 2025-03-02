@@ -16,6 +16,7 @@ on:
       - 'tasks/config_*.yaml'
 
 env:
+  ANSIBLE_HOST_KEY_CHECKING: false
   HCLOUD_TOKEN: ${{secrets.HCLOUD_TOKEN}}
 
 jobs:
@@ -29,9 +30,9 @@ jobs:
         with:
           python-version: '3.12.9'
           cache: 'pip'
-      - name: Install Ansible
+      - name: Install Ansible & Dependencies
         shell: bash
-        run: python -m pip install ansible
+        run: pip install -r requirements.txt
       - name: Run Ansible Playbook - deploy-config.yaml
         uses: dawidd6/action-ansible-playbook@v3
         with:
