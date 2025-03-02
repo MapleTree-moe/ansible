@@ -12,3 +12,9 @@ common_relay_post: 25
 common_relay_user: USERNAME
 common_relay_pass: PASSWORD
 common_relay_tls: encrypt
+common_admin_authorized_keys:
+  - ssh-key-1
+  - ssh-key-2
+common_podman_authorized_keys:
+  - ssh-key-1
+  - ssh-key-2

@@ -199,13 +199,13 @@
     user: admin
     state: present
     key: '{{ item }}'
-  with_items: "{{ admin_authorized_keys }}"
+  with_items: "{{ common_admin_authorized_keys }}"
 - name: USERS | PODMAN | Set up ssh authorized_keys
   ansible.posix.authorized_key:
     user: admin
     state: present
     key: '{{ item }}'
-  with_items: "{{ podman_authorized_keys }}"
+  with_items: "{{ common_podman_authorized_keys }}"
 - name: USERS | PODMAN | Enable systemd linger for user
   ansible.builtin.command:
     cmd: "loginctl enable-linger podman"

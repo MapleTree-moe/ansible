@@ -1,0 +1,6 @@
+###
+### mapletree.moe - system configuration management
+### hardening role - default variable configuration
+###
+---
+hardening_bootloader_password: "password123"
