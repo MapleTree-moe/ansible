@@ -3,7 +3,6 @@
 ### provision new cloud servers
 ###
 ---
-# TODO: this could likely be made into a task
 - name: Provision Unconfigured Cloud Servers
   hosts: all
   become: true

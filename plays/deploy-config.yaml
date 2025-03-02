@@ -17,4 +17,5 @@
     - name: CONFIGURE | Install NVIDIA and load module on boot
       ansible.builtin.include_tasks:
         file: ../tasks/config_nvidia.yaml
+      # TODO: use ansible to detect if gfx present instead of arch check
       when: ansible_architecture == "x86_64"
