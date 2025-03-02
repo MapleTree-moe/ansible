@@ -15,8 +15,12 @@ redhat_username: "{{ vault_redhat_username }}"
 ## ssh keys
 admin_authorized_keys:
   # yamllint disable-line rule:line-length
+  - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKuYlqIG3fsTfKt5xmvbzgxIp1pzh2xiJXGtyBo41DJB nagato@mapletree.com"
+  # yamllint disable-line rule:line-length
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEYfs1EndYHRh5WcW+jkuD7IKSvZZHM+OTqDX0RuYlY5 yuki@murasame"
 podman_authorized_keys:
+  # yamllint disable-line rule:line-length
+  - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKuYlqIG3fsTfKt5xmvbzgxIp1pzh2xiJXGtyBo41DJB nagato@mapletree.com"
   # yamllint disable-line rule:line-length
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEYfs1EndYHRh5WcW+jkuD7IKSvZZHM+OTqDX0RuYlY5 yuki@murasame"
 
