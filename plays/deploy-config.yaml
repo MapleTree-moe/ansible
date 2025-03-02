@@ -14,3 +14,7 @@
       ansible.builtin.include_tasks:
         file: ../tasks/config_zfs.yaml
       when: ansible_architecture == "x86_64"
+    - name: CONFIGURE | Install NVIDIA and load module on boot
+      ansible.builtin.include_tasks:
+        file: ../tasks/config_nvidia.yaml
+      when: ansible_architecture == "x86_64"
