@@ -1,0 +1,36 @@
+###
+### mapletree.moe - system configuration management
+### configuration playbook - deploy nvidia drivers using kABI tracking kmod
+###
+---
+- name: CONFIGURE | NVIDIA | Install NVIDIA public key
+  ansible.builtin.rpm_key:
+    # yamllint disable-line rule:line-length
+    key: https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/D42D0685.pub
+    fingerprint: 610C 7B14 E068 A878 070D A4E9 9CD0 A493 D42D 068
+    state: present
+- name: CONFIGURE | NVIDIA | Install NVIDIA dnf repository
+  ansible.builtin.dnf:
+    # UPGRADE: change this on upgrade
+    # yamllint disable-line rule:line-length
+    name: https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/cuda-rhel9.repo
+    state: present
+- name: CONFIGURE | NVIDIA | Enable tracking the 565 driver path for kABI driver
+  ansible.builtin.dnf:
+    # FIXME: when nvidia decides we are worthy of a 570 precompiled, update this
+    name: "@nvidia-driver:565"
+    state: present
+- name: CONFIGURE | NVIDIA | Install NVIDIA drivers and container-tools
+  ansible.builtin.dnf:
+    name:
+      # FIXME: the kmod driver should one day be explicitly listed
+      - nvidia-driver-cuda
+      - nvidia-container-toolkit
+    state: present
+- name: CONFIGURE | NVIDIA | Enable nvidia driver on reboot
+  ansible.builtin.copy:
+    dest: /etc/modules-load.d/nvidia.conf
+    content: "nvidia"
+    owner: root
+    group: root
+    mode: "0644"
