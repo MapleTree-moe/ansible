@@ -30,5 +30,5 @@
         file: ../tasks/config_packages.yaml
     - name: CONFIGURE | Install ZFS and load module on boot
       ansible.builtin.include_tasks:
-        file: ../tasks/config_packages.yaml
+        file: ../tasks/config_zfs.yaml
       when: ansible_architecture == "x86_64"
