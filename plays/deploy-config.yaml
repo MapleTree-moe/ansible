@@ -7,27 +7,9 @@
   hosts: all
   become: true
   tasks:
-    - name: CONFIGURE | Disable cloud-init after first boot
-      ansible.builtin.include_tasks:
-        file: ../tasks/config_cloudinit.yaml
-    - name: CONFIGURE | Deploy network configuration
-      ansible.builtin.include_tasks:
-        file: ../tasks/config_network.yaml
-    - name: CONFIGURE | Deploy RedHat configuration
-      ansible.builtin.include_tasks:
-        file: ../tasks/config_redhat.yaml
-    - name: CONFIGURE | Deploy `tuned` daemon configuration
-      ansible.builtin.include_tasks:
-        file: ../tasks/config_tuned.yaml
-    - name: CONFIGURE | Deploy user and group configuration
-      ansible.builtin.include_tasks:
-        file: ../tasks/config_users.yaml
-    - name: CONFIGURE | Deploy Postfix as a null-relay to forward mail
-      ansible.builtin.include_tasks:
-        file: ../tasks/config_postfix.yaml
-    - name: CONFIGURE | Configure package manager and install tools
-      ansible.builtin.include_tasks:
-        file: ../tasks/config_packages.yaml
+    - name: CONFIGURE | Deploy COMMON server configuration role
+      ansible.builtin.include_role:
+        name: common
     - name: CONFIGURE | Install ZFS and load module on boot
       ansible.builtin.include_tasks:
         file: ../tasks/config_zfs.yaml
