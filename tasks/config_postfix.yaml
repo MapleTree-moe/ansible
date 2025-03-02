@@ -12,6 +12,7 @@
     postfix_conf:
       # NOTE: these may need to be changed according to relayhost requirements
       inet_interfaces: "loopback-only" # do not allow external connections
+      inet_protocols: "ipv4" # FIXME: enable ipv6
       mydestination: "" # null configuration, handle routing with virtual maps
       relayhost: "[{{ smtp_relay_host }}]:{{ smtp_relay_port }}"
       sender_canonical_classes: "envelope_sender, header_sender"

@@ -3,4 +3,3 @@
 ### ansible host variables - kanade.mapletree.moe
 ###
 ---
-tuned_active_builtin_profile: "virtual-guest"
