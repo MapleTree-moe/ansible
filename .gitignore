@@ -3,6 +3,4 @@
 .env
 .vault_key
 .vscode
-todo
-private.pem
-private.pem.pub
+roles-vendor

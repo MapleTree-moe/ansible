@@ -1,0 +1,14 @@
+###
+### mapletree.moe - system configuration management
+### common role - default variable configuration
+###
+---
+common_redhat_enabled: false
+common_redhat_key: EXAMPLE_KEY
+common_redhat_org: 0123456789
+common_relay_sasl: example-sasl-package
+common_relay_host: smtp.example.com
+common_relay_post: 25
+common_relay_user: USERNAME
+common_relay_pass: PASSWORD
+common_relay_tls: encrypt
