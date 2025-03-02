@@ -13,7 +13,7 @@ on:
       - main
     paths:
       - 'play/deploy-config.yaml'
-      - 'tasks/config_*.yaml'
+      - 'roles/common/*'
 
 env:
   ANSIBLE_HOST_KEY_CHECKING: false
