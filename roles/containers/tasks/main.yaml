@@ -10,6 +10,19 @@
   ansible.builtin.include_role:
     name: subuid_subgid
 
+- name: SELINUX | Enable SELinux modules for traefik container
+  vars:
+    selinux_modules:
+      - path: base_container.cil
+        state: enabled
+      - path: net_container.cil
+        state: enabled
+      - path: traefik.cil
+        state: enabled
+  ansible.builtin.include_role:
+    name: fedora.linux_system_roles.selinux
+  when: containers_enable_webservices
+
 - name: PODMAN | Enable podman.socket service for podman user
   vars:
     systemd_enabled_units:
@@ -26,32 +39,35 @@
     podman_fail_if_too_old: true
     podman_quadlet_specs: "{{ containers_installed_services }}"
     podman_prune_images: true
+    podman_pull_image: true
     podman_run_as_user: podman
     podman_run_as_group: podman
-    podman_pull_image: true
     podman_validate_certs: true
   ansible.builtin.include_role:
     name: fedora.linux_system_roles.podman
 
-- name: FIREWALL | Enable port forwarding for web services
-  vars:
-    firewall:
-      - forward_port:
-          - port: 80
-            proto: tcp
-            to_port: 8080
-          - port: 443
-            proto: tcp
-            to_port: 8443
-          - port: 443
-            proto: udp
-            to_port: 8443
-      - service: http
-        state: enabled
-      - service: https
-        state: enabled
-      - service: http3
-        state: enabled
-  ansible.builtin.include_role:
-    name: fedora.linux_system_roles.firewall
-  when: containers_enable_webservices
+# NOTE: Attempting to do this through pure SELinux to preserve source ip
+# - name: FIREWALL | Enable port forwarding for web services
+#   vars:
+#     firewall:
+#       - zone: public
+#       - forward_port:
+#           - port: 80
+#             proto: tcp
+#             toport: 8080
+#           - port: 443
+#             proto: tcp
+#             toport: 8443
+#           - port: 443
+#             proto: udp
+#             toport: 8443
+#         state: enabled
+#       - service: http
+#         state: enabled
+#       - service: https
+#         state: enabled
+#       - service: http3
+#         state: enabled
+#   ansible.builtin.include_role:
+#     name: fedora.linux_system_roles.firewall
+#   when: containers_enable_webservices

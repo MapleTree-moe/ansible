@@ -23,6 +23,11 @@ common_relay_pass: "{{ vault_common_relay_pass }}"
 #
 hardening_bootloader_password: "{{ vault_hardening_bootloader_password }}"
 
+#
+# containers role variables
+#
+containers_traefik_acme_email: "{{ vault_containers_traefik_acme_email }}"
+
 ## redhat
 redhat_password: "{{ vault_redhat_password }}"
 redhat_username: "{{ vault_redhat_username }}"
