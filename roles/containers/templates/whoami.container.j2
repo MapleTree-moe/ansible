@@ -6,4 +6,15 @@
 Image=docker.io/traefik/whoami
 ContainerName=whoami
 Network=traefik.network
-Label="traefik.enable=true"
+
+Label=traefik.enable="true"
+Label=traefik.http.routers.whoami.rule="Host(`kanade.mapletree.moe`)"
+Label=traefik.http.routers.whoami.tls="true"
+Label=traefik.http.routers.whoami.tls.certresolver="letsencrypt"
+
+[Install]
+WantedBy=multi-user.target default.target
+
+[Unit]
+Description=whoami container
+After=traefik.service

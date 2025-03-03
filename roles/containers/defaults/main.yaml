@@ -4,6 +4,7 @@
 ###
 ---
 containers_enable_webservices: true
+containers_traefik_acme_email: user@example.com
 containers_traefik_dashboard_user: admin
 containers_traefik_dashboard_password: changeme
 containers_installed_services:

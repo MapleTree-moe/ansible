@@ -1,0 +1,6 @@
+###
+### mapletree.moe - system configuration management
+### kanade.mapletree.moe - host configuration
+###
+---
+containers_enable_webservices: true
