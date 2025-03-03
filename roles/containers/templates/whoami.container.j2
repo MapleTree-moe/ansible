@@ -1,0 +1,9 @@
+# {{ ansible_managed }}
+# {{ ansible_fqdn }}
+# TODO: it would be nice to have the recent git commit here
+
+[Container]
+Image=docker.io/traefik/whoami
+ContainerName=whoami
+Network=traefik.network
+Label="traefik.enable=true"

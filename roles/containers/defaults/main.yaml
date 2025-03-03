@@ -3,6 +3,7 @@
 ### containers role - default variable configuration
 ###
 ---
+containers_enable_webservices: true
 containers_traefik_dashboard_user: admin
 containers_traefik_dashboard_password: changeme
 containers_installed_services:
@@ -10,3 +11,4 @@ containers_installed_services:
   - template_src: https.socket.j2
   - template_src: traefik.network.j2
   - template_src: traefik.container.j2
+  - template_src: whoami.container.j2

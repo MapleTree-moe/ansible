@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 # {{ ansible_fqdn }}
-# {{{{ template_path|basename + lookup('pipe', 'git log --format=",%%h %%ad %%ae" -1 --date=format:"%%Y/%%m/%%d %%H:%%M" ' + template_fullpath|quote)|default(",UNCOMMITED", True) }}}}
+# TODO: it would be nice to have the recent git commit here
 
 [Socket]
 # forward 443 to 8443 using firewalld

@@ -4,5 +4,9 @@
 ###
 ---
 - name: CONTAINERS | Deploy container configuration
-  ansible.builtin.include_role:
-    name: containers
+  hosts: all
+  become: true
+  tasks:
+    - name: CONTAINERS | Activate container configuration
+      ansible.builtin.include_role:
+        name: containers
