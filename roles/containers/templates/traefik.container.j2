@@ -5,18 +5,34 @@
 [Container]
 AutoUpdate=registry
 ContainerName=traefik
-Image=docker.io/traefik:v2.10.5
-Network=traefik.network
-Volume=/%t/podman/podman.sock:/var/run/docker.sock:ro
+Image=docker.io/traefik:v3.3
+SecurityLabelType=traefik.process
 
-PublishPort=8080:80
-PublishPort=8443:443
+Network=traefik.network
+
+PublishPort=80:80
+PublishPort=443:443
+
+Environment=TRAEFIK_API="true"
+Environment=TRAEFIK_PROVIDERS_DOCKER="true"
+Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt="true"
+Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_EMAIL="{{ containers_traefik_acme_email }}"
+Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_STORAGE="acme.json"
+# FIXME: This is using the staging server while prototyping
+Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_CASERVER="https://acme-staging-v02.api.letsencrypt.org/directory"
+Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_TLSCHALLENGE="true"
+Environment=TRAEFIK_ENTRYPOINTS_web_ADDRESS=":80"
+Environment=TRAEFIK_ENTRYPOINTS_websecure_ADDRESS=":443"
 
 Label=traefik.enable="true"
 Label=traefik.http.routers.dashboard.rule="Host(`traefik.{{ ansible_fqdn }}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
 Label=traefik.http.routers.dashboard.service="api@internal"
 Label=traefik.http.routers.dashboard.middlewares="auth"
+Label=traefik.http.routers.dashboard.tls="true"
+Label=traefik.http.routers.dashboard.tls.certresolver="letsencrypt"
 Label=traefik.http.middlewares.auth.basicauth.users="{{ containers_traefik_dashboard_user }}:{{ containers_traefik_dashboard_password | password_hash('bcrypt') }}"
+
+Volume=/%t/podman/podman.sock:/var/run/docker.sock:ro
 
 [Service]
 Restart=on-failure
