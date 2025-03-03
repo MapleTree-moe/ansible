@@ -1,0 +1,50 @@
+###
+### mapletree.moe - system configuration management
+### containers role - setup podman on target systems
+###
+---
+- name: USERS | Configure subuid and subgid for podman user
+  vars:
+    subid_users: # noqa var-naming
+      - podman
+  ansible.builtin.include_role:
+    name: subuid_subgid
+- name: USERS | Enable systemd linger for podman user
+  ansible.builtin.command:
+    cmd: "loginctl enable-linger podman"
+    creates: "/var/lib/systemd/linger/podman"
+# FIXME: use a handler
+- name: USERS | Reboot the server to apply lingering
+  ansible.builtin.reboot:
+    reboot_timeout: 600
+- name: PODMAN | Deploy podman to target system
+  vars:
+    podman_containers_conf:
+      containers:
+        default_sysctls:
+          - user.max_ipc_namespaces=125052
+    podman_fail_if_too_old: true
+    podman_quadlet_specs: "{{ containers_installed_services }}"
+    podman_firewall:
+      - port: 80/tcp
+        state: enabled
+      - port: 443/tcp
+        state: enabled
+    podman_prune_images: true
+    podman_run_as_user: podman
+    podman_run_as_group: podman
+    podman_pull_image: true
+    podman_validate_certs: true
+  ansible.builtin.include_role:
+    name: fedora.linux_system_roles.podman
+- name: FIREWALL | Forward ports to rootless podman
+  vars:
+    forward_port:
+      - port: 80
+        proto: tcp
+        to_port: 8080
+      - port: 443
+        proto: tcp
+        to_port: 8443
+  ansible.builtin.include_role:
+    name: fedora.linux_system_roles.firewall

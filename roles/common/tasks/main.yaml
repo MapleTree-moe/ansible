@@ -206,17 +206,3 @@
     state: present
     key: '{{ item }}'
   with_items: "{{ common_podman_authorized_keys }}"
-- name: USERS | PODMAN | Enable systemd linger for user
-  ansible.builtin.command:
-    cmd: "loginctl enable-linger podman"
-    creates: "/var/lib/systemd/linger/podman"
-- name: USERS | PODMAN | Generate subuids
-  vars:
-    subid_users: # noqa var-naming
-      - podman
-  ansible.builtin.include_role:
-    name: subuid_subgid
-# FIXME: use a handler
-- name: USERS | Reboot the server to apply lingering
-  ansible.builtin.reboot:
-    reboot_timeout: 600

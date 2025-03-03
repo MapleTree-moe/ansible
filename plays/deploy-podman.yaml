@@ -1,0 +1,8 @@
+###
+### mapletree.moe - system configuration management
+### update containers configuration
+###
+---
+- name: CONTAINERS | Deploy container configuration
+  ansible.builtin.include_role:
+    name: containers

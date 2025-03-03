@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+# {{ ansible_fqdn }}
+# {{{{ template_path|basename + lookup('pipe', 'git log --format=",%%h %%ad %%ae" -1 --date=format:"%%Y/%%m/%%d %%H:%%M" ' + template_fullpath|quote)|default(",UNCOMMITED", True) }}}}
+
+[Network]
+NetworkName=traefik
