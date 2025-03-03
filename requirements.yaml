@@ -6,6 +6,7 @@
 collections:
   - name: ansible.posix
   - name: community.general
+  - name: containers.podman
   - name: fedora.linux_system_roles
   - name: hetzner.hcloud
   - name: infra.convert2rhel

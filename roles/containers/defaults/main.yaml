@@ -1,0 +1,12 @@
+###
+### mapletree.moe - system configuration management
+### containers role - default variable configuration
+###
+---
+containers_traefik_dashboard_user: admin
+containers_traefik_dashboard_password: changeme
+containers_installed_services:
+  - template_src: http.socket.j2
+  - template_src: https.socket.j2
+  - template_src: traefik.network.j2
+  - template_src: traefik.container.j2

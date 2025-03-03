@@ -1,0 +1,31 @@
+# {{ ansible_managed }}
+# {{ ansible_fqdn }}
+# {{{{ template_path|basename + lookup('pipe', 'git log --format=",%%h %%ad %%ae" -1 --date=format:"%%Y/%%m/%%d %%H:%%M" ' + template_fullpath|quote)|default(",UNCOMMITED", True) }}}}
+
+[Container]
+AutoUpdate=registry
+ContainerName=traefik
+Image=docker.io/traefik:v2.10.5
+Network=traefik.network
+Volume=/%t/podman/podman.sock:/var/run/docker.sock:ro
+
+PublishPort=8080:80
+PublishPort=8443:443
+
+Label=traefik.enable="true"
+Label=traefik.http.routers.dashboard.rule="Host(`{{ ansible_fqdn }}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+Label=traefik.http.routers.dashboard.service="api@internal"
+Label=traefik.http.routers.dashboard.middlewares="auth"
+Label=traefik.http.middlewares.auth.basicauth.users="{{ containers_traefik_dashboard_user }}:{{ {{ containers_traefik_dashboard_password }} | password_hash('sha1') }}"
+
+[Service]
+Restart=on-failure
+MemoryMax=512m
+
+[Install]
+WantedBy=multi-user.target default.target
+
+[Unit]
+Description=Traefik container
+Documentation=https://traefik.io
+After=network-online.target
