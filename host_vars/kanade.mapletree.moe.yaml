@@ -3,4 +3,5 @@
 ### kanade.mapletree.moe - host configuration
 ###
 ---
+common_nvidia_enabled: false
 containers_enable_webservices: true

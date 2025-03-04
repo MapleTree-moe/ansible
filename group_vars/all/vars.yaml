@@ -7,14 +7,12 @@
 # common role configuration variables
 #
 # redhat credentials
-common_redhat_enabled: true
 common_redhat_key: "{{ vault_common_redhat_key }}"
 common_redhat_org: "{{ vault_common_redhat_org }}"
 # postfix null-relay configuration
 common_relay_sasl: "cyrus-sasl-plain"
 common_relay_host: "mail.smtp2go.com"
 common_relay_port: "587"
-common_relay_tls: "encrypt"
 common_relay_user: "{{ vault_common_relay_user }}"
 common_relay_pass: "{{ vault_common_relay_pass }}"
 
@@ -36,11 +34,6 @@ redhat_username: "{{ vault_redhat_username }}"
 
 ## ssh keys
 common_admin_authorized_keys:
-  # yamllint disable-line rule:line-length
-  - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKuYlqIG3fsTfKt5xmvbzgxIp1pzh2xiJXGtyBo41DJB nagato@mapletree.com"
-  # yamllint disable-line rule:line-length
-  - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEYfs1EndYHRh5WcW+jkuD7IKSvZZHM+OTqDX0RuYlY5 yuki@murasame"
-common_podman_authorized_keys:
   # yamllint disable-line rule:line-length
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKuYlqIG3fsTfKt5xmvbzgxIp1pzh2xiJXGtyBo41DJB nagato@mapletree.com"
   # yamllint disable-line rule:line-length
