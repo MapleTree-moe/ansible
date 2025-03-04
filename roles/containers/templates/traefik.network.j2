@@ -1,7 +1,13 @@
-# {{ ansible_managed }}
-# {{ ansible_fqdn }}
-# TODO: it would be nice to have the recent git commit here
-# https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
+### {{ ansible_managed }} - {{ ansible_fqdn }}
+###
+### mapletree.moe - podman quadlet file
+### https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
+###
+### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
+
+[Unit]
+Description=podman network for traefik proxied services
+Documentation=https://github.com/eriksjolund/podman-traefik-socket-activation
 
 [Network]
 NetworkName=traefik
