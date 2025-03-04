@@ -1,14 +1,17 @@
 # {{ ansible_managed }}
 # {{ ansible_fqdn }}
 # TODO: it would be nice to have the recent git commit here
+# https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
 
 [Container]
 AutoUpdate=registry
 ContainerName=traefik
 
 # environmental variables
-Environment=TRAEFIK_API="true"
+# https://doc.traefik.io/traefik/reference/static-configuration/env/
+Environment=TRAEFIK_API_DASHBOARD="true"
 Environment=TRAEFIK_PROVIDERS_DOCKER="true"
+# https://doc.traefik.io/traefik/https/acme/
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt="true"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_EMAIL="{{ containers_traefik_acme_email }}"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_STORAGE="/etc/traefik/acme.json"
@@ -16,14 +19,19 @@ Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_TLSCHALLENGE="true"
 Environment=TRAEFIK_ENTRYPOINTS_web_HTTP_REDIRECTIONS_ENTRYPOINT_TO="websecure"
 Environment=TRAEFIK_ENTRYPOINTS_web_HTTP_REDIRECTIONS_ENTRYPOINT_SCHEME="https"
 Environment=TRAEFIK_ENTRYPOINTS_web_HTTP_REDIRECTIONS_ENTRYPOINT_PERMANENT="true"
+Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP_TLS="true"
+Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP_TLS_CERTRESOLVER="letsencrypt"
+# FIXME: Harden TLS settings
+#Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP_TLS_OPTIONS="{"minVersion":"VersionTLS12","cipherSuites":["TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384","TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384","TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256","TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256","TLS_AES_128_GCM_SHA256","TLS_AES_256_GCM_SHA384","TLS_CHACHA20_POLY1305_SHA256"],"curvePreferences":["X25519","CurveP521","CurveP384"],"sniStrict":true}"
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP2_MAXCONCURRENTSTREAMS="250"
-Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP3="true"
+Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP3_ADVERTISEDPORT="443"
 Environment=TZ="Europe/Berlin"
 
 Image=docker.io/traefik:v3.3
 
 # labels for traefik autoconfiguration
 Label=traefik.enable="true"
+# automatically create the domain for the traefik dashboard
 Label=traefik.http.routers.dashboard.rule="Host(`traefik.{{ ansible_fqdn }}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
 Label=traefik.http.routers.dashboard.service="api@internal"
 Label=traefik.http.routers.dashboard.middlewares="auth"
