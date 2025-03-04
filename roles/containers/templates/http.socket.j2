@@ -1,12 +1,14 @@
 # {{ ansible_managed }}
 # {{ ansible_fqdn }}
 # TODO: it would be nice to have the recent git commit here
+[Unit]
+Description=HTTP socket for Traefik
 
 [Socket]
-# forward 80 to 8080 using firewalld
 ListenStream=0.0.0.0:8080
 FileDescriptorName=web
 Service=traefik.service
+SELinuxContextFromNet=true
 
 [Install]
 WantedBy=sockets.target
