@@ -3,19 +3,10 @@
 ### update system configuration
 ###
 ---
-- name: CONFIGURE | Deploy standard server configuration
+- name: COMMON | Deploy standard server configuration
   hosts: all
   become: true
   tasks:
-    - name: CONFIGURE | Deploy COMMON server configuration role
+    - name: COMMON | Deploy COMMON server configuration role
       ansible.builtin.include_role:
         name: common
-    - name: CONFIGURE | Install ZFS and load module on boot
-      ansible.builtin.include_tasks:
-        file: ../tasks/config_zfs.yaml
-      when: ansible_architecture == "x86_64"
-    - name: CONFIGURE | Install NVIDIA and load module on boot
-      ansible.builtin.include_tasks:
-        file: ../tasks/config_nvidia.yaml
-      # TODO: use ansible to detect if gfx present instead of arch check
-      when: ansible_architecture == "x86_64"
