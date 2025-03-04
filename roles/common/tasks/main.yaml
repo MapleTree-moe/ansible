@@ -3,6 +3,80 @@
 ### common role - configure system settings common to all devices
 ###
 ---
+- name: CONVERT | Convert RHEL Clones to genuine RHEL if conversion enabled
+  when: common_convert_enabled and ansible_distribution != "RedHat"
+  block:
+    - name: CONVERT | UPDATE | Ensure packages are latest version
+      ansible.builtin.package:
+        name: '*'
+        state: latest # noqa package-latest
+        update_cache: true
+
+    - name: CONVERT | UPDATE | Install dnf-utils to check for restarts
+      ansible.builtin.package:
+        name: 'dnf-utils'
+        state: present
+
+    - name: CONVERT | UPDATE | Remove orphaned packages
+      ansible.builtin.dnf:
+        autoremove: true
+
+    - name: CONVERT | UPDATE | Check if reboot is required
+      ansible.builtin.command:
+        cmd: needs-restarting -r
+      register: reboot_required
+      changed_when: true
+      failed_when: reboot_required.rc not in [0, 1]
+
+    - name: CONVERT | UPDATE | Reboot the server if required
+      ansible.builtin.reboot:
+        reboot_timeout: 600
+      when: reboot_required.rc == 1
+
+    - name: CONVERT | CONVERSION | Deploy `convert2rhel` script
+      vars:
+        # UPGRADE: change this on upgrade
+        # yamllint disable-line rule:line-length
+        convert2rhel_repofile_url: "https://cdn-public.redhat.com/content/public/repofiles/convert2rhel-for-rhel-9-x86_64.repo"
+        rhsm_username: "{{ common_redhat_user }}"
+        rhsm_password: "{{ common_redhat_pass }}"
+        rhsm_activation_key: "{{ common_redhat_key }}"
+        rhsm_org: "{{ common_redhat_org }}"
+      block:
+        - name: CONVERT | CONVERSION | ANALYSIS | Run convert2rhel analysis
+          # conversion will fail without analysis
+          ansible.builtin.include_role:
+            # https://galaxy.ansible.com/ui/repo/published/infra/convert2rhel/content/role/analysis/
+            name: infra.convert2rhel.analysis
+
+        - name: CONVERT | CONVERSION | CONVERT | Run convert2rhel conversion
+          vars:
+            # remove conversion tooling after successful conversion
+            convert_gpg_key_remove: true
+            convert_convert2rhel_repo_remove: true
+            convert_convert2rhel_package_remove: true
+            convert_reboot_requested: true # reboot after conversion
+          ansible.builtin.include_role:
+            # https://galaxy.ansible.com/ui/repo/published/infra/convert2rhel/content/role/convert/
+            name: infra.convert2rhel.convert
+
+    # TODO: this should be done by the convert2rhel script, why is it not?
+    - name: CONVERT | POST | Remove AlmaLinux GPG key from RPM Key Registry
+      when: ansible_distribution == "AlmaLinux"
+      ansible.builtin.rpm_key:
+        key: http://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux-9
+        state: absent
+
+    - name: CONVERT | POST | Remove RockyLinux GPG key from RPM Key Registry
+      when: ansible_distribution == "Rocky"
+      ansible.builtin.rpm_key:
+        key: https://dl.rockylinux.org/pub/rocky/RPM-GPG-KEY-Rocky-9
+        state: absent
+
+    - name: CONVERT | POST | Remove orphaned packages
+      ansible.builtin.dnf:
+        autoremove: true
+
 # disable cloud-init after first boot configuration
 # https://cloudinit.readthedocs.io/en/stable/howto/disable_cloud_init.html
 - name: CLOUD-INIT | Create file disabling cloud-init

@@ -3,6 +3,7 @@
 ### common role - default variable configuration
 ###
 ---
+common_convert_enabled: true # convert system to RHEL
 common_redhat_enabled: true # redhat subscription + insights installation
 common_nvidia_enabled: true # nvidia cuda driver installation
 common_postfix_enabled: true # postfix null-relay installation
@@ -10,6 +11,8 @@ common_zfs_enabled: true # zfs kernel module installation
 
 common_redhat_key: EXAMPLE_KEY
 common_redhat_org: 0123456789
+common_redhat_user: USERNAME
+common_redhat_pass: PASSWORD
 common_relay_sasl: example-sasl-package
 common_relay_host: smtp.example.com
 common_relay_post: 25
@@ -17,8 +20,5 @@ common_relay_user: USERNAME
 common_relay_pass: PASSWORD
 common_relay_tls: encrypt
 common_admin_authorized_keys:
-  - ssh-key-1
-  - ssh-key-2
-common_podman_authorized_keys:
   - ssh-key-1
   - ssh-key-2
