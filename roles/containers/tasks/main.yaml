@@ -4,19 +4,29 @@
 ###
 ---
 - name: COMMON | USERS | Configure subuid and subgid for podman user
+  # rootless podman requires that the user and group it is set to run as to have
+  # subuid and subgid ranges defined. normally this would be done by podman if
+  # it was installed when the user was created, but we use this role to install
+  # podman after the fact. thus, this task is required.
+  # https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/building_running_and_managing_containers/assembly_starting-with-containers_building-running-and-managing-containers
   vars:
     subid_users: # noqa var-naming
       - podman
   ansible.builtin.include_role:
+    # https://github.com/rwxd/ansible-role-subuid_subgid
     name: subuid_subgid
 
-- name: WEBSERVICES | Enable webservices on target system
+- name: WEBSERVICES | Enable webservices on target system - Deploy Traefik
   when: containers_enable_webservices
   block:
-    - name: WEBSERVICES | FIREWALL | Enable port forwarding for web services
+    - name: WEBSERVICES | FIREWALL | Configure firewall for traefik deployment
       vars:
         firewall:
           - zone: public
+          # forward privileged ports 80 and 443 to non-privileged 8080 and 8443
+          # on the same host. this is done to prevent the need for traefik to
+          # run as root in order for it to bind to privileged ports.
+          # https://access.redhat.com/solutions/18843
           - forward_port:
               - port: 80
                 proto: tcp
@@ -28,6 +38,9 @@
                 proto: udp
                 toport: 8443
             state: enabled
+          # enable the http, https, and http3 services within firewalld. it is
+          # preferable to use services rather than explicit port declarations
+          # as it makes the firewall policy easier to understand.
           - service: http
             state: enabled
           - service: https
@@ -35,9 +48,15 @@
           - service: http3
             state: enabled
       ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_firewall/
         name: fedora.linux_system_roles.firewall
 
     - name: WEBSERVICES | SELINUX | Enable SELinux modules for traefik container
+      # traefik requires access to the podman.socket to allow dynamic
+      # configuration of the reverse proxy. this requires the SELinux policy on
+      # the host to be updated to allow the traefik container to access the
+      # podman.socket.
+      # https://kcore.org/2023/12/13/adventures-with-rootless-containers/
       vars:
         selinux_modules:
           - path: base_container.cil
@@ -47,10 +66,18 @@
           - path: traefik.cil
             state: enabled
       ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_selinux/
         name: fedora.linux_system_roles.selinux
 
     # yamllint disable-line rule:line-length
     - name: WEBSERVICES | SOCKETS | Deploy sockets required for traefik functionality
+      # rootless podman by default uses cni networking modules to route traffic
+      # to containers. this can at times be quite slow. it is much faster to use
+      # systemd-socket-activation and directly bind both the port and the
+      # container to a unix socket.
+      # https://www.redhat.com/en/blog/socket-activation-podman
+      # https://github.com/eriksjolund/podman-traefik-socket-activation
+      # see the above note about the podman.socket service
       vars:
         systemd_unit_file_templates:
           - item: http.socket.j2
@@ -71,20 +98,26 @@
           - item: podman.socket
             user: podman
       ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
         name: fedora.linux_system_roles.systemd
+
     - name: WEBSERVICES | CONTAINERS | Deploy traefik containers to host
       vars:
         podman_fail_if_too_old: true
         podman_quadlet_specs:
+          # do NOT modify the order of these quadlet specs. the role activates
+          # each spec as it is installed, so dependencies for the container must
+          # come first.
           - template_src: traefik.network.j2
           - template_src: traefik.volume.j2
           - template_src: traefik.container.j2
         podman_prune_images: true
         podman_pull_image: true
+        podman_validate_certs: true
         podman_run_as_user: podman
         podman_run_as_group: podman
-        podman_validate_certs: true
       ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
         name: fedora.linux_system_roles.podman
 
 - name: COMMON | SERVICES | Deploy podman containers to target system
@@ -97,4 +130,5 @@
     podman_run_as_group: podman
     podman_validate_certs: true
   ansible.builtin.include_role:
+    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
     name: fedora.linux_system_roles.podman

@@ -1,6 +1,7 @@
 # {{ ansible_managed }}
 # {{ ansible_fqdn }}
 # TODO: it would be nice to have the recent git commit here
+# https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
 
 [Container]
 Image=docker.io/traefik/whoami
@@ -9,8 +10,6 @@ Network=traefik.network
 
 Label=traefik.enable="true"
 Label=traefik.http.routers.whoami.rule="Host(`kanade.mapletree.moe`)"
-Label=traefik.http.routers.whoami.tls="true"
-Label=traefik.http.routers.whoami.tls.certresolver="letsencrypt"
 
 [Install]
 WantedBy=multi-user.target default.target
