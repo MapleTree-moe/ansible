@@ -6,215 +6,244 @@
 # NOTE: this role is extremely aggressive in applying compliance settings as it
 #       is intended to be used on fresh installs. this could break existing
 #       systems, so use with caution.
-- name: HARDENING | BENCHMARK | Run CIS server level 2 benchmark
-  vars:
-    rhel9cis_aide_scan: cron # FIXME: transition to using systemd timers
-    rhel9cis_auditd_extra_conf:
-      admin_space_left: '10%' # should never be hit, if so halt system
-      space_left: '20%'  # give more time to get in to clear space
-    rhel9cis_auditd_extra_conf_usage: true
-    rhel9cis_auditd_space_left_action: email # notify when space is low
-    rhel9cis_authselect_custom_profile_name: mapletree # must be set for role
-    # yamllint disable-line rule:line-length
-    rhel9cis_authselect_default_profile_to_copy: minimal --symlink-meta --symlink-pam
-    rhel9cis_authselect_pkg_update: true
-    # TODO: we would ideally use "FUTURE" here, but some websites (openzfs) use
-    #        ssl certificates that are too weak for this, so we fall back to
-    #        "DEFAULT"
-    # NOTE: in some cases it seems like changing this post initial run doesn't
-    #       actually change the crypto policy on the target system.
-    rhel9cis_crypto_policy: DEFAULT
-    rhel9cis_disruption_high: true # assume fresh install, so nothing to disrupt
-    rhel9cis_dotperm_ansiblemanaged: true # allow ansible to set dotfile perms
-    rhel9cis_flush_ipv4_route: true
-    rhel9cis_flush_ipv6_route: false # IPV6: ipv6
-    rhel9cis_ipv6_required: false  # IPV6: implement ipv6
-    rhel9cis_journald_systemkeepfree: 20G
-    rhel9cis_journald_runtimekeepfree: 20G
-    rhel9cis_set_boot_pass: false  # this is done by a task post benchmark
-    rhel9cis_ssh_loglevel: VERBOSE # ensure sshd_config passes oscap
-    rhel9cis_sshd_clientalivecountmax: 1 # ensure sshd_config passes oscap
-    rhel9cis_sshd_clientaliveinterval: 300 # ensure sshd_config passes oscap
-    rhel9cis_sysctl_update: true
-    rhel9cis_syslog: journald # prefer journald as its already present
-    # rules 1.1.2.x are for dedicated partitions, which we don't use
-    rhel9cis_rule_1_1_2_1_1: false
-    rhel9cis_rule_1_1_2_1_2: false
-    rhel9cis_rule_1_1_2_1_3: false
-    rhel9cis_rule_1_1_2_1_4: false
-    rhel9cis_rule_1_1_2_3_1: false
-    rhel9cis_rule_1_1_2_3_2: false
-    rhel9cis_rule_1_1_2_3_3: false
-    rhel9cis_rule_1_1_2_4_1: false
-    rhel9cis_rule_1_1_2_4_2: false
-    rhel9cis_rule_1_1_2_4_3: false
-    rhel9cis_rule_1_1_2_5_1: false
-    rhel9cis_rule_1_1_2_5_2: false
-    rhel9cis_rule_1_1_2_5_3: false
-    rhel9cis_rule_1_1_2_5_4: false
-    rhel9cis_rule_1_1_2_6_1: false
-    rhel9cis_rule_1_1_2_6_2: false
-    rhel9cis_rule_1_1_2_6_3: false
-    rhel9cis_rule_1_1_2_6_4: false
-    rhel9cis_rule_1_1_2_7_1: false
-    rhel9cis_rule_1_1_2_7_2: false
-    rhel9cis_rule_1_1_2_7_3: false
-    rhel9cis_rule_1_1_2_7_4: false
-    rhel9cis_rule_1_2_1_1: false # FIXME: false positive, issue #292
-    # we use sudo with NO_PASSWD for automation, as well as locked accounts
-    # so we disable this for now
-    # TODO: transition to using BECOME with a provided password secret
-    rhel9cis_rule_5_2_4: false
-    rhel9cis_rule_5_4_2_5: false  # FIXME: false positive on root_path
-    # rules 6.2.2.1.x configures offsite logging, which we don't use
-    rhel9cis_rule_6_2_2_1_1: false
-    rhel9cis_rule_6_2_2_1_2: false
-    rhel9cis_rule_6_2_2_1_3: false
-    rhel9cis_rule_6_2_2_1_4: false
-  ansible.builtin.include_role:
-    # https://github.com/ansible-lockdown/RHEL9-CIS
-    name: rhel9-cis
+- name: HARDENING | Ensure system is compliant with CIS Server Level 2
+  block:
+    - name: HARDENING | BENCHMARK | Run CIS server level 2 benchmark
+      vars:
+        rhel9cis_aide_scan: cron # FIXME: transition to using systemd timers
+        rhel9cis_auditd_extra_conf:
+          admin_space_left: '10%' # should never be hit, if so halt system
+          space_left: '20%'  # give more time to get in to clear space
+        rhel9cis_auditd_extra_conf_usage: true
+        rhel9cis_auditd_space_left_action: email # notify when space is low
+        rhel9cis_authselect_custom_profile_name: mapletree # must set for role
+        # yamllint disable-line rule:line-length
+        rhel9cis_authselect_default_profile_to_copy: minimal --symlink-meta --symlink-pam
+        rhel9cis_authselect_pkg_update: true
+        # TODO: we would ideally use "FUTURE" here, but some websites (openzfs)
+        #       use ssl certificates that are too weak for this, so we fall back
+        #       to "DEFAULT"
+        # NOTE: in some cases it seems like changing this post initial run
+        #       doesn't actually change the crypto policy on the target system.
+        rhel9cis_crypto_policy: DEFAULT
+        rhel9cis_disruption_high: true # assume new install, nothing to disrupt
+        rhel9cis_dotperm_ansiblemanaged: true # ansible to set dotfile perms
+        rhel9cis_flush_ipv4_route: true
+        rhel9cis_flush_ipv6_route: false # IPV6: ipv6
+        rhel9cis_ipv6_required: false  # IPV6: implement ipv6
+        rhel9cis_journald_systemkeepfree: 20G
+        rhel9cis_journald_runtimekeepfree: 20G
+        rhel9cis_set_boot_pass: false  # this is done by a task post benchmark
+        rhel9cis_ssh_loglevel: VERBOSE # ensure sshd_config passes oscap
+        rhel9cis_sshd_clientalivecountmax: 1 # ensure sshd_config passes oscap
+        rhel9cis_sshd_clientaliveinterval: 300 # ensure sshd_config passes oscap
+        rhel9cis_sysctl_update: true
+        rhel9cis_syslog: journald # prefer journald as its already present
+        # rules 1.1.2.x are for dedicated partitions, which we don't use
+        rhel9cis_rule_1_1_2_1_1: false
+        rhel9cis_rule_1_1_2_1_2: false
+        rhel9cis_rule_1_1_2_1_3: false
+        rhel9cis_rule_1_1_2_1_4: false
+        rhel9cis_rule_1_1_2_3_1: false
+        rhel9cis_rule_1_1_2_3_2: false
+        rhel9cis_rule_1_1_2_3_3: false
+        rhel9cis_rule_1_1_2_4_1: false
+        rhel9cis_rule_1_1_2_4_2: false
+        rhel9cis_rule_1_1_2_4_3: false
+        rhel9cis_rule_1_1_2_5_1: false
+        rhel9cis_rule_1_1_2_5_2: false
+        rhel9cis_rule_1_1_2_5_3: false
+        rhel9cis_rule_1_1_2_5_4: false
+        rhel9cis_rule_1_1_2_6_1: false
+        rhel9cis_rule_1_1_2_6_2: false
+        rhel9cis_rule_1_1_2_6_3: false
+        rhel9cis_rule_1_1_2_6_4: false
+        rhel9cis_rule_1_1_2_7_1: false
+        rhel9cis_rule_1_1_2_7_2: false
+        rhel9cis_rule_1_1_2_7_3: false
+        rhel9cis_rule_1_1_2_7_4: false
+        rhel9cis_rule_1_2_1_1: false # FIXME: false positive, issue #292
+        # we use sudo with NO_PASSWD for automation, as well as locked accounts
+        # so we disable this for now
+        # TODO: transition to using BECOME with a provided password secret
+        rhel9cis_rule_5_2_4: false
+        rhel9cis_rule_5_4_2_5: false  # FIXME: false positive on root_path
+        # rules 6.2.2.1.x configures offsite logging, which we don't use
+        rhel9cis_rule_6_2_2_1_1: false
+        rhel9cis_rule_6_2_2_1_2: false
+        rhel9cis_rule_6_2_2_1_3: false
+        rhel9cis_rule_6_2_2_1_4: false
+      ansible.builtin.include_role:
+        # https://github.com/ansible-lockdown/RHEL9-CIS
+        name: rhel9-cis
+
+    - name: HARDENING | BENCHMARK | Flush benchmark handlers
+      ansible.builtin.meta: flush_handlers
 
 - name: HARDENING | Set bootloader password & harden kernel boot arguments
-  vars:
-    # set hardening_bootloader_password in group_vars
-    bootloader_password: "{{ hardening_bootloader_password }}"
-    bootloader_settings:
-      - kernel: ALL
-        options:
-          - name: slub_debug # freed memory poisoning (DISA STIG)
-            value: P
-          - name: page_poison # freed memory poisoning (DISA STIG)
-            value: 1
-          - name: vsyscall # disable virtual syscalls (DISA STIG)
-            value: none
-  ansible.builtin.include_role:
-    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_bootloader/
-    name: fedora.linux_system_roles.bootloader
+  block:
+    - name: HARDENING | BOOTLOADER | Configure bootloader
+      vars:
+        # set hardening_bootloader_password in group_vars
+        bootloader_password: "{{ hardening_bootloader_password }}"
+        bootloader_reboot_ok: true
+        bootloader_settings:
+          - kernel: ALL
+            options:
+              - name: slub_debug # freed memory poisoning (DISA STIG)
+                value: P
+              - name: page_poison # freed memory poisoning (DISA STIG)
+                value: 1
+              - name: vsyscall # disable virtual syscalls (DISA STIG)
+                value: none
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_bootloader/
+        name: fedora.linux_system_roles.bootloader
+
+    - name: HARDENING | BOOTLOADER | Flush bootloader handlers
+      ansible.builtin.meta: flush_handlers
 
 - name: HARDENING | Ensure firewall meets baseline policy
-  vars:
-    firewall:
-      - service: cockpit
-        state: disabled # cockpit is unused within the org
-        permanent: true
-      - service: dhcpv6-client
-        state: disabled # IPV6: Enable when we start using ipv6
-        permanent: true
-      - service: ssh
-        state: enabled # explicitly prevent ssh lockout
-        permanent: true
-    firewall_disable_conflicting_services: true
-  ansible.builtin.include_role:
-    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_firewall/
-    name: fedora.linux_system_roles.firewall
+  block:
+    - name: HARDENING | FIREWALL | Configure firewall
+      vars:
+        firewall:
+          - service: cockpit
+            state: disabled # cockpit is unused within the org
+            permanent: true
+          - service: dhcpv6-client
+            state: disabled # IPV6: Enable when we start using ipv6
+            permanent: true
+          - service: ssh
+            state: enabled # explicitly prevent ssh lockout
+            permanent: true
+        firewall_disable_conflicting_services: true
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_firewall/
+        name: fedora.linux_system_roles.firewall
+
+    - name: HARDENING | FIREWALL | Flush firewall handlers
+      ansible.builtin.meta: flush_handlers
 
 # remove unused kernel modules with potential CVEs (DISA STIG)
-- name: HARDENING | KERNEL | Configure kernel modules
-  vars:
-    compliance_kernel_blacklist:
-      - cachefiles # disable unused filesystems
-      - ceph
-      - dlm
-      - erofs
-      - exfat
-      - fscache
-      - fuse
-      - gfs2
-      - isofs
-      - netfs
-      - smb # do not use samba on root system
-      - lockd # disable nfs and modules used by nfs
-      - nfs_common
-      - nfs
-      - nfsd
-      - atm # unused connection protocols
-      - can
-      - firewire-core
-      - bluetooth # no need for bluetooth on servers
+- name: HARDENING | Configure kernel to comply with security policy
   block:
-    - name: HARDENING | KERNEL | MODULES | Assign modules to /bin/true
-      # this assigns the kernel modules to /bin/true which prevents them from
-      # being loaded even if the modprobe blacklist is somehow bypassed
-      ansible.builtin.lineinfile:
-        path: /etc/modprobe.d/mapletree.conf
-        regexp: "^(#)?install {{ item }}(\\s|$)"
-        line: "install {{ item }} /bin/true"
+    - name: HARDENING | KERNEL | Define kernel module blacklist
+      vars:
+        compliance_kernel_blacklist:
+          - cachefiles # disable unused filesystems
+          - ceph
+          - dlm
+          - erofs
+          - exfat
+          - fscache
+          - fuse
+          - gfs2
+          - isofs
+          - netfs
+          - smb # do not use samba on root system
+          - lockd # disable nfs and modules used by nfs
+          - nfs_common
+          - nfs
+          - nfsd
+          - atm # unused connection protocols
+          - can
+          - firewire-core
+          - bluetooth # no need for bluetooth on servers
+      block:
+        - name: HARDENING | KERNEL | MODULES | Assign modules to /bin/true
+          # this assigns the kernel modules to /bin/true which prevents them
+          # from being loaded even if the modprobe blacklist is somehow bypassed
+          ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/mapletree.conf
+            regexp: "^(#)?install {{ item }}(\\s|$)"
+            line: "install {{ item }} /bin/true"
+            create: true
+            mode: 'go-rwx'
+          with_items: "{{ compliance_kernel_blacklist }}"
+          notify: Restart System
+
+        - name: HARDENING | KERNEL | MODULES | Blacklist kernel modules
+          # add files to modprobes blacklisted entries
+          community.general.kernel_blacklist:
+            name: "{{ item }}"
+          with_items: "{{ compliance_kernel_blacklist }}"
+          notify: Restart System
+
+    - name: HARDENING | KERNEL | Configure restrictive kernel sysctl values
+      ansible.posix.sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        sysctl_file: /etc/sysctl.d/60-kernel_sysctl.conf
+        state: present
+        reload: true
+      with_items:
+        - name: kernel.core_pattern # prevent core dumps (DISA STIG)
+          value: "|/bin/false"
+        - name: kernel.dmesg_restrict # restrict kernel logs (DISA STIG)
+          value: 1
+        - name: kernel.kexec_load_disabled # prevent livepatching (DISA STIG)
+          value: 1
+        - name: kernel.perf_event_paranoid # restrict metrics (DISA STIG)
+          value: 2
+        - name: kernel.unprivileged_bpf_disabled # (DISA STIG)
+          value: 1
+
+- name: HARDENING | Configure system packages and package manager
+  block:
+    - name: HARDENING | PACKAGES | Enable local package gpg key verification
+      community.general.ini_file:
+        dest: /etc/dnf/dnf.conf
+        section: main
+        option: localpkg_gpgcheck
+        value: 1
+        no_extra_spaces: true
         create: true
-        mode: 'go-rwx'
-      with_items: "{{ compliance_kernel_blacklist }}"
+        mode: "0644"
 
-    - name: HARDENING | KERNEL | MODULES | Blacklist kernel modules
-      # add files to modprobes blacklisted entries
-      community.general.kernel_blacklist:
-        name: "{{ item }}"
-      with_items: "{{ compliance_kernel_blacklist }}"
+    - name: HARDENING | PACKAGES | Install packages needed for compliance
+      ansible.builtin.package:
+        name:
+          - audispd-plugins
+          - gnutls-utils
+          - libreswan
+          - nss-tools
+          - policycoreutils-python-utils
+          - rng-tools
+          - rsyslog-gnutls
+          - s-nail
+          - systemd-journal-remote
+        state: present
 
-- name: HARDENING | KERNEL | Configure restrictive kernel sysctl values
-  ansible.posix.sysctl:
-    name: "{{ item.name }}"
-    value: "{{ item.value }}"
-    sysctl_file: /etc/sysctl.d/60-kernel_sysctl.conf
-    state: present
-    reload: true
-  with_items:
-    - name: kernel.core_pattern # prevent core dumps (DISA STIG)
-      value: "|/bin/false"
-    - name: kernel.dmesg_restrict # restrict access to kernel logs (DISA STIG)
-      value: 1
-    - name: kernel.kexec_load_disabled # prevent kernel livepatching (DISA STIG)
-      value: 1
-    - name: kernel.perf_event_paranoid # restrict access to metrics (DISA STIG)
-      value: 2
-    - name: kernel.unprivileged_bpf_disabled # users cannot use bpf (DISA STIG)
-      value: 1
+- name: HARDENING | Configure SystemD to align with compliance policy
+  block:
+    - name: HARDENING | SYSTEMD | Disable and mask unneeded services
+      vars:
+        service_list:
+          - ctrl-alt-del.target # disable ctrl-alt-del usage for reboot
+          - debug-shell.service # do not allow system debugging
+          - kdump.service # disable kernel core dumps
+          - lvm2-monitor.service # lvm2 is unused in mapletree
+          - lvm2-lvmpolld.socket
+          - nis-domainname.service # nis service is unused
+          - rsyslog.service # we use systemd-journal instead of rsyslog
+          - sssd.service # local authentication only
+          - sssd-kcm.socket # if sssd=disabled RH recommends disabling ALL sssd
+          - systemd-coredump.socket # disable coredumps
+          - NetworkManager-dispatcher.service # no scripts on network change
+        systemd_disabled_units: "{{ service_list }}"
+        systemd_masked_units: "{{ service_list }}"
+        systemd_stopped_units: "{{ service_list }}"
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
+        name: fedora.linux_system_roles.systemd
 
-- name: HARDENING | PACKAGES | Enable local package gpg key verification
-  community.general.ini_file:
-    dest: /etc/dnf/dnf.conf
-    section: main
-    option: localpkg_gpgcheck
-    value: 1
-    no_extra_spaces: true
-    create: true
-    mode: "0644"
+    - name: HARDENING | SYSTEMD | Flush systemd handlers
+      ansible.builtin.meta: flush_handlers
 
-- name: HARDENING | PACKAGES | Install packages needed for compliance
-  ansible.builtin.package:
-    name:
-      - audispd-plugins
-      - gnutls-utils
-      - libreswan
-      - nss-tools
-      - policycoreutils-python-utils
-      - rng-tools
-      - rsyslog-gnutls
-      - s-nail
-      - systemd-journal-remote
-    state: present
-
-- name: HARDENING | SYSTEM | Disable unneeded systemd services and mask
-  ansible.builtin.systemd_service:
-    name: "{{ item }}"
-    state: stopped
-    enabled: false
-    force: true
-    masked: true
-  with_items:
-    - ctrl-alt-del.target # disable ctrl-alt-del usage for reboot
-    - debug-shell.service # do not allow system debugging
-    - kdump.service # disable kernel core dumps
-    - lvm2-monitor.service # lvm2 is unused in mapletree
-    - lvm2-lvmpolld.socket
-    - nis-domainname.service # nis service is unused
-    - rsyslog.service # we use systemd-journal instead of rsyslog
-    - sssd.service # local authentication only
-    - sssd-kcm.socket # if sssd is disabled RH recommends disabling ALL sssd
-    - systemd-coredump.socket # disable coredumps
-    - NetworkManager-dispatcher.service # don't run scripts on networking change
 
 # prevent rapidfire Ctrl-Alt-Del bursts from triggering system reboot
-- name: HARDENING | SYSTEM | Disable Ctrl-Alt-Del Burst Action
+- name: HARDENING | Disable Ctrl-Alt-Del Burst Action
   ansible.builtin.lineinfile:
     dest: /etc/systemd/system.conf
     state: present
@@ -222,8 +251,9 @@
     line: CtrlAltDelBurstAction=none
     create: true
     mode: "0644"
+  notify: Restart System
 
-- name: HARDENING | SYSTEM | Require Authentication for Single User Mode
+- name: HARDENING | Require Authentication for Single User Mode
   community.general.ini_file:
     path: /etc/systemd/system/rescue.service.d/10-oscap.conf
     section: Service
@@ -232,7 +262,7 @@
     mode: "0644"
 
 # rhel9-cis misses some critical files, so we'll add them here
-- name: HARDENING | SYSTEM | Enable restrictive permissions on critical files
+- name: HARDENING | Enable restrictive permissions on critical files
   ansible.builtin.file:
     path: "{{ item }}"
     owner: root
@@ -243,32 +273,32 @@
     - "/etc/at.allow"
     - "/etc/cron.allow"
 
-- name: HARDENING | TIMESYNC | Ensure chrony matches compliance policy
-  vars:
-    timesync_dhcp_ntp_servers: false
-    timesync_chrony_custom_settings:
-      - "cmdport 0"
-      - "logdir /var/log/chrony"
-      - "port 0"
-    timesync_ntp_provider: chrony
-    timesync_ntp_servers:
-      - hostname: 0.pool.ntp.org
-        minpoll: 8
-        maxpoll: 16
-      - hostname: 1.pool.ntp.org
-        minpoll: 8
-        maxpoll: 16
-      - hostname: 2.pool.ntp.org
-        minpoll: 8
-        maxpoll: 16
-      - hostname: 3.pool.ntp.org
-        minpoll: 8
-        maxpoll: 16
-  ansible.builtin.include_role:
-    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_timesync/
-    name: fedora.linux_system_roles.timesync
+- name: HARDENING | Configure system time synchronization
+  block:
+    - name: HARDENING | TIMESYNC | Configure chrony
+      vars:
+        timesync_dhcp_ntp_servers: false
+        timesync_chrony_custom_settings:
+          - "cmdport 0"
+          - "logdir /var/log/chrony"
+          - "port 0"
+        timesync_ntp_provider: chrony
+        timesync_ntp_servers:
+          - hostname: 0.pool.ntp.org
+            minpoll: 8
+            maxpoll: 16
+          - hostname: 1.pool.ntp.org
+            minpoll: 8
+            maxpoll: 16
+          - hostname: 2.pool.ntp.org
+            minpoll: 8
+            maxpoll: 16
+          - hostname: 3.pool.ntp.org
+            minpoll: 8
+            maxpoll: 16
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_timesync/
+        name: fedora.linux_system_roles.timesync
 
-# FIXME: use a handler
-- name: HARDENING | Reboot the server to apply compliance policy
-  ansible.builtin.reboot:
-    reboot_timeout: 600
+    - name: HARDENING | TIMESYNC | Flush timesync handlers
+      ansible.builtin.meta: flush_handlers
