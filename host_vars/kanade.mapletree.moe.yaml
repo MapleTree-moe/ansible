@@ -3,5 +3,5 @@
 ### kanade.mapletree.moe - host configuration
 ###
 ---
+### common role configuration variables
 common_nvidia_enabled: false
-containers_enable_webservices: true

@@ -3,7 +3,15 @@
 ### containers role - setup podman on target systems
 ###
 ---
-- name: COMMON | USERS | Configure subuid and subgid for podman user
+- name: PODMAN | Install podman and container-selinux packages
+  ansible.builtin.package:
+    name:
+      - podman
+      - container-selinux
+    state: present
+    update_cache: true
+
+- name: USERS | Configure subuid and subgid for podman user
   # rootless podman requires that the user and group it is set to run as to have
   # subuid and subgid ranges defined. normally this would be done by podman if
   # it was installed when the user was created, but we use this role to install
@@ -51,31 +59,26 @@
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_firewall/
         name: fedora.linux_system_roles.firewall
 
-    - name: WEBSERVICES | Configure SELinux for web services
-      block:
-        - name: WEBSERVICES | SELINUX | Install container-selinux package
-          ansible.builtin.package:
-            name: container-selinux
-            state: present
-            update_cache: true
-
-        - name: WEBSERVICES | SELINUX | Enable SELinux modules for web services
-          # traefik requires access to the podman.socket to allow dynamic
-          # configuration of the reverse proxy. this requires the SELinux policy
-          # on the host to be updated to allow the traefik container to access
-          # the podman.socket.
-          # https://kcore.org/2023/12/13/adventures-with-rootless-containers/
-          vars:
-            selinux_modules:
-              - path: base_container.cil
-                state: enabled
-              - path: net_container.cil
-                state: enabled
-              - path: traefik.cil
-                state: enabled
-          ansible.builtin.include_role:
-            # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_selinux/
-            name: fedora.linux_system_roles.selinux
+    - name: WEBSERVICES | Enable SELinux modules for web services
+      # traefik requires access to the podman.socket to allow dynamic
+      # configuration of the reverse proxy. this requires the SELinux policy
+      # on the host to be updated to allow the traefik container to access
+      # the podman.socket.
+      # https://kcore.org/2023/12/13/adventures-with-rootless-containers/
+      vars:
+        selinux_modules:
+          # TODO: figure out how to use the templates provided by the udica
+          #       package instead of keeping static ones in this repository.
+          #       this will allow for updates to the policy as udica updates.
+          - path: base_container.cil
+            state: enabled
+          - path: net_container.cil
+            state: enabled
+          - path: traefik.cil
+            state: enabled
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_selinux/
+        name: fedora.linux_system_roles.selinux
 
     # yamllint disable-line rule:line-length
     - name: WEBSERVICES | Deploy sockets required for traefik functionality
@@ -109,7 +112,24 @@
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
         name: fedora.linux_system_roles.systemd
 
-    - name: WEBSERVICES | CONTAINERS | Deploy traefik containers to host
+    - name: WEBSERVICES | Deploy traefik configuration files to host
+      block:
+        - name: WEBSERVICES | FILES | Create required directories
+          ansible.builtin.file:
+            path: /home/podman/containers/traefik
+            owner: podman
+            group: podman
+            mode: "0644"
+            state: directory
+        - name: WEBSERVICES | FILES | Deploy traefik configuration files
+          ansible.builtin.copy:
+            src: traefik_tls.yaml
+            dest: /home/podman/containers/traefik/tls_options.yaml
+            owner: podman
+            group: podman
+            mode: "0644"
+
+    - name: WEBSERVICES | Deploy traefik containers to host
       vars:
         podman_fail_if_too_old: true
         podman_quadlet_specs:
@@ -128,7 +148,7 @@
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
         name: fedora.linux_system_roles.podman
 
-- name: COMMON | SERVICES | Deploy podman containers to target system
+- name: SERVICES | Deploy podman containers to target system
   vars:
     podman_fail_if_too_old: true
     podman_quadlet_specs: "{{ containers_installed_services }}"
