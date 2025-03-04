@@ -27,6 +27,8 @@ hardening_bootloader_password: "{{ vault_hardening_bootloader_password }}"
 # containers role variables
 #
 containers_traefik_acme_email: "{{ vault_containers_traefik_acme_email }}"
+# yamllint disable-line rule:line-length
+containers_traefik_dashboard_password: "{{ vault_containers_traefik_dashboard_password }}"
 
 ## redhat
 redhat_password: "{{ vault_redhat_password }}"
