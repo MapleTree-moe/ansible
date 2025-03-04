@@ -1,6 +1,0 @@
-###
-### mapletree.moe - system configuration management
-### hetzner dynamic inventory provider configuration
-###
----
-plugin: hetzner.hcloud.hcloud

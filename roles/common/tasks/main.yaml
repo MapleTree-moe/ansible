@@ -332,9 +332,9 @@
 # configure standard users and groups
 - name: GROUPS | Configure standard groups for target system
   block:
-    - name: GROUPS | Ensure group 'admin' - GID '1001' exists
+    - name: GROUPS | Ensure group 'mapletree' - GID '1001' exists
       ansible.builtin.group:
-        name: admin
+        name: mapletree
         gid: 1001
         state: present
 
@@ -345,18 +345,18 @@
         state: present
 
 # TODO: Eventually we should actually roll out version controlled passwords
-#       for admin, root, and podman, and transition to using become with the
+#       for mapletree, root, and podman, and transition to using become with the
 #       vaulted password.
 - name: USERS | Configure standard users for target system
   block:
-    - name: USERS | Ensure user "admin" - UID '1001' - locked exists
+    - name: USERS | Ensure user "mapletree" - UID '1001' - locked exists
       ansible.builtin.user:
-        name: admin
+        name: mapletree
         comment: Mapletree.moe Administrator
         uid: 1001
-        group: admin
+        group: mapletree
         password_lock: true
-        groups: admin,users,wheel
+        groups: mapletree,users,wheel
         state: present
 
     - name: USERS | Ensure user "podman" - UID '1000' - locked exists
@@ -374,12 +374,12 @@
         name: root
         password_lock: true
 
-    - name: USERS | ADMIN | Set up ssh authorized_keys
+    - name: USERS | MAPLETREE | Set up ssh authorized_keys
       ansible.posix.authorized_key:
-        user: admin
+        user: mapletree
         state: present
         key: '{{ item }}'
-      with_items: "{{ common_admin_authorized_keys }}"
+      with_items: "{{ common_mapletree_authorized_keys }}"
 
 # https://openzfs.github.io/openzfs-docs/Getting%20Started/RHEL-based%20distro/index.html
 - name: ZFS | Install ZFS kernel module and tools

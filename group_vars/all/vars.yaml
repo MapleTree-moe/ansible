@@ -15,14 +15,13 @@ common_relay_host: "mail.smtp2go.com"
 common_relay_port: "587"
 common_relay_user: "{{ vault_common_relay_user }}"
 common_relay_pass: "{{ vault_common_relay_pass }}"
-common_admin_authorized_keys:
+common_mapletree_authorized_keys:
   # yamllint disable-line rule:line-length
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKuYlqIG3fsTfKt5xmvbzgxIp1pzh2xiJXGtyBo41DJB nagato@mapletree.com"
   # yamllint disable-line rule:line-length
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEYfs1EndYHRh5WcW+jkuD7IKSvZZHM+OTqDX0RuYlY5 yuki@murasame"
 
 ### containers role variables
-containers_traefik_acme_email: "{{ vault_containers_traefik_acme_email }}"
 # yamllint disable-line rule:line-length
 containers_traefik_dashboard_password: "{{ vault_containers_traefik_dashboard_password }}"
 
