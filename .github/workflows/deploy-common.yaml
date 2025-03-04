@@ -36,7 +36,7 @@ jobs:
       - name: Run Ansible Playbook - deploy-common.yaml
         uses: dawidd6/action-ansible-playbook@v3
         with:
-          playbook: plays/deploy-config.yaml
+          playbook: plays/deploy-common.yaml
           key: ${{secrets.SSH_PRIVATE_KEY}}
           vault_password: ${{secrets.VAULT_PASSWORD}}
           requirements: requirements.yaml
