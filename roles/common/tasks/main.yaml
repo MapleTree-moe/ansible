@@ -176,7 +176,8 @@
       block:
         - name: PACKAGES | AUTO-UPDATES | Enable Autoupdate services
           vars:
-            systemd_enabled_units: dnf-automatic.timer
+            systemd_enabled_units:
+              - dnf-automatic.timer
           ansible.builtin.include_role:
             # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
             name: fedora.linux_system_roles.systemd
