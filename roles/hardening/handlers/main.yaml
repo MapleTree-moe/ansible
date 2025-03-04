@@ -1,0 +1,10 @@
+###
+### mapletree.moe - system configuration management
+### hardening role - handlers
+###
+---
+- name: Restart system to apply compliance policy
+  ansible.builtin.reboot:
+    reboot_timeout: 600
+    msg: "Rebooting to apply compliance policy"
+  listen: "Restart System"
