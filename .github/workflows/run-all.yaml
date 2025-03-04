@@ -1,22 +1,16 @@
 ###
 ### mapletree.moe - Automation
-### Run compliance playbook on github actions
+### Run all playbooks on github actions
 ###
 ---
-name: Deploy common ansible configuration
+name: Deploy containers playbook
 
 # yamllint disable-line rule:truthy
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'play/deploy-config.yaml'
-      - 'roles/common/**'
+  workflow_dispatch: # this playbook takes a WHILE so make it manual only
 
 env:
-  ANSIBLE_HOST_KEY_CHECKING: false
+  ANSIBLE_HOST_KEY_CHECKING: false  # needed for automation
   HCLOUD_TOKEN: ${{secrets.HCLOUD_TOKEN}}
 
 jobs:
@@ -29,14 +23,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12.9'
-          cache: 'pip'
       - name: Install Ansible & Dependencies
         shell: bash
         run: pip install -r requirements.txt
-      - name: Run Ansible Playbook - deploy-common.yaml
+      - name: Run Ansible Playbook - site.yaml
         uses: dawidd6/action-ansible-playbook@v3
         with:
-          playbook: plays/deploy-common.yaml
+          playbook: site.yaml
           key: ${{secrets.SSH_PRIVATE_KEY}}
           vault_password: ${{secrets.VAULT_PASSWORD}}
           requirements: requirements.yaml
