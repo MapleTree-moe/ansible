@@ -19,7 +19,7 @@
 - name: WEBSERVICES | Enable webservices on target system - Deploy Traefik
   when: containers_enable_webservices
   block:
-    - name: WEBSERVICES | FIREWALL | Configure firewall for traefik deployment
+    - name: WEBSERVICES | Configure firewall for traefik deployment
       vars:
         firewall:
           - zone: public
@@ -51,26 +51,34 @@
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_firewall/
         name: fedora.linux_system_roles.firewall
 
-    - name: WEBSERVICES | SELINUX | Enable SELinux modules for traefik container
-      # traefik requires access to the podman.socket to allow dynamic
-      # configuration of the reverse proxy. this requires the SELinux policy on
-      # the host to be updated to allow the traefik container to access the
-      # podman.socket.
-      # https://kcore.org/2023/12/13/adventures-with-rootless-containers/
-      vars:
-        selinux_modules:
-          - path: base_container.cil
-            state: enabled
-          - path: net_container.cil
-            state: enabled
-          - path: traefik.cil
-            state: enabled
-      ansible.builtin.include_role:
-        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_selinux/
-        name: fedora.linux_system_roles.selinux
+    - name: WEBSERVICES | Configure SELinux for web services
+      block:
+        - name: WEBSERVICES | SELINUX | Install container-selinux package
+          ansible.builtin.package:
+            name: container-selinux
+            state: present
+            update_cache: true
+
+        - name: WEBSERVICES | SELINUX | Enable SELinux modules for web services
+          # traefik requires access to the podman.socket to allow dynamic
+          # configuration of the reverse proxy. this requires the SELinux policy
+          # on the host to be updated to allow the traefik container to access
+          # the podman.socket.
+          # https://kcore.org/2023/12/13/adventures-with-rootless-containers/
+          vars:
+            selinux_modules:
+              - path: base_container.cil
+                state: enabled
+              - path: net_container.cil
+                state: enabled
+              - path: traefik.cil
+                state: enabled
+          ansible.builtin.include_role:
+            # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_selinux/
+            name: fedora.linux_system_roles.selinux
 
     # yamllint disable-line rule:line-length
-    - name: WEBSERVICES | SOCKETS | Deploy sockets required for traefik functionality
+    - name: WEBSERVICES | Deploy sockets required for traefik functionality
       # rootless podman by default uses cni networking modules to route traffic
       # to containers. this can at times be quite slow. it is much faster to use
       # systemd-socket-activation and directly bind both the port and the
