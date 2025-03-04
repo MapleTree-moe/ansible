@@ -3,9 +3,7 @@
 ### ansible group variables
 ###
 ---
-#
-# common role configuration variables
-#
+### common role configuration variables
 # redhat credentials
 common_redhat_key: "{{ vault_common_redhat_key }}"
 common_redhat_org: "{{ vault_common_redhat_org }}"
@@ -23,14 +21,10 @@ common_admin_authorized_keys:
   # yamllint disable-line rule:line-length
   - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEYfs1EndYHRh5WcW+jkuD7IKSvZZHM+OTqDX0RuYlY5 yuki@murasame"
 
-#
-# hardening role configuration variables
-#
-hardening_bootloader_password: "{{ vault_hardening_bootloader_password }}"
-
-#
-# containers role variables
-#
+### containers role variables
 containers_traefik_acme_email: "{{ vault_containers_traefik_acme_email }}"
 # yamllint disable-line rule:line-length
 containers_traefik_dashboard_password: "{{ vault_containers_traefik_dashboard_password }}"
+
+### hardening role configuration variables
+hardening_bootloader_password: "{{ vault_hardening_bootloader_password }}"

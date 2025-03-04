@@ -18,7 +18,7 @@
     # yamllint disable-line rule:line-length
     rhel9cis_authselect_default_profile_to_copy: minimal --symlink-meta --symlink-pam
     rhel9cis_authselect_pkg_update: true
-    # FIXME: we would ideally use "FUTURE" here, but some websites (openzfs) use
+    # TODO: we would ideally use "FUTURE" here, but some websites (openzfs) use
     #        ssl certificates that are too weak for this, so we fall back to
     #        "DEFAULT"
     # NOTE: in some cases it seems like changing this post initial run doesn't
