@@ -11,7 +11,11 @@ Documentation=https://github.com/eriksjolund/podman-traefik-socket-activation
 
 [Socket]
 ListenStream=0.0.0.0:8443
-ListenDatagram=0.0.0.0:8443 # needed for HTTP/3 QUIC support
+# TODO: currently HTTP/3 is not supported by traefik w/ systemd sockets however
+#       this should be supported in a future release so keep an eye on it
+# https://doc.traefik.io/traefik/routing/entrypoints/#systemd-socket-activation
+# https://github.com/traefik/traefik/pull/11022
+ListenDatagram=0.0.0.0:8443
 FileDescriptorName=websecure
 Service=traefik.service
 SELinuxContextFromNet=true

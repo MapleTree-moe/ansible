@@ -1,0 +1,20 @@
+###
+### mapletree.moe - system configuration management
+### ansible group variables - encrypted
+###
+---
+## NOTE: Prefix all variables here with vault_
+
+## bootloader
+vault_hardening_bootloader_password: "changeme"
+
+## common
+vault_common_redhat_key: "super-secret-redhat-key"
+vault_common_redhat_org: "0123456789"
+vault_common_redhat_pass: "PASSWORD"
+vault_common_redhat_user: "USERNAME"
+vault_common_relay_user: "USERNAME"
+vault_common_relay_pass: "PASSWORD"
+
+## containers
+vault_containers_traefik_dashboard_password: "PASSWORD"

@@ -89,15 +89,15 @@
                 priority: 350
                 state: enabled
             selinux_ports:
-              - port: 8080
+              - ports: 8080
                 proto: tcp
                 setype: http_port_t
                 state: present
-              - port: 8443
+              - ports: 8443
                 proto: tcp
                 setype: http_port_t
                 state: present
-              - port: 8443
+              - ports: 8443
                 proto: udp
                 setype: http_port_t
                 state: present
@@ -120,16 +120,16 @@
           # https://github.com/eriksjolund/podman-traefik-socket-activation
           vars:
             systemd_unit_file_templates:
-              - item: http.socket.j2
+              - item: traefik-web.socket.j2
                 user: podman
                 state: present
-              - item: https.socket.j2
+              - item: traefik-websecure.socket.j2
                 user: podman
                 state: present
             systemd_enabled_units:
-              - item: http.socket
+              - item: traefik-web.socket
                 user: podman
-              - item: https.socket
+              - item: traefik-websecure.socket
                 user: podman
               - item: podman.socket # see the above SELinux task for more info
                 user: podman

@@ -8,8 +8,8 @@
 [Unit]
 Description=Traefik container
 Documentation=https://traefik.io
-After=http.socket https.socket
-Requires=http.socket https.socket
+After=traefik-web.socket traefik-websecure.socket
+Requires=traefik-web.socket traefik-websecure.socket
 
 [Install]
 WantedBy=multi-user.target default.target
@@ -17,7 +17,7 @@ WantedBy=multi-user.target default.target
 [Service]
 MemoryMax=512M
 Restart=on-failure
-Sockets=http.socket https.socket
+Sockets=traefik-web.socket traefik-websecure.socket
 
 [Container]
 AutoUpdate=registry
@@ -31,7 +31,7 @@ SecurityLabelType=traefik.process
 Environment=TRAEFIK_API_DASHBOARD="true"
 # https://doc.traefik.io/traefik/https/acme/
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt="true"
-Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_EMAIL="{{ containers_traefik_acme_email }}"
+Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_EMAIL="admin@{{ ansible_domain }}"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_CASERVER="https://acme-staging-v02.api.letsencrypt.org/directory"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_STORAGE="/etc/traefik/acme.json"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_TLSCHALLENGE="true"
@@ -41,11 +41,11 @@ Environment=TRAEFIK_ENTRYPOINTS_web_HTTP_REDIRECTIONS_ENTRYPOINT_PERMANENT="true
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP_TLS="true"
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP_TLS_CERTRESOLVER="letsencrypt"
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP2_MAXCONCURRENTSTREAMS="250"
+Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP3="true"
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP3_ADVERTISEDPORT="443"
 Environment=TRAEFIK_PROVIDERS_DOCKER="true"
 # load secured tls configuration from file
 Environment=TRAEFIK_PROVIDERS_FILE_FILENAME="/etc/traefik/tls_options.yaml"
-Environment=TZ="Europe/Berlin"
 
 #
 # labels for traefik autoconfiguration
@@ -59,7 +59,7 @@ Label=traefik.http.routers.dashboard.tls="true"
 Label=traefik.http.routers.dashboard.tls.certresolver="letsencrypt"
 
 # middlewares
-Label=traefik.http.middlewares.auth.basicauth.users="{{ containers_traefik_dashboard_user }}:{{ containers_traefik_dashboard_password | password_hash('bcrypt') }}"
+Label=traefik.http.middlewares.auth.basicauth.users="mapletree:{{ containers_traefik_dashboard_password | password_hash('bcrypt') }}"
 Label=traefik.http.middlewares.securityHeaders.headers.browserXssFilter="true"
 Label=traefik.http.middlewares.securityHeaders.headers.contentTypeNosniff="true"
 Label=traefik.http.middlewares.securityHeaders.headers.customFrameOptionsValue="SAMEORIGIN"
@@ -75,4 +75,4 @@ Label=traefik.http.middlewares.securityHeaders.headers.stsSeconds="15552000"
 # volumes
 Volume=/%t/podman/podman.sock:/var/run/docker.sock:ro
 Volume=traefik.volume:/etc/traefik
-Volume=%h/containers/traefik/tls_options.yaml:/etc/traefik/tls_options.yaml:ro,z
+Volume=%h/containers/traefik/tls_options.yaml:/etc/traefik/tls_options.yaml:ro,Z
