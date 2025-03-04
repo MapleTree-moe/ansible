@@ -3,7 +3,7 @@
 ### Run all playbooks on github actions
 ###
 ---
-name: Deploy containers playbook
+name: Deploy all playbooks
 
 # yamllint disable-line rule:truthy
 on:
