@@ -1,0 +1,22 @@
+###
+### mapletree.moe - system configuration management
+### containers - whoami - deploy lldap to target system
+###
+---
+- name: CONTAINERS | WHOAMI | Configure podman
+  block:
+    - name: CONTAINERS | WHOAMI | PODMAN | Install traefik containers
+      vars:
+        podman_fail_if_too_old: true
+        podman_quadlet_specs:
+          - template_src: whoami.container.j2
+        podman_prune_images: true
+        podman_pull_image: true
+        podman_validate_certs: true
+        podman_run_as_user: podman
+        podman_run_as_group: podman
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
+        name: fedora.linux_system_roles.podman
+    - name: CONTAINERS | WHOAMI | PODMAN | Flush podman handlers
+      ansible.builtin.meta: flush_handlers

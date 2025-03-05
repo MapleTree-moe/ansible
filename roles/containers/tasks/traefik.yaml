@@ -1,0 +1,128 @@
+###
+### mapletree.moe - system configuration management
+### containers - traefik - deploy traefik to target system
+###
+---
+# TODOS: health checks
+- name: CONTAINERS | TRAEFIK | Configure firewall
+  block:
+    - name: CONTAINERS | TRAEFIK | FIREWALL | Set firewall policy
+      vars:
+        firewall:
+          - zone: public
+          # forward privileged ports 80 and 443 to non-privileged 8080 and 8443
+          # this prevents the need for traefik to run as root
+          # https://access.redhat.com/solutions/18843
+          - forward_port:
+              - port: 80
+                proto: tcp
+                toport: 8080
+              - port: 443
+                proto: tcp
+                toport: 8443
+              - port: 443
+                proto: udp
+                toport: 8443
+            state: enabled
+          # enable the http, https, and http3 services within firewalld.
+          # prefer to use services over ports to keep policy cleaner
+          - service: http
+            state: enabled
+          - service: https
+            state: enabled
+          - service: http3
+            state: enabled
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_firewall/
+        name: fedora.linux_system_roles.firewall
+    - name: CONTAINER | TRAEFIK | FIREWALL | Flush firewall handlers
+      ansible.builtin.meta: flush_handlers
+
+- name: CONTAINERS | TRAEFIK | Configure SELinux
+  # allow traefik to access `podman.socket` for dynamic configuration
+  # https://kcore.org/2023/12/13/adventures-with-rootless-containers/
+  block:
+    - name: CONTAINERS | TRAEFIK | SELINUX | Install SELinux policy modules
+      vars:
+        selinux_modules:
+          # TODO: figure out how to use the templates provided by the udica
+          #       package instead of keeping static ones in this repository.
+          #       this will allow for updates to the policy as udica updates
+          - path: selinux/traefik.cil
+            priority: 350
+            state: enabled
+        selinux_ports:
+          - ports: 8080
+            proto: tcp
+            setype: http_port_t
+            state: present
+          - ports: 8443
+            proto: tcp
+            setype: http_port_t
+            state: present
+          - ports: 8443
+            proto: udp
+            setype: http_port_t
+            state: present
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_selinux/
+        name: fedora.linux_system_roles.selinux
+    - name: CONTAINERS | TRAEFIK | SELINUX | Flush SELinux handlers
+      ansible.builtin.meta: flush_handlers
+
+- name: CONTAINERS | TRAEFIK | Configure SystemD
+  block:
+    - name: CONTAINERS | TRAEFIK | SYSTEMD | Install SystemD sockets
+      # rootless podman by default uses cni networking modules to route
+      # traffic to containers. this can at times be quite slow. it is much
+      # faster to use systemd-socket-activation and directly bind both the
+      # port and the container to a unix socket.
+      # https://www.redhat.com/en/blog/socket-activation-podman
+      # https://github.com/eriksjolund/podman-traefik-socket-activation
+      vars:
+        systemd_unit_file_templates:
+          - item: traefik-web.socket.j2
+            user: podman
+            state: present
+          - item: traefik-websecure.socket.j2
+            user: podman
+            state: present
+        systemd_enabled_units:
+          - item: traefik-web.socket
+            user: podman
+          - item: traefik-websecure.socket
+            user: podman
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
+        name: fedora.linux_system_roles.systemd
+    - name: CONTAINERS | TRAEFIK | SYSTEMD | Flush systemd handlers
+      ansible.builtin.meta: flush_handlers
+
+- name: CONTAINERS | TRAEFIK | Copy configuration files
+  ansible.builtin.copy:
+    src: traefik
+    dest: /home/podman/containers
+    owner: podman
+    group: podman
+    mode: "0644"
+
+- name: CONTAINERS | TRAEFIK | Configure podman
+  block:
+    - name: CONTAINERS | TRAEFIK | PODMAN | Install containers
+      vars:
+        podman_fail_if_too_old: true
+        podman_quadlet_specs:
+          # list order determined by dependencies - do NOT modify
+          - template_src: traefik.network.j2
+          - template_src: traefik.volume.j2
+          - template_src: traefik.container.j2
+        podman_prune_images: true
+        podman_pull_image: true
+        podman_validate_certs: true
+        podman_run_as_user: podman
+        podman_run_as_group: podman
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
+        name: fedora.linux_system_roles.podman
+    - name: CONTAINERS | TRAEFIK | PODMAN | Flush podman handlers
+      ansible.builtin.meta: flush_handlers
