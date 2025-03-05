@@ -8,8 +8,8 @@
 [Unit]
 Description=LLDAP container
 Documentation=https://github.com/lldap/lldap
-After=lldap-db.service
-Requires=lldap-db.service
+After=lldap-db.service traefik.service
+Requires=lldap-db.service traefik.service
 
 [Service]
 Restart=on-failure
@@ -19,17 +19,15 @@ WantedBy=multi-user.target default.target
 
 [Container]
 AutoUpdate=registry
-ContainerName=lldap-db
+ContainerName=lldap
 Image=docker.io/lldap/lldap:stable
-Network=lldap.network
-Network=traefik.network
+Network=lldap-network.network
+Network=traefik-network.network
 
 # environmental variables
+Environment=LLDAP_DATABASE_URL=postgres://lldapuser:${POSTGRES_PASSWORD}@lldap-db/lldap
+Environment=LLDAP_LDAP_BASE_DN=dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
 Environment=TZ={{ ansible_date_time.tz }}
-Environment=LLDAP_LDAP_BASE_DN=dc=mapletree,dc=moe
-Environment=LLDAP_JWT_SECRET=REPLACE_WITH_RANDOM
-Environment=LLDAP_KEY_SEED=REPLACE_WITH_RANDOM
-Environment=LLDAP_DATABASE_URL=postgres://lldapuser:lldappass@lldap-db/lldap
 
 # traefik configuration labels
 Label=traefik.enable="true"
@@ -37,4 +35,10 @@ Label=traefik.http.routers.lldap.rule="Host(`lldap.{{ ansible_fqdn }}`)"
 Label=traefik.http.routers.lldap.middlewares="securityHeaders"
 Label=traefik.http.services.lldap.loadbalancer.server.port=17170
 
-Volume=lldap.volume:/data:Z
+# secrets
+Secret=lldap-db-password,type=env,target=POSTGRES_PASSWORD
+Secret=lldap-jwt-secret,type=env,target=LLDAP_JWT_SECRET
+Secret=lldap-key-seed,type=env,target=LLDAP_KEY_SEED
+Secret=lldap-ldap-user-pass,type=env,target=LLDAP_LDAP_USER_PASS
+
+Volume=lldap-data.volume:/data:Z
