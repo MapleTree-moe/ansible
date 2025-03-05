@@ -162,7 +162,7 @@
         path: /etc/dnf/automatic.conf
         regexp: '^{{ item.name }}'
         line: '{{ item.name }} = {{ item.value }}'
-      with_items:
+      loop:
         - name: upgrade_type
           value: security
         - name: download_updates
@@ -379,7 +379,7 @@
         user: mapletree
         state: present
         key: '{{ item }}'
-      with_items: "{{ common_mapletree_authorized_keys }}"
+      loop: "{{ common_mapletree_authorized_keys }}"
 
 # https://openzfs.github.io/openzfs-docs/Getting%20Started/RHEL-based%20distro/index.html
 - name: ZFS | Install ZFS kernel module and tools

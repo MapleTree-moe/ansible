@@ -6,7 +6,8 @@
 ### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
 
 [Unit]
-Description=whoami container for testing traefik
+Description=Whoami container
+Documentation=https://traefik.io
 After=traefik.service
 
 [Install]
@@ -17,6 +18,7 @@ Image=docker.io/traefik/whoami
 ContainerName=whoami
 Network=traefik.network
 
+# traefik configuration labels
 Label=traefik.enable="true"
 Label=traefik.http.routers.whoami.rule="Host(`{{ ansible_fqdn }}`)"
 Label=traefik.http.routers.whoami.middlewares="securityHeaders"
