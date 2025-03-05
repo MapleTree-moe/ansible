@@ -1,0 +1,32 @@
+###
+### mapletree.moe - system configuration management
+### containers - lldap - deploy lldap to target system
+###
+---
+# TODOS: health checks
+#        automated database backups
+#        use podman secrets
+#        configurable base dn
+#        import traefik as a hard requirement
+- name: CONTAINERS | LLDAP | Configure podman
+  block:
+    - name: CONTAINERS | LLDAP | PODMAN | Install containers
+      vars:
+        podman_fail_if_too_old: true
+        podman_quadlet_specs:
+          # list order determined by dependencies - do NOT modify
+          - template_src: lldap.network.j2
+          - template_src: lldap.volume.j2
+          - template_src: lldap-db.volume.j2
+          - template_src: lldap-db.container.j2
+          - template_src: lldap.container.j2
+        podman_prune_images: true
+        podman_pull_image: true
+        podman_validate_certs: true
+        podman_run_as_user: podman
+        podman_run_as_group: podman
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
+        name: fedora.linux_system_roles.podman
+    - name: CONTAINERS | LLDAP | PODMAN | Flush podman handlers
+      ansible.builtin.meta: flush_handlers

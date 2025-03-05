@@ -160,14 +160,14 @@
             line: "install {{ item }} /bin/true"
             create: true
             mode: 'go-rwx'
-          with_items: "{{ compliance_kernel_blacklist }}"
+          loop: "{{ compliance_kernel_blacklist }}"
           notify: Restart System
 
         - name: HARDENING | KERNEL | MODULES | Blacklist kernel modules
           # add files to modprobes blacklisted entries
           community.general.kernel_blacklist:
             name: "{{ item }}"
-          with_items: "{{ compliance_kernel_blacklist }}"
+          loop: "{{ compliance_kernel_blacklist }}"
           notify: Restart System
 
     - name: HARDENING | KERNEL | Configure restrictive kernel sysctl values
@@ -177,7 +177,7 @@
         sysctl_file: /etc/sysctl.d/60-kernel_sysctl.conf
         state: present
         reload: true
-      with_items:
+      loop:
         - name: kernel.core_pattern # prevent core dumps (DISA STIG)
           value: "|/bin/false"
         - name: kernel.dmesg_restrict # restrict kernel logs (DISA STIG)
@@ -268,7 +268,7 @@
     owner: root
     group: root
     mode: '0600'
-  with_items:
+  loop:
     - "/boot/grub2/grub.cfg"
     - "/etc/at.allow"
     - "/etc/cron.allow"

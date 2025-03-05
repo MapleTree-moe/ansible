@@ -1,0 +1,39 @@
+### {{ ansible_managed }} - {{ ansible_fqdn }}
+###
+### mapletree.moe - podman quadlet file
+### https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
+###
+### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
+
+# TODO: Automated backups
+
+[Unit]
+Description=LLDAP Database container
+Documentation=https://github.com/lldap/lldap
+
+[Service]
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target default.target
+
+[Container]
+AutoUpdate=registry
+ContainerName=lldap-db
+Image=docker.io/postgres:17
+Network=lldap.network
+
+# health check
+HealthCmd=pg_isready
+HealthInterval=10s
+HealthRetries=3
+HealthStartPeriod=10s
+HealthTimeout=30s
+
+# environmental variables
+Environment=POSTGRES_DB=lldap
+Environment=POSTGRES_USER=lldapuser
+# FIXME: transition to using actual podman secrets
+Environment=POSTGRES_PASS=lldappass
+
+Volume=lldap-db.volume:/var/lib/postgresql/data:Z
