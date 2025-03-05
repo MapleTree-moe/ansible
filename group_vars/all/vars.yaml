@@ -24,6 +24,12 @@ common_mapletree_authorized_keys:
 ### hardening role configuration variables
 hardening_bootloader_password: "{{ vault_hardening_bootloader_password }}"
 
+#
+# global container configuration
+#
+containers_lldap_base_dn_domain: mapletree
+containers_lldap_base_dn_extension: moe
+
 ###
 ### Container Secrets Section
 ###

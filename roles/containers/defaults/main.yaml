@@ -5,4 +5,8 @@
 ---
 containers_services_enabled:
   - traefik
+  - lldap
   - whoami
+
+containers_lldap_base_dn_domain: example
+containers_lldap_base_dn_extension: com
