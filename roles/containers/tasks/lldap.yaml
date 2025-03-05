@@ -5,9 +5,27 @@
 ---
 # TODOS: health checks
 #        automated database backups
-#        use podman secrets
-#        configurable base dn
-#        import traefik as a hard requirement
+#        automatic dependency resolution
+# TODO: low priority - create local vault with secrets
+- name: CONTAINERS | LLDAP | Check dependencies
+  ansible.builtin.fail:
+    msg: |
+      !!!ERROR!!!
+      !!!ERROR!!! {{ ansible.fqdn }} - roles/containers/lldap.yaml:19
+      !!!ERROR!!! traefik is a hard dependency of lldap.
+      !!!ERROR!!! you must add it to `containers_services_enabled` before the
+      !!!ERROR!!! declaration of lldap.
+      !!!ERROR!!!
+  when: "'traefik' not in containers_services_enabled"
+
+- name: CONTAINERS | LLDAP | Create database backup folder
+  ansible.builtin.file:
+    path: /home/podman/containers/backup/lldap-db
+    state: directory
+    owner: podman
+    group: podman
+    mode: "0644"
+
 - name: CONTAINERS | LLDAP | Configure podman
   block:
     - name: CONTAINERS | LLDAP | PODMAN | Install containers
@@ -22,9 +40,30 @@
           - template_src: lldap.container.j2
         podman_prune_images: true
         podman_pull_image: true
-        podman_validate_certs: true
         podman_run_as_user: podman
         podman_run_as_group: podman
+        podman_secrets:
+          - name: lldap-db-password
+            state: present
+            skip_existing: true # do not overwrite if secret exists
+            # yamllint disable-line rule:line-length
+            data: "{{ lookup('community.general.random_string', special=false, length=20) }}"
+          - name: lldap-jwt-secret
+            state: present
+            skip_existing: true # do not overwrite if secret exists
+            # yamllint disable-line rule:line-length
+            data: "{{ lookup('community.general.random_string', special=false, length=20) }}"
+          - name: lldap-key-seed
+            state: present
+            skip_existing: true # do not overwrite if secret exists
+            # yamllint disable-line rule:line-length
+            data: "{{ lookup('community.general.random_string', special=false, length=20) }}"
+          - name: lldap-ldap-user-pass
+            state: present
+            skip_existing: true # do not overwrite if secret exists
+            # yamllint disable-line rule:line-length
+            data: "{{ lookup('community.general.random_string', special=false, length=20) }}"
+        podman_validate_certs: true
       ansible.builtin.include_role:
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
         name: fedora.linux_system_roles.podman
