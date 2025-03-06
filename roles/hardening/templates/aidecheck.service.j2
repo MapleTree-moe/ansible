@@ -4,3 +4,13 @@
 ### https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html
 ###
 ### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
+
+[Unit]
+Description=Aide Check
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/aide --check --config /etc/aide/aide.conf
+
+[Install]
+WantedBy=multi-user.target

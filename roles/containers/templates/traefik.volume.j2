@@ -6,8 +6,8 @@
 ### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
 
 [Unit]
-Description=Traefik network
+Description=Traefik configuration volume
 Documentation=https://traefik.io
 
-[Network]
-NetworkName=traefik-network
+[Volume]
+VolumeName=traefik

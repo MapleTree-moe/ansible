@@ -23,7 +23,7 @@ Sockets=traefik-web.socket traefik-websecure.socket
 AutoUpdate=registry
 ContainerName=traefik
 Image=docker.io/traefik:v3.3
-Network=traefik-network.network
+Network=traefik.network
 SecurityLabelType=traefik.process
 
 # environmental variables
@@ -32,7 +32,7 @@ Environment=TRAEFIK_API_DASHBOARD="true"
 # https://doc.traefik.io/traefik/https/acme/
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt="true"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_EMAIL="admin@{{ ansible_domain }}"
-# Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_CASERVER="https://acme-staging-v02.api.letsencrypt.org/directory"
+Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_CASERVER="https://acme-staging-v02.api.letsencrypt.org/directory"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_STORAGE="/etc/traefik/acme.json"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_TLSCHALLENGE="true"
 Environment=TRAEFIK_ENTRYPOINTS_web_HTTP_REDIRECTIONS_ENTRYPOINT_TO="websecure"
@@ -75,5 +75,5 @@ Label=traefik.http.middlewares.securityHeaders.headers.stsSeconds="31536000"
 
 # volumes
 Volume=/%t/podman/podman.sock:/var/run/docker.sock:ro
-Volume=traefik-data.volume:/etc/traefik
+Volume=traefik.volume:/etc/traefik
 Volume=%h/containers/traefik/tls_options.yaml:/etc/traefik/tls_options.yaml:ro,Z

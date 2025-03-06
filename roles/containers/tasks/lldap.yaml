@@ -6,7 +6,7 @@
 # TODOS: health checks
 #        automated database backups
 #        automatic dependency resolution
-# TODO: low priority - create local vault with secrets
+#        low priority - create local vault with secrets
 - name: CONTAINERS | LLDAP | Check dependencies
   ansible.builtin.fail:
     msg: |
@@ -24,7 +24,7 @@
     state: directory
     owner: podman
     group: podman
-    mode: "0644"
+    mode: "0755"
 
 - name: CONTAINERS | LLDAP | Configure podman
   block:
@@ -33,9 +33,9 @@
         podman_fail_if_too_old: true
         podman_quadlet_specs:
           # list order determined by dependencies - do NOT modify
-          - template_src: lldap.network.j2
-          - template_src: lldap.volume.j2
-          - template_src: lldap-db.volume.j2
+          - template_src: lldap-network.network.j2
+          - template_src: lldap-data.volume.j2
+          - template_src: lldap-db-data.volume.j2
           - template_src: lldap-db.container.j2
           - template_src: lldap.container.j2
         podman_prune_images: true

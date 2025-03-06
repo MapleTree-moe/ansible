@@ -6,11 +6,11 @@
 ### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
 
 [Unit]
-Description=lldap-db backup timer
+Description=Aide check every day at midnight
 
 [Timer]
-OnCalendar=daily
-Persistent=true
+OnCalendar=*-*-* 00:00:00
+Unit=aidecheck.service
 
 [Install]
-WantedBy=timers.target
+WantedBy=multi-user.target

@@ -16,7 +16,7 @@ WantedBy=multi-user.target default.target
 [Container]
 Image=docker.io/traefik/whoami
 ContainerName=whoami
-Network=traefik.network
+Network=traefik-network.network
 
 # traefik configuration labels
 Label=traefik.enable="true"
