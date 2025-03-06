@@ -110,6 +110,7 @@
         podman_fail_if_too_old: true
         podman_quadlet_specs:
           # list order determined by dependencies - do NOT modify
+          - template_src: traefik.volume.j2
           - template_src: traefik.network.j2
           - template_src: traefik.container.j2
         podman_prune_images: true
