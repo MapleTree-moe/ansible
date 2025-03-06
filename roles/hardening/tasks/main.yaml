@@ -137,6 +137,7 @@
           - erofs
           - exfat
           - fscache
+          - fuse
           - gfs2
           - isofs
           - netfs
