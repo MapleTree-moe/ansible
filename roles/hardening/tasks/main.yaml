@@ -73,6 +73,50 @@
         rhel9cis_rule_6_2_2_1_2: false
         rhel9cis_rule_6_2_2_1_3: false
         rhel9cis_rule_6_2_2_1_4: false
+
+        # testing
+
+        # Additional Process Hardening
+        rhel9cis_rule_1_5_1: false
+        rhel9cis_rule_1_5_2: false
+        rhel9cis_rule_1_5_3: false
+        rhel9cis_rule_1_5_4: false
+        # 5.4.2 Configure root and system accounts and environfalse
+        rhel9cis_rule_5_4_2_1: false
+        rhel9cis_rule_5_4_2_2: false
+        rhel9cis_rule_5_4_2_3: false
+        rhel9cis_rule_5_4_2_4: false
+        rhel9cis_rule_5_4_2_6: false
+        rhel9cis_rule_5_4_2_7: false
+        rhel9cis_rule_5_4_2_8: false
+        # 5.4.2 Configure user default environfalse
+        rhel9cis_rule_5_4_3_1: false
+        rhel9cis_rule_5_4_3_2: false
+        rhel9cis_rule_5_4_3_3: false
+        ## 7.1 System File Permissfalse
+        rhel9cis_rule_7_1_1: false
+        rhel9cis_rule_7_1_2: false
+        rhel9cis_rule_7_1_3: false
+        rhel9cis_rule_7_1_4: false
+        rhel9cis_rule_7_1_5: false
+        rhel9cis_rule_7_1_6: false
+        rhel9cis_rule_7_1_7: false
+        rhel9cis_rule_7_1_8: false
+        rhel9cis_rule_7_1_9: false
+        rhel9cis_rule_7_1_10: false
+        rhel9cis_rule_7_1_11: false
+        rhel9cis_rule_7_1_12: false
+        rhel9cis_rule_7_1_13: false
+        ## 7.2 Local User and Group Settfalse
+        rhel9cis_rule_7_2_1: false
+        rhel9cis_rule_7_2_2: false
+        rhel9cis_rule_7_2_3: false
+        rhel9cis_rule_7_2_4: false
+        rhel9cis_rule_7_2_5: false
+        rhel9cis_rule_7_2_6: false
+        rhel9cis_rule_7_2_7: false
+        rhel9cis_rule_7_2_8: false
+        rhel9cis_rule_7_2_9: false
       ansible.builtin.include_role:
         # https://github.com/ansible-lockdown/RHEL9-CIS
         name: rhel9-cis
