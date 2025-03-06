@@ -3,11 +3,11 @@
 ### containers role - setup podman on target systems
 ###
 ---
+# TODO: a podman socket proxy could be good for security?
 - name: CONTAINERS | Install packages
   ansible.builtin.package:
     name:
-      - container-selinux
-      - podman
+      - container-tools
     state: present
     update_cache: true
 

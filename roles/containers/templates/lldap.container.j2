@@ -8,8 +8,8 @@
 [Unit]
 Description=LLDAP container
 Documentation=https://github.com/lldap/lldap
-After=lldap-db.service traefik.service
-Requires=lldap-db.service traefik.service
+After=traefik.service
+Requires=traefik.service
 
 [Service]
 Restart=on-failure
@@ -24,6 +24,8 @@ Image=docker.io/lldap/lldap:stable
 Network=traefik.network
 
 # environmental variables
+Environment=UID=1000
+Environment=GID=1000
 Environment=LLDAP_LDAP_BASE_DN=dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
 Environment=TZ={{ ansible_date_time.tz }}
 
@@ -37,3 +39,5 @@ Label=traefik.http.services.lldap.loadbalancer.server.port=17170
 Secret=lldap-jwt-secret,type=env,target=LLDAP_JWT_SECRET
 Secret=lldap-key-seed,type=env,target=LLDAP_KEY_SEED
 Secret=lldap-ldap-user-pass,type=env,target=LLDAP_LDAP_USER_PASS
+
+Volume=lldap.volume:/data
