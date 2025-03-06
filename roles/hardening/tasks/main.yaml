@@ -77,10 +77,10 @@
         # testing
 
         # Additional Process Hardening
-        rhel9cis_rule_1_5_1: false
-        rhel9cis_rule_1_5_2: false
-        rhel9cis_rule_1_5_3: false
-        rhel9cis_rule_1_5_4: false
+        # rhel9cis_rule_1_5_1: false
+        # rhel9cis_rule_1_5_2: false
+        # rhel9cis_rule_1_5_3: false
+        # rhel9cis_rule_1_5_4: false
         # 5.4.2 Configure root and system accounts and environfalse
         rhel9cis_rule_5_4_2_1: false
         rhel9cis_rule_5_4_2_2: false
