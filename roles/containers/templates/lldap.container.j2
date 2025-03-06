@@ -21,11 +21,9 @@ WantedBy=multi-user.target default.target
 AutoUpdate=registry
 ContainerName=lldap
 Image=docker.io/lldap/lldap:stable
-Network=lldap-network.network
-Network=traefik-network.network
+Network=traefik.network
 
 # environmental variables
-Environment=LLDAP_DATABASE_URL=postgres://lldapuser:${POSTGRES_PASSWORD}@lldap-db/lldap
 Environment=LLDAP_LDAP_BASE_DN=dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
 Environment=TZ={{ ansible_date_time.tz }}
 
@@ -36,9 +34,6 @@ Label=traefik.http.routers.lldap.middlewares="securityHeaders"
 Label=traefik.http.services.lldap.loadbalancer.server.port=17170
 
 # secrets
-Secret=lldap-db-password,type=env,target=POSTGRES_PASSWORD
 Secret=lldap-jwt-secret,type=env,target=LLDAP_JWT_SECRET
 Secret=lldap-key-seed,type=env,target=LLDAP_KEY_SEED
 Secret=lldap-ldap-user-pass,type=env,target=LLDAP_LDAP_USER_PASS
-
-Volume=lldap-data.volume:/data:Z

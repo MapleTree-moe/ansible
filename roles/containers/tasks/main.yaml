@@ -6,8 +6,8 @@
 - name: CONTAINERS | Install packages
   ansible.builtin.package:
     name:
-      - podman
       - container-selinux
+      - podman
     state: present
     update_cache: true
 
