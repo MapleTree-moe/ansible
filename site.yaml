@@ -6,8 +6,8 @@
 - name: PLAYBOOK | Deploy common configuration options
   ansible.builtin.import_playbook: plays/deploy-common.yaml
 
-# - name: PLAYBOOK | Deploy compliance policy to infrastructure
-#   ansible.builtin.import_playbook: plays/deploy-compliance.yaml
+- name: PLAYBOOK | Deploy compliance policy to infrastructure
+  ansible.builtin.import_playbook: plays/deploy-compliance.yaml
 
 - name: PLAYBOOK | Deploy containers to infrastructue
   ansible.builtin.import_playbook: plays/deploy-containers.yaml
