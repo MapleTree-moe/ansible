@@ -18,14 +18,6 @@
       !!!ERROR!!!
   when: "'traefik' not in containers_services_enabled"
 
-- name: CONTAINERS | LLDAP | Create database backup folder
-  ansible.builtin.file:
-    path: /home/podman/containers/backup/lldap-db
-    state: directory
-    owner: podman
-    group: podman
-    mode: "0755"
-
 - name: CONTAINERS | LLDAP | Configure podman
   block:
     - name: CONTAINERS | LLDAP | PODMAN | Install containers
@@ -33,21 +25,13 @@
         podman_fail_if_too_old: true
         podman_quadlet_specs:
           # list order determined by dependencies - do NOT modify
-          - template_src: lldap-network.network.j2
-          - template_src: lldap-data.volume.j2
-          - template_src: lldap-db-data.volume.j2
-          - template_src: lldap-db.container.j2
+          - template_src: lldap.network.j2
           - template_src: lldap.container.j2
         podman_prune_images: true
         podman_pull_image: true
         podman_run_as_user: podman
         podman_run_as_group: podman
         podman_secrets:
-          - name: lldap-db-password
-            state: present
-            skip_existing: true # do not overwrite if secret exists
-            # yamllint disable-line rule:line-length
-            data: "{{ lookup('community.general.random_string', special=false, length=20) }}"
           - name: lldap-jwt-secret
             state: present
             skip_existing: true # do not overwrite if secret exists
