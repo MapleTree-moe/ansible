@@ -45,9 +45,6 @@
     - name: CONTAINERS | TRAEFIK | SELINUX | Install SELinux policy modules
       vars:
         selinux_modules:
-          # TODO: figure out how to use the templates provided by the udica
-          #       package instead of keeping static ones in this repository.
-          #       this will allow for updates to the policy as udica updates
           - path: selinux/traefik.cil
             priority: 350
             state: enabled
@@ -104,7 +101,7 @@
     dest: /home/podman/containers
     owner: podman
     group: podman
-    mode: "0644"
+    mode: "0755"
 
 - name: CONTAINERS | TRAEFIK | Configure podman
   block:
@@ -114,7 +111,6 @@
         podman_quadlet_specs:
           # list order determined by dependencies - do NOT modify
           - template_src: traefik.network.j2
-          - template_src: traefik.volume.j2
           - template_src: traefik.container.j2
         podman_prune_images: true
         podman_pull_image: true
