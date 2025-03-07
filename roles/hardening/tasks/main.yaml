@@ -6,11 +6,43 @@
 # NOTE: this role is extremely aggressive in applying compliance settings as it
 #       is intended to be used on fresh installs. this could break existing
 #       systems, so use with caution.
+
+# systemd compliance needs to run before benchmark to install AIDE service files
+- name: HARDENING | Configure SystemD to align with compliance policy
+  block:
+    - name: HARDENING | SYSTEMD | Disable and mask unneeded services
+      vars:
+        service_list:
+          - ctrl-alt-del.target # disable ctrl-alt-del usage for reboot
+          - debug-shell.service # do not allow system debugging
+          - kdump.service # disable kernel core dumps
+          - lvm2-monitor.service # lvm2 is unused in mapletree
+          - lvm2-lvmpolld.socket
+          - nis-domainname.service # nis service is unused
+          - rsyslog.service # we use systemd-journal instead of rsyslog
+          - sssd.service # local authentication only
+          - sssd-kcm.socket # if sssd=disabled RH recommends disabling ALL sssd
+          - systemd-coredump.socket # disable coredumps
+          - NetworkManager-dispatcher.service # no scripts on network change
+        systemd_disabled_units: "{{ service_list }}"
+        systemd_masked_units: "{{ service_list }}"
+        systemd_stopped_units: "{{ service_list }}"
+        systemd_unit_file_templates:
+          - item: aidecheck.service.j2
+          - item: aidecheck.timer.j2
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
+        name: fedora.linux_system_roles.systemd
+
+    - name: HARDENING | SYSTEMD | Flush systemd handlers
+      ansible.builtin.meta: flush_handlers
+
+# use the cis level 2 server benchmark as a basis for policy
 - name: HARDENING | Ensure system is compliant with CIS Server Level 2
   block:
     - name: HARDENING | BENCHMARK | Run CIS server level 2 benchmark
       vars:
-        rhel9cis_aide_scan: cron # FIXME: transition to using systemd timers
+        rhel9cis_aide_scan: timer
         rhel9cis_auditd_extra_conf:
           admin_space_left: '10%' # should never be hit, if so halt system
           space_left: '20%'  # give more time to get in to clear space
@@ -27,8 +59,8 @@
         #       doesn't actually change the crypto policy on the target system.
         rhel9cis_crypto_policy: DEFAULT
         rhel9cis_disruption_high: true # assume new install, nothing to disrupt
-        # rhel9cis_dotperm_ansiblemanaged: true # ansible to set dotfile perms
-        # this MUST BE SET or podman will choke. important filter is at the end
+        # MUST BE SET or podman will choke:
+        #   -a ! -path "*/.local/share/containers/storage/*"
         # yamllint disable-line rule:line-length
         rhel9cis_exclude_unowned_search_path: (! -path "/run/user/*" -a ! -path "/proc/*" -a ! -path "*/containerd/*" -a ! -path "*/kubelet/pods/*" -a ! -path "*/kubelet/plugins/*" -a ! -path "/sys/fs/cgroup/memory/*" -a ! -path "/var/*/private/*" -a ! -path "*/.local/share/containers/storage/*")
         rhel9cis_flush_ipv4_route: true
@@ -77,12 +109,6 @@
         rhel9cis_rule_6_2_2_1_3: false
         rhel9cis_rule_6_2_2_1_4: false
 
-        ## 7.1 System File Permissfalse
-        # rhel9cis_rule_7_1_12: false # this is one of the problems
-        rhel9cis_rule_7_1_13: false
-        ## 7.2 Local User and Group Settfalse
-        rhel9cis_rule_7_2_8: false
-        rhel9cis_rule_7_2_9: false
       ansible.builtin.include_role:
         # https://github.com/ansible-lockdown/RHEL9-CIS
         name: rhel9-cis
@@ -224,33 +250,6 @@
           - s-nail
           - systemd-journal-remote
         state: present
-
-- name: HARDENING | Configure SystemD to align with compliance policy
-  block:
-    - name: HARDENING | SYSTEMD | Disable and mask unneeded services
-      vars:
-        service_list:
-          - ctrl-alt-del.target # disable ctrl-alt-del usage for reboot
-          - debug-shell.service # do not allow system debugging
-          - kdump.service # disable kernel core dumps
-          - lvm2-monitor.service # lvm2 is unused in mapletree
-          - lvm2-lvmpolld.socket
-          - nis-domainname.service # nis service is unused
-          - rsyslog.service # we use systemd-journal instead of rsyslog
-          - sssd.service # local authentication only
-          - sssd-kcm.socket # if sssd=disabled RH recommends disabling ALL sssd
-          - systemd-coredump.socket # disable coredumps
-          - NetworkManager-dispatcher.service # no scripts on network change
-        systemd_disabled_units: "{{ service_list }}"
-        systemd_masked_units: "{{ service_list }}"
-        systemd_stopped_units: "{{ service_list }}"
-      ansible.builtin.include_role:
-        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
-        name: fedora.linux_system_roles.systemd
-
-    - name: HARDENING | SYSTEMD | Flush systemd handlers
-      ansible.builtin.meta: flush_handlers
-
 
 # prevent rapidfire Ctrl-Alt-Del bursts from triggering system reboot
 - name: HARDENING | Disable Ctrl-Alt-Del Burst Action
