@@ -52,13 +52,14 @@
         # yamllint disable-line rule:line-length
         rhel9cis_authselect_default_profile_to_copy: minimal --symlink-meta --symlink-pam
         rhel9cis_authselect_pkg_update: true
-        # TODO: we would ideally use "FUTURE" here, but some websites (openzfs)
-        #       use ssl certificates that are too weak for this, so we fall back
-        #       to "DEFAULT"
+        # SECURITY: we would ideally use "FUTURE" here, but some websites
+        #       (openzfs) use ssl certificates that are too weak for this, so we
+        #        fall back to "DEFAULT"
         # NOTE: in some cases it seems like changing this post initial run
         #       doesn't actually change the crypto policy on the target system.
         rhel9cis_crypto_policy: DEFAULT
         rhel9cis_disruption_high: true # assume new install, nothing to disrupt
+        rhel9cis_dotperm_ansiblemanaged: false # MUST BE FALSE or podman chokes
         # MUST BE SET or podman will choke:
         #   -a ! -path "*/.local/share/containers/storage/*"
         # yamllint disable-line rule:line-length
@@ -100,7 +101,7 @@
         rhel9cis_rule_1_2_1_1: false # FIXME: false positive, issue #292
         # we use sudo with NO_PASSWD for automation, as well as locked accounts
         # so we disable this for now
-        # TODO: transition to using BECOME with a provided password secret
+        # SECURITY: transition to using BECOME with a provided password secret
         rhel9cis_rule_5_2_4: false
         rhel9cis_rule_5_4_2_5: false  # FIXME: false positive on root_path
         # rules 6.2.2.1.x configures offsite logging, which we don't use

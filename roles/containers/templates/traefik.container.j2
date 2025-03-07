@@ -8,7 +8,6 @@
 [Unit]
 Description=Traefik container
 Documentation=https://traefik.io
-After=traefik-web.socket traefik-websecure.socket user-network-online.service
 Requires=traefik-web.socket traefik-websecure.socket user-network-online.service
 
 [Install]
@@ -22,7 +21,7 @@ Sockets=traefik-web.socket traefik-websecure.socket
 [Container]
 AutoUpdate=registry
 ContainerName=traefik
-Image=docker.io/traefik:v3.3
+Image=docker.io/traefik:v3
 Network=traefik.network
 SecurityLabelType=traefik.process
 
@@ -44,14 +43,19 @@ Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP2_MAXCONCURRENTSTREAMS="250"
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP3="true"
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP3_ADVERTISEDPORT="443"
 Environment=TRAEFIK_PROVIDERS_DOCKER="true"
-# load secured tls configuration from file
 Environment=TRAEFIK_PROVIDERS_FILE_FILENAME="/etc/traefik/tls_options.yaml"
 Environment=TZ={{ ansible_date_time.tz }}
 
-#
-# labels for traefik autoconfiguration
-#
+# health check
+HealthCmd=traefik healthcheck
+HealthInterval=10s
+HealthRetries=3
+HealthStartPeriod=10s
+HealthTimeout=30s
+
+# automatically configure traefik to proxy the web service
 Label=traefik.enable="true"
+
 # configure the traefik dashboard
 Label=traefik.http.routers.dashboard.rule="Host(`traefik.{{ ansible_fqdn }}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
 Label=traefik.http.routers.dashboard.service="api@internal"
