@@ -30,7 +30,7 @@
         # rhel9cis_dotperm_ansiblemanaged: true # ansible to set dotfile perms
         # this MUST BE SET or podman will choke. important filter is at the end
         # yamllint disable-line rule:line-length
-        rhel9cis_exclude_unowned_search_path: (! -path "/run/user/*" -a ! -path "/proc/*" -a ! -path "*/containerd/*" -a ! -path "*/kubelet/pods/*" -a ! -path "*/kubelet/plugins/*" -a ! -path "/sys/fs/cgroup/memory/*" -a ! -path "/var/*/private/*" ! -path "*/.local/share/containers/storage/*")
+        rhel9cis_exclude_unowned_search_path: (! -path "/run/user/*" -a ! -path "/proc/*" -a ! -path "*/containerd/*" -a ! -path "*/kubelet/pods/*" -a ! -path "*/kubelet/plugins/*" -a ! -path "/sys/fs/cgroup/memory/*" -a ! -path "/var/*/private/*" ! -path "*/.local/share/containers/storage/*" -a)
         rhel9cis_flush_ipv4_route: true
         rhel9cis_flush_ipv6_route: false # IPV6: ipv6
         rhel9cis_ipv6_required: false  # IPV6: implement ipv6
