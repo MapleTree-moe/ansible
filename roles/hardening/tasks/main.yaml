@@ -111,6 +111,7 @@
         rhel9cis_rule_6_2_2_1_2: false
         rhel9cis_rule_6_2_2_1_3: false
         rhel9cis_rule_6_2_2_1_4: false
+        rhel9cis_rule_7_1_12: false # FIXME: we shouldn't need to do this
 
       ansible.builtin.include_role:
         # https://github.com/ansible-lockdown/RHEL9-CIS
