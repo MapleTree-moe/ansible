@@ -77,6 +77,11 @@
       # https://www.redhat.com/en/blog/socket-activation-podman
       # https://github.com/eriksjolund/podman-traefik-socket-activation
       vars:
+        systemd_enabled_units:
+          - item: traefik-web.socket
+            user: podman
+          - item: traefik-websecure.socket
+            user: podman
         systemd_unit_file_templates:
           - item: traefik-web.socket.j2
             user: podman
@@ -84,11 +89,6 @@
           - item: traefik-websecure.socket.j2
             user: podman
             state: present
-        systemd_enabled_units:
-          - item: traefik-web.socket
-            user: podman
-          - item: traefik-websecure.socket
-            user: podman
       ansible.builtin.include_role:
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
         name: fedora.linux_system_roles.systemd

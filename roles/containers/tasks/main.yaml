@@ -55,11 +55,6 @@
       # https://github.com/eriksjolund/podman-traefik-socket-activation
       vars:
         # TODO: only enable the podman socket on hosts that actually need it
-        systemd_unit_file_templates:
-          - item: user-network-online.service.j2
-            # https://access.redhat.com/solutions/7004860
-            user: podman
-            state: present
         systemd_enabled_units:
           - item: podman.socket
             user: podman
@@ -70,6 +65,11 @@
             user: podman
           - item: user-network-online.service
             user: podman
+        systemd_unit_file_templates:
+          - item: user-network-online.service.j2
+            # https://access.redhat.com/solutions/7004860
+            user: podman
+            state: present
       ansible.builtin.include_role:
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
         name: fedora.linux_system_roles.systemd
