@@ -28,6 +28,8 @@
         rhel9cis_crypto_policy: DEFAULT
         rhel9cis_disruption_high: true # assume new install, nothing to disrupt
         rhel9cis_dotperm_ansiblemanaged: true # ansible to set dotfile perms
+        # yamllint disable-line rule:line-length
+        rhel9cis_exclude_unowned_search_path: (! -path "/run/user/*" -a ! -path "/proc/*" -a ! -path "*/containerd/*" -a ! -path "*/kubelet/pods/*" -a ! -path "*/kubelet/plugins/*" -a ! -path "/sys/fs/cgroup/memory/*" -a ! -path "/var/*/private/*" ! -path "*./local/share/containers/storage*")
         rhel9cis_flush_ipv4_route: true
         rhel9cis_flush_ipv6_route: false # IPV6: ipv6
         rhel9cis_ipv6_required: false  # IPV6: implement ipv6
@@ -75,23 +77,9 @@
         rhel9cis_rule_6_2_2_1_4: false
 
         ## 7.1 System File Permissfalse
-        # rhel9cis_rule_7_1_1: false
-        # rhel9cis_rule_7_1_2: false
-        # rhel9cis_rule_7_1_3: false
-        # rhel9cis_rule_7_1_4: false
-        # rhel9cis_rule_7_1_5: false
-        # rhel9cis_rule_7_1_6: false
-        # rhel9cis_rule_7_1_7: false
-        # rhel9cis_rule_7_1_8: false
-        # rhel9cis_rule_7_1_9: false
-        # rhel9cis_rule_7_1_10: false
-        rhel9cis_rule_7_1_11: false
-        rhel9cis_rule_7_1_12: false
+        # rhel9cis_rule_7_1_12: false # this is one of the problems
         rhel9cis_rule_7_1_13: false
         ## 7.2 Local User and Group Settfalse
-        # rhel9cis_rule_7_2_1: false
-        # rhel9cis_rule_7_2_2: false
-        # rhel9cis_rule_7_2_3: false
         rhel9cis_rule_7_2_4: false
         rhel9cis_rule_7_2_5: false
         rhel9cis_rule_7_2_6: false
