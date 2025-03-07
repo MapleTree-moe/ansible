@@ -89,15 +89,15 @@
         rhel9cis_rule_7_1_12: false
         rhel9cis_rule_7_1_13: false
         ## 7.2 Local User and Group Settfalse
-        # rhel9cis_rule_7_2_1: false
-        # rhel9cis_rule_7_2_2: false
-        # rhel9cis_rule_7_2_3: false
-        # rhel9cis_rule_7_2_4: false
-        # rhel9cis_rule_7_2_5: false
-        # rhel9cis_rule_7_2_6: false
-        # rhel9cis_rule_7_2_7: false
-        # rhel9cis_rule_7_2_8: false
-        # rhel9cis_rule_7_2_9: false
+        rhel9cis_rule_7_2_1: false
+        rhel9cis_rule_7_2_2: false
+        rhel9cis_rule_7_2_3: false
+        rhel9cis_rule_7_2_4: false
+        rhel9cis_rule_7_2_5: false
+        rhel9cis_rule_7_2_6: false
+        rhel9cis_rule_7_2_7: false
+        rhel9cis_rule_7_2_8: false
+        rhel9cis_rule_7_2_9: false
       ansible.builtin.include_role:
         # https://github.com/ansible-lockdown/RHEL9-CIS
         name: rhel9-cis
