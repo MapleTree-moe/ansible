@@ -3,7 +3,6 @@
 ### containers - traefik - deploy traefik to target system
 ###
 ---
-# TODOS: health checks
 - name: CONTAINERS | TRAEFIK | Configure firewall
   block:
     - name: CONTAINERS | TRAEFIK | FIREWALL | Set firewall policy
@@ -46,7 +45,6 @@
       vars:
         selinux_modules:
           - path: selinux/traefik.cil
-            priority: 350
             state: enabled
         selinux_ports:
           - ports: 8080
@@ -70,12 +68,9 @@
 - name: CONTAINERS | TRAEFIK | Configure SystemD
   block:
     - name: CONTAINERS | TRAEFIK | SYSTEMD | Install SystemD sockets
-      # rootless podman by default uses cni networking modules to route
-      # traffic to containers. this can at times be quite slow. it is much
-      # faster to use systemd-socket-activation and directly bind both the
-      # port and the container to a unix socket.
+      # systemd-socket-activation results in faster networking than standard
+      # rootless podman networks
       # https://www.redhat.com/en/blog/socket-activation-podman
-      # https://github.com/eriksjolund/podman-traefik-socket-activation
       vars:
         systemd_enabled_units:
           - item: traefik-web.socket
