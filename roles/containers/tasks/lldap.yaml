@@ -1,3 +1,5 @@
+# code: language=ansible
+
 ###
 ### mapletree.moe - system configuration management
 ### containers - lldap - deploy lldap to target system

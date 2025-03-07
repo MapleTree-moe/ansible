@@ -1,3 +1,5 @@
+# code: language=yaml
+
 ###
 ### mapletree.moe - Standards & Formatting
 ### enforce pre-commit hooks to check for errors and force standardized commits

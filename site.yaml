@@ -1,3 +1,5 @@
+# code: language=ansible
+
 ###
 ### mapletree.moe - system configuration management
 ### run all available roles against infrastructure
