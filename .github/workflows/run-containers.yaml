@@ -1,3 +1,5 @@
+# code: language=yaml
+
 ###
 ### mapletree.moe - Automation
 ### Run containers playbook on github actions

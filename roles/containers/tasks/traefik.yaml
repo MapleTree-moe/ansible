@@ -1,3 +1,5 @@
+# code: language=ansible
+
 ###
 ### mapletree.moe - system configuration management
 ### containers - traefik - deploy traefik to target system
