@@ -1,3 +1,5 @@
+# code: language=yaml
+
 ###
 ### mapletree.moe - Automation
 ### Run all playbooks on github actions

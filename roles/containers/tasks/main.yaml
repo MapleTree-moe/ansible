@@ -1,3 +1,5 @@
+# code: language=ansible
+
 ###
 ### mapletree.moe - system configuration management
 ### containers role - setup podman on target systems
