@@ -75,23 +75,23 @@
         rhel9cis_rule_6_2_2_1_4: false
 
         ## 7.1 System File Permissfalse
-        rhel9cis_rule_7_1_1: false
-        rhel9cis_rule_7_1_2: false
-        rhel9cis_rule_7_1_3: false
-        rhel9cis_rule_7_1_4: false
-        rhel9cis_rule_7_1_5: false
-        rhel9cis_rule_7_1_6: false
-        rhel9cis_rule_7_1_7: false
-        rhel9cis_rule_7_1_8: false
-        rhel9cis_rule_7_1_9: false
-        rhel9cis_rule_7_1_10: false
+        # rhel9cis_rule_7_1_1: false
+        # rhel9cis_rule_7_1_2: false
+        # rhel9cis_rule_7_1_3: false
+        # rhel9cis_rule_7_1_4: false
+        # rhel9cis_rule_7_1_5: false
+        # rhel9cis_rule_7_1_6: false
+        # rhel9cis_rule_7_1_7: false
+        # rhel9cis_rule_7_1_8: false
+        # rhel9cis_rule_7_1_9: false
+        # rhel9cis_rule_7_1_10: false
         rhel9cis_rule_7_1_11: false
         rhel9cis_rule_7_1_12: false
         rhel9cis_rule_7_1_13: false
         ## 7.2 Local User and Group Settfalse
-        rhel9cis_rule_7_2_1: false
-        rhel9cis_rule_7_2_2: false
-        rhel9cis_rule_7_2_3: false
+        # rhel9cis_rule_7_2_1: false
+        # rhel9cis_rule_7_2_2: false
+        # rhel9cis_rule_7_2_3: false
         rhel9cis_rule_7_2_4: false
         rhel9cis_rule_7_2_5: false
         rhel9cis_rule_7_2_6: false
