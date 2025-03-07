@@ -56,7 +56,6 @@
         - name: CONVERT | CONVERSION | CONVERT | Run convert2rhel conversion
           vars:
             # remove conversion tooling after successful conversion
-            convert_gpg_key_remove: true
             convert_convert2rhel_repo_remove: true
             convert_convert2rhel_package_remove: true
             convert_reboot_requested: true # reboot after conversion

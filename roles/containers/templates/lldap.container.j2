@@ -20,7 +20,7 @@ WantedBy=default.target
 [Container]
 AutoUpdate=registry
 ContainerName=lldap
-Image=docker.io/lldap/lldap:stable
+Image=docker.io/lldap/lldap:stable-debian-rootless
 Network=traefik.network
 
 # environmental variables
@@ -29,7 +29,7 @@ Environment=GID=1000
 Environment=LLDAP_LDAP_BASE_DN=dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
 Environment=TZ={{ ansible_date_time.tz }}
 
-# traefik configuration labels
+# automatically configure traefik to proxy the web service
 Label=traefik.enable="true"
 Label=traefik.http.routers.lldap.rule="Host(`lldap.{{ ansible_fqdn }}`)"
 Label=traefik.http.routers.lldap.middlewares="securityHeaders"

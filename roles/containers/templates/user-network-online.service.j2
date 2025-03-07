@@ -5,13 +5,9 @@
 ###
 ### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
 
-# systemD doesn't allow user units to interact with system units. because of
-# this we need to have a replacement for network-online.target or many podman
-# containers will fail to launch.
-# https://access.redhat.com/solutions/7004860
-
 [Unit]
 Description=User Wait for Network to be Configured
+Documentation=https://access.redhat.com/solutions/7004860
 
 [Service]
 Type=oneshot
