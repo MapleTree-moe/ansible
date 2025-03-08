@@ -9,4 +9,4 @@
   ansible.builtin.reboot:
     reboot_timeout: 600
     msg: "Rebooting to apply compliance policy"
-  listen: "Restart System"
+  listen: Restart System

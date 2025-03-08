@@ -75,8 +75,10 @@
           - item: user-network-online.service
             user: podman
         systemd_unit_file_templates:
-          - item: user-network-online.service.j2
-            # https://access.redhat.com/solutions/7004860
+          - item: network-online.target.j2
+            user: podman
+            state: present
+          - item: NetworkManager-wait-online.service.j2
             user: podman
             state: present
       ansible.builtin.include_role:
