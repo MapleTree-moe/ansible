@@ -8,8 +8,8 @@
 [Unit]
 Description=Traefik container
 Documentation=https://traefik.io
-Requires=traefik-web.socket traefik-websecure.socket network-online.target
-After=network-online.target
+Requires=traefik-web.socket traefik-websecure.socket
+After=podman-user-wait-network-online.service
 
 [Service]
 MemoryMax=512M
@@ -80,3 +80,6 @@ Label=traefik.http.middlewares.securityHeaders.headers.stsSeconds="31536000"
 Volume=/%t/podman/podman.sock:/var/run/docker.sock:ro
 Volume=traefik.volume:/etc/traefik
 Volume=%h/containers/traefik/tls_options.yaml:/etc/traefik/tls_options.yaml:ro,Z
+
+[Install]
+WantedBy=default.target

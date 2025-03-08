@@ -69,16 +69,13 @@
     - name: CONTAINERS | SYSTEMD | Install user-network-online.service
       vars:
         systemd_enabled_units:
-          - item: user-network-online.service
+          - item: podman-user-wait-network-online.service
             user: podman
         systemd_started_units:
-          - item: user-network-online.service
+          - item: podman-user-wait-network-online.service
             user: podman
         systemd_unit_file_templates:
-          - item: network-online.target.j2
-            user: podman
-            state: present
-          - item: NetworkManager-wait-online.service.j2
+          - item: podman-user-wait-network-online.service.j2
             user: podman
             state: present
       ansible.builtin.include_role:

@@ -8,20 +8,17 @@
 # UPGRADE: This isn't needed as of Podman 5.3.0, remove when it drops in RHEL
 
 [Unit]
-Description=Network Manager Wait Online for Users
-Documentation=man:NetworkManager-wait-online.service(8)
-Documentation=https://access.redhat.com/solutions/7004860
+Description=Wait for system level network-online.target as user.
 Documentation=https://github.com/containers/podman/issues/22197
-Requires=NetworkManager.service
-After=NetworkManager.service
-Before=network-online.target
+Documentation=man:podman-systemd.unit(5)
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/nm-online -q
+# Set a timeout as by default oneshot does not have one and in case network-online.target
+# never comes online we do not want to block forever, 90s is the default systemd unit timeout.
+TimeoutStartSec=90s
+ExecStart=/bin/sh -c 'until systemctl is-active network-online.target; do sleep 0.5; done'
 RemainAfterExit=yes
 
-Environment=NM_ONLINE_TIMEOUT=60
-
 [Install]
-WantedBy=network-online.target
+WantedBy=default.target
