@@ -101,6 +101,7 @@
     group: root
     mode: "0644"
 
+# TODO: this sometimes seizes up in the CI/CD pipeline, why?
 - name: NETWORK | Configure networking on target system
   block:
     - name: NETWORK | NM | Configure NM to use DHCP with static DNS Servers
