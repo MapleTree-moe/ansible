@@ -8,8 +8,6 @@
 [Unit]
 Description=Traefik Websecure socket
 Documentation=https://github.com/eriksjolund/podman-traefik-socket-activation
-After=user-network-online.service
-Requires=user-network-online.service
 
 [Socket]
 ListenStream=0.0.0.0:8443
