@@ -8,7 +8,6 @@
 [Unit]
 Description=Whoami container
 Documentation=https://traefik.io
-Wants=traefik.service
 After=traefik.service
 
 [Container]
@@ -20,3 +19,6 @@ Network=traefik.network
 Label=traefik.enable="true"
 Label=traefik.http.routers.whoami.rule="Host(`{{ ansible_fqdn }}`)"
 Label=traefik.http.routers.whoami.middlewares="securityHeaders"
+
+[Install]
+WantedBy=default.target
