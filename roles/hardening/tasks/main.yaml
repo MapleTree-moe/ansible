@@ -64,13 +64,15 @@
         rhel9cis_dotperm_ansiblemanaged: false # MUST BE FALSE or podman chokes
         # MUST BE SET or podman will choke:
         #   -a ! -path "*/.local/share/containers/storage/*"
+        # FIXME: this doesn't work
         # yamllint disable-line rule:line-length
-        rhel9cis_exclude_unowned_search_path: (! -path "/run/user/*" -a ! -path "/proc/*" -a ! -path "*/containerd/*" -a ! -path "*/kubelet/pods/*" -a ! -path "*/kubelet/plugins/*" -a ! -path "/sys/fs/cgroup/memory/*" -a ! -path "/var/*/private/*" -a ! -path "*/.local/share/containers/storage/*")
+        # rhel9cis_exclude_unowned_search_path: (! -path "/run/user/*" -a ! -path "/proc/*" -a ! -path "*/containerd/*" -a ! -path "*/kubelet/pods/*" -a ! -path "*/kubelet/plugins/*" -a ! -path "/sys/fs/cgroup/memory/*" -a ! -path "/var/*/private/*" -a ! -path "*/.local/share/containers/storage/*")
         rhel9cis_flush_ipv4_route: true
         rhel9cis_flush_ipv6_route: false # IPV6: ipv6
         rhel9cis_ipv6_required: false  # IPV6: implement ipv6
         rhel9cis_journald_systemkeepfree: 20G
         rhel9cis_journald_runtimekeepfree: 20G
+        rhel9cis_ownership_adjust: false # FIXME: this is a bad way to do this
         rhel9cis_set_boot_pass: false  # this is done by a task post benchmark
         rhel9cis_ssh_loglevel: VERBOSE # ensure sshd_config passes oscap
         rhel9cis_sshd_clientalivecountmax: 1 # ensure sshd_config passes oscap
