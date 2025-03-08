@@ -9,7 +9,6 @@
 Description=LLDAP container
 Documentation=https://github.com/lldap/lldap
 After=traefik.service
-Wants=traefik.service
 
 [Service]
 Restart=on-failure
@@ -38,3 +37,6 @@ Secret=lldap-key-seed,type=env,target=LLDAP_KEY_SEED
 Secret=lldap-ldap-user-pass,type=env,target=LLDAP_LDAP_USER_PASS
 
 Volume=lldap.volume:/data
+
+[Install]
+WantedBy=default.target
