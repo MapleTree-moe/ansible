@@ -8,10 +8,8 @@
 [Unit]
 Description=Whoami container
 Documentation=https://traefik.io
-Requires=traefik.service
-
-[Install]
-WantedBy=default.target
+Wants=traefik.service
+After=traefik.service
 
 [Container]
 Image=docker.io/traefik/whoami

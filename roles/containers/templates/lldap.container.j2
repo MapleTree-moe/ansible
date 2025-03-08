@@ -9,13 +9,10 @@
 Description=LLDAP container
 Documentation=https://github.com/lldap/lldap
 After=traefik.service
-Requires=traefik.service
+Wants=traefik.service
 
 [Service]
 Restart=on-failure
-
-[Install]
-WantedBy=default.target
 
 [Container]
 AutoUpdate=registry

@@ -8,10 +8,8 @@
 [Unit]
 Description=Traefik container
 Documentation=https://traefik.io
-Requires=traefik-web.socket traefik-websecure.socket user-network-online.service
-
-[Install]
-WantedBy=default.target
+Requires=traefik-web.socket traefik-websecure.socket network-online.target
+After=network-online.target
 
 [Service]
 MemoryMax=512M
