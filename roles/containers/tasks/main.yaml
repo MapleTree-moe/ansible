@@ -9,6 +9,8 @@
   # SECURITY: a podman socket proxy could be useful to boost security
   ansible.builtin.set_fact:
     podman_socket_required: true
+  # TODO: this is just traefik for now, but it would be nice to check multiple
+  #       services against `containers_services_enabled`
   when: '"traefik" in containers_services_enabled'
 
 - name: CONTAINERS | Install packages
