@@ -5,12 +5,16 @@
 ### common role - configure system settings common to all devices
 ###
 ---
+# the cloud we use does not natively provide RHEL images, so we use terraform to
+# install a RHEL clone and then convert the clone to genuine RHEL. this is not
+# technically supported by redhat.
 - name: CONVERT | Convert RHEL Clones to genuine RHEL if conversion enabled
   when: common_convert_enabled and ansible_distribution != "RedHat"
   block:
     - name: CONVERT | Update system packages and install required utilities
       block:
         - name: CONVERT | UPDATE | Update all system packages to latest version
+          # conversion will fail if packages are not latest versions
           ansible.builtin.package:
             name: '*'
             state: latest # noqa package-latest
@@ -41,7 +45,7 @@
 
     - name: CONVERT | CONVERSION | Deploy `convert2rhel` script
       vars:
-        # UPGRADE: change this on upgrade
+        # UPGRADE: change the specified repo url on a major upgrade i.e. RHEL10
         # yamllint disable-line rule:line-length
         convert2rhel_repofile_url: "https://cdn-public.redhat.com/content/public/repofiles/convert2rhel-for-rhel-9-x86_64.repo"
         rhsm_username: "{{ common_redhat_user }}"
@@ -212,7 +216,7 @@
         gpgkey: https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/D42D0685.pub
         mode: "0644"
 
-    # TODO: if nvidia decides we deserve a 570 precompiled, update this
+    # TODO: if nvidia decides we deserve a 570 precompiled kmod, update this
     - name: NVIDIA | Set nvidia driver to 565 branch to access precompiled kmod
       ansible.builtin.dnf:
         name: "@nvidia-driver:565"
@@ -245,7 +249,7 @@
 
     - name: POSTFIX | Install & Configure Postfix
       vars:
-        # these may need to be changed according to relayhost requirements
+        # NOTE: these are set according to the relay mail server's requirements
         postfix_conf:
           inet_interfaces: "loopback-only" # do not allow external connections
           inet_protocols: "ipv4" # IPV6: enable ipv6
@@ -271,7 +275,7 @@
             # rewrites sender address to allow mail to pass through relayhost
             content: "/.+/ {{ ansible_hostname }}@{{ ansible_domain }}"
           - name: smtp_header_checks
-            # rewrites headers to make mail appear to be from sender addr
+            # rewrites headers to align with the new sender address
             # yamllint disable-line rule:line-length
             content: "/^From:.*/ REPLACE From: {{ ansible_hostname }}@{{ ansible_domain }}"
           - name: tls_policy
@@ -288,7 +292,8 @@
     - name: POSTFIX | Flush postfix handlers
       ansible.builtin.meta: flush_handlers
 
-# connect system to redhat, verify license, and install insights
+# conversion script still uses individual account authentication, this converts
+# the rhel license to the organizational license and enables insights
 - name: REDHAT | Configure RedHat services
   when: common_redhat_enabled
   block:
@@ -309,7 +314,8 @@
     - name: REDHAT | Flush rhc handlers
       ansible.builtin.meta: flush_handlers
 
-# configure system tuning daemon based on system type
+# NOTE: DISA STIG explicitly provides a rule for turning the tuned daemon OFF,
+#       however the potential performance benefits outweigh the security risks
 - name: TUNED | Configure system tuning based on system type
   block:
     - name: TUNED | Set tuned to 'virtual-guest' on virtual systems
@@ -331,7 +337,6 @@
     - name: TUNED | Flush tuned handlers
       ansible.builtin.meta: flush_handlers
 
-# configure standard users and groups
 - name: GROUPS | Configure standard groups for target system
   block:
     - name: GROUPS | Ensure group 'mapletree' - GID '1001' exists
@@ -402,6 +407,8 @@
         state: present
 
     - name: ZFS | Disable DKMS zfs repository
+      # DKMS requires build tools to be present on the system, which is not
+      # appropriate for a production server
       community.general.dnf_config_manager:
         name: zfs
         state: disabled
