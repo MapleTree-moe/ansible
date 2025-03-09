@@ -35,7 +35,9 @@ jobs:
           mode: create
           github_token: ${{ secrets.NAGATO_GITHUB_RUNNERS }}
           hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          enable_ipv6: false
           server_type: cx22
+          ssh_key: 27836571
           image: rocky-9
   deploy:
     name: Deploy compliance role to all servers
