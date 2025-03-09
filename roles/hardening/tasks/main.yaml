@@ -333,7 +333,7 @@
         - name: SSHD | HOST KEYS | Ensure host has compliant 4096 bit RSA key
           community.crypto.openssh_keypair:
             group: root
-            mode: "0640"
+            mode: "0600"
             owner: root
             path: /etc/ssh/ssh_host_rsa_key
             regenerate: full_idempotence
@@ -344,7 +344,7 @@
         - name: SSHD | HOST KEYS | Ensure host has compliant ed25519 key
           community.crypto.openssh_keypair:
             group: root
-            mode: "0640"
+            mode: "0600"
             owner: root
             path: /etc/ssh/ssh_host_ed25519_key
             regenerate: full_idempotence
@@ -365,6 +365,8 @@
           DisableForwarding: true
           GSSAPIAuthentication: false
           HostbasedAuthentication: false
+          # most profiles require chacha20-poly1305 as well, but disable due to
+          # terrapin vuln (CVE-2023-48795)
           HostKeyAlgorithms: ssh-ed25519,rsa-sha2-512,rsa-sha2-256
           HostKey:
             - /etc/ssh/ssh_host_ed25519_key
