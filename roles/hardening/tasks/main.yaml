@@ -10,9 +10,9 @@
 #       systems, so use with caution.
 
 # systemd compliance needs to run before benchmark to install AIDE service files
-- name: HARDENING | Configure SystemD to align with compliance policy
+- name: Configure SystemD to align with compliance policy
   block:
-    - name: HARDENING | SYSTEMD | Disable and mask unneeded services
+    - name: SYSTEMD | Disable and mask unneeded services
       vars:
         service_list:
           - ctrl-alt-del.target # disable ctrl-alt-del usage for reboot
@@ -36,13 +36,13 @@
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
         name: fedora.linux_system_roles.systemd
 
-    - name: HARDENING | SYSTEMD | Flush systemd handlers
+    - name: SYSTEMD | Flush systemd handlers
       ansible.builtin.meta: flush_handlers
 
 # use the cis level 2 server benchmark as a basis for policy
-- name: HARDENING | Ensure system is compliant with CIS Server Level 2
+- name: Ensure system is compliant with CIS Server Level 2
   block:
-    - name: HARDENING | BENCHMARK | Run CIS server level 2 benchmark
+    - name: BENCHMARK | Run CIS server level 2 benchmark
       vars:
         rhel9cis_aide_scan: timer
         rhel9cis_auditd_extra_conf:
@@ -67,10 +67,6 @@
         rhel9cis_journald_systemkeepfree: 20G
         rhel9cis_journald_runtimekeepfree: 20G
         rhel9cis_set_boot_pass: false  # this is done by a task post benchmark
-        rhel9cis_ssh_loglevel: VERBOSE # ensure sshd_config passes oscap
-        rhel9cis_sshd_clientalivecountmax: 1 # ensure sshd_config passes oscap
-        rhel9cis_sshd_clientaliveinterval: 300 # ensure sshd_config passes oscap
-        rhel9cis_sshd_logingracetime: 0 # regreSSHion fix
         rhel9cis_sysctl_update: true
         rhel9cis_syslog: journald # prefer journald as its already present
         # rules 1.1.2.x are for dedicated partitions, which we don't use
@@ -109,20 +105,16 @@
         rhel9cis_rule_6_2_2_1_4: false
         rhel9cis_rule_7_2_8: false # breaks podman
         rhel9cis_rule_7_2_9: false # breaks podman
-        # testing
-        # rhel9cis_rule_7_1_11: false
-        # rhel9cis_rule_7_1_12: false
-        # rhel9cis_rule_7_1_13: false
       ansible.builtin.include_role:
         # https://github.com/ansible-lockdown/RHEL9-CIS
         name: rhel9-cis
 
-    - name: HARDENING | BENCHMARK | Flush benchmark handlers
+    - name: BENCHMARK | Flush benchmark handlers
       ansible.builtin.meta: flush_handlers
 
-- name: HARDENING | Set bootloader password & harden kernel boot arguments
+- name: Set bootloader password & harden kernel boot arguments
   block:
-    - name: HARDENING | BOOTLOADER | Configure bootloader
+    - name: BOOTLOADER | Configure bootloader
       vars:
         # set hardening_bootloader_password in group_vars
         bootloader_password: "{{ hardening_bootloader_password }}"
@@ -140,12 +132,12 @@
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_bootloader/
         name: fedora.linux_system_roles.bootloader
 
-    - name: HARDENING | BOOTLOADER | Flush bootloader handlers
+    - name: BOOTLOADER | Flush bootloader handlers
       ansible.builtin.meta: flush_handlers
 
-- name: HARDENING | Ensure firewall meets baseline policy
+- name: Ensure firewall meets baseline policy
   block:
-    - name: HARDENING | FIREWALL | Configure firewall
+    - name: FIREWALL | Configure firewall
       vars:
         firewall:
           - service: cockpit
@@ -162,13 +154,13 @@
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_firewall/
         name: fedora.linux_system_roles.firewall
 
-    - name: HARDENING | FIREWALL | Flush firewall handlers
+    - name: FIREWALL | Flush firewall handlers
       ansible.builtin.meta: flush_handlers
 
 # remove unused kernel modules with potential CVEs (DISA STIG)
-- name: HARDENING | Configure kernel to comply with security policy
+- name: Configure kernel to comply with security policy
   block:
-    - name: HARDENING | KERNEL | Define kernel module blacklist
+    - name: KERNEL | Define kernel module blacklist
       vars:
         compliance_kernel_blacklist:
           - cachefiles # disable unused filesystems
@@ -191,7 +183,7 @@
           - firewire-core
           - bluetooth # no need for bluetooth on servers
       block:
-        - name: HARDENING | KERNEL | MODULES | Assign modules to /bin/true
+        - name: KERNEL | MODULES | Assign modules to /bin/true
           # this assigns the kernel modules to /bin/true which prevents them
           # from being loaded even if the modprobe blacklist is somehow bypassed
           ansible.builtin.lineinfile:
@@ -203,14 +195,14 @@
           loop: "{{ compliance_kernel_blacklist }}"
           notify: Restart System
 
-        - name: HARDENING | KERNEL | MODULES | Blacklist kernel modules
+        - name: KERNEL | MODULES | Blacklist kernel modules
           # add files to modprobes blacklisted entries
           community.general.kernel_blacklist:
             name: "{{ item }}"
           loop: "{{ compliance_kernel_blacklist }}"
           notify: Restart System
 
-    - name: HARDENING | KERNEL | Configure restrictive kernel sysctl values
+    - name: KERNEL | Configure restrictive kernel sysctl values
       ansible.posix.sysctl:
         name: "{{ item.name }}"
         value: "{{ item.value }}"
@@ -229,9 +221,9 @@
         - name: kernel.unprivileged_bpf_disabled # (DISA STIG)
           value: 1
 
-- name: HARDENING | Configure system packages and package manager
+- name: Configure system packages and package manager
   block:
-    - name: HARDENING | PACKAGES | Enable local package gpg key verification
+    - name: PACKAGES | Enable local package gpg key verification
       community.general.ini_file:
         dest: /etc/dnf/dnf.conf
         section: main
@@ -241,7 +233,7 @@
         create: true
         mode: "0644"
 
-    - name: HARDENING | PACKAGES | Install packages needed for compliance
+    - name: PACKAGES | Install packages needed for compliance
       ansible.builtin.package:
         name:
           - audispd-plugins
@@ -252,11 +244,10 @@
           - rng-tools
           - rsyslog-gnutls
           - s-nail
-          - systemd-journal-remote
         state: present
 
 # prevent rapidfire Ctrl-Alt-Del bursts from triggering system reboot
-- name: HARDENING | Disable Ctrl-Alt-Del Burst Action
+- name: Disable Ctrl-Alt-Del Burst Action
   ansible.builtin.lineinfile:
     dest: /etc/systemd/system.conf
     state: present
@@ -266,7 +257,7 @@
     mode: "0644"
   notify: Restart System
 
-- name: HARDENING | Require Authentication for Single User Mode
+- name: Require Authentication for Single User Mode
   community.general.ini_file:
     path: /etc/systemd/system/rescue.service.d/10-oscap.conf
     section: Service
@@ -275,7 +266,7 @@
     mode: "0644"
 
 # rhel9-cis misses some critical files, so we'll add them here
-- name: HARDENING | Enable restrictive permissions on critical files
+- name: Enable restrictive permissions on critical files
   ansible.builtin.file:
     path: "{{ item }}"
     owner: root
@@ -286,9 +277,64 @@
     - "/etc/at.allow"
     - "/etc/cron.allow"
 
-- name: HARDENING | Configure system time synchronization
+# be even more paranoid than most paranoid people
+- name: Configure secure shell service
   block:
-    - name: HARDENING | TIMESYNC | Configure chrony
+    - name: SSHD | Configure SSHD to align with policy
+      vars:
+        sshd_config:
+          # yamllint disable rule:line-length
+          AllowUsers: mapletree
+          Banner: /etc/issue.net
+          Ciphers: chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-gcm@openssh.com,aes128-ctr
+          ClientAliveInterval: 300
+          ClientAliveCountMax: 1
+          Compression: false # DISA STIG
+          DenyUsers: nobody
+          DisableForwarding: true
+          GSSAPIAuthentication: false
+          HostbasedAuthentication: false
+          HostKeyAlgorithms: ssh-ed25519,rsa-sha2-512,rsa-sha2-256
+          IgnoreRhosts: true
+          IgnoreUserKnownHosts: true
+          KerberosAuthentication: false
+          KexAlgorithms: sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha256,kex-strict-s-v00@openssh.com
+          ListenAddress:
+            - 0.0.0.0 # IPV6: enable here as well
+          LoginGraceTime: 0 # regreSSHion fix
+          LogLevel: VERBOSE # CIS Level 2 & DISA STIG
+          MACs: hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,umac-128-etm@openssh.com
+          MaxAuthTries: 4
+          MaxSessions: 4
+          MaxStartups: 10:30:60
+          PermitEmptyPasswords: false
+          PermitRootLogin: false
+          PermitUserEnvironment: false
+          PrintLastLog: true
+          PubkeyAuthentication: true
+          RekeyLimit: 1G 1h
+          RequiredRSASize: 4096
+          StrictModes: true
+          Subsystem: sftp /usr/libexec/openssh/sftp-server
+          UsePAM: true
+          X11UseLocalhost: true
+          # yamllint enable rule:line-length
+        sshd_manage_firewall: true
+        sshd_manage_selinux: true
+        sshd_skip_defaults: true
+        sshd_sysconfig: true
+        sshd_sysconfig_override_crypto_policy: true
+        sshd_sysconfig_use_strong_rng: true
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_sshd/
+        name: fedora.linux_system_roles.sshd
+
+    - name: SSHD | Flush sshd handlers
+      ansible.builtin.meta: flush_handlers
+
+- name: Configure system time synchronization
+  block:
+    - name: TIMESYNC | Configure chrony
       vars:
         timesync_dhcp_ntp_servers: false
         timesync_chrony_custom_settings:
@@ -313,5 +359,5 @@
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_timesync/
         name: fedora.linux_system_roles.timesync
 
-    - name: HARDENING | TIMESYNC | Flush timesync handlers
+    - name: TIMESYNC | Flush timesync handlers
       ansible.builtin.meta: flush_handlers
