@@ -70,6 +70,7 @@
         rhel9cis_ssh_loglevel: VERBOSE # ensure sshd_config passes oscap
         rhel9cis_sshd_clientalivecountmax: 1 # ensure sshd_config passes oscap
         rhel9cis_sshd_clientaliveinterval: 300 # ensure sshd_config passes oscap
+        rhel9cis_sshd_logingracetime: 0 # regreSSHion fix
         rhel9cis_sysctl_update: true
         rhel9cis_syslog: journald # prefer journald as its already present
         # rules 1.1.2.x are for dedicated partitions, which we don't use
@@ -95,7 +96,7 @@
         rhel9cis_rule_1_1_2_7_2: false
         rhel9cis_rule_1_1_2_7_3: false
         rhel9cis_rule_1_1_2_7_4: false
-        rhel9cis_rule_1_2_1_1: false # FIXME: false positive, issue #292
+        rhel9cis_rule_1_2_1_1: false # FIXME: ansible-lockdown/RHEL9-CIS #292
         # we use sudo with NO_PASSWD for automation, as well as locked accounts
         # so we disable this for now
         # SECURITY: transition to using BECOME with a provided password secret
@@ -106,16 +107,12 @@
         rhel9cis_rule_6_2_2_1_2: false
         rhel9cis_rule_6_2_2_1_3: false
         rhel9cis_rule_6_2_2_1_4: false
-
-        #
+        rhel9cis_rule_7_2_8: false # breaks podman
+        rhel9cis_rule_7_2_9: false # breaks podman
         # testing
-        #
         # rhel9cis_rule_7_1_11: false
-        # rhel9cis_rule_7_1_12: true
-        # rhel9cis_rule_7_1_13: true
-        # rhel9cis_rule_7_2_8: false
-        rhel9cis_rule_7_2_9: false
-
+        # rhel9cis_rule_7_1_12: false
+        # rhel9cis_rule_7_1_13: false
       ansible.builtin.include_role:
         # https://github.com/ansible-lockdown/RHEL9-CIS
         name: rhel9-cis
