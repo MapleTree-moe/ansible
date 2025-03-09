@@ -69,6 +69,14 @@
         rhel9cis_set_boot_pass: false  # this is done by a task post benchmark
         rhel9cis_sysctl_update: true
         rhel9cis_syslog: journald # prefer journald as its already present
+        rhel9cis_rule_1_1_1_1: false # these remove unused kernel modules, we
+        rhel9cis_rule_1_1_1_2: false #   can implement it faster in our own
+        rhel9cis_rule_1_1_1_3: false #   routine below, disable
+        rhel9cis_rule_1_1_1_4: false
+        rhel9cis_rule_1_1_1_5: false
+        rhel9cis_rule_1_1_1_6: false
+        rhel9cis_rule_1_1_1_7: false
+        rhel9cis_rule_1_1_1_8: false
         rhel9cis_rule_1_1_2_1_1: false # rules 1.1.2.x are for fs partitions
         rhel9cis_rule_1_1_2_1_2: false #   which we don't use, disable
         rhel9cis_rule_1_1_2_1_3: false
@@ -180,22 +188,30 @@
         compliance_kernel_blacklist:
           - cachefiles # disable unused filesystems
           - ceph
+          - cramfs
           - dlm
           - erofs
           - exfat
           - fscache
+          - freevxfs
           - fuse
           - gfs2
+          - hfs
+          - hfsplus
           - isofs
+          - jffs2
           - netfs
-          - smb # do not use samba on root system
           - lockd # disable nfs and modules used by nfs
           - nfs_common
           - nfs
           - nfsd
+          - smb # do not use samba on root system
+          - squashfs
+          - udf
           - atm # unused connection protocols
           - can
           - firewire-core
+          - usb-storage
           - bluetooth # no need for bluetooth on servers
       block:
         - name: KERNEL | MODULES | Assign modules to /bin/true
@@ -304,7 +320,7 @@
           # yamllint disable rule:line-length
           AllowUsers: mapletree
           Banner: /etc/issue.net
-          Ciphers: chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-gcm@openssh.com,aes128-ctr
+          Ciphers: aes256-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-gcm@openssh.com,aes128-ctr
           ClientAliveInterval: 300
           ClientAliveCountMax: 1
           Compression: false # DISA STIG
