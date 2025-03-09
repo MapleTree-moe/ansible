@@ -10,7 +10,7 @@ Description=Aide Check
 
 [Service]
 Type=simple
-ExecStart=/sbin/aide --check --config /etc/aide/aide.conf
+ExecStart=/sbin/aide --check --config /etc/aide/aide.conf | /bin/mail -s "$(hostname) - AIDE Integrity Check" root@localhost
 
 [Install]
 WantedBy=multi-user.target

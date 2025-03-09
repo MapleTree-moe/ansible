@@ -9,35 +9,13 @@
 #       is intended to be used on fresh installs. this could break existing
 #       systems, so use with caution.
 
-# systemd compliance needs to run before benchmark to install AIDE service files
-- name: Configure SystemD to align with compliance policy
-  block:
-    - name: SYSTEMD | Disable and mask unneeded services
-      vars:
-        service_list:
-          - ctrl-alt-del.target # disable ctrl-alt-del usage for reboot
-          - debug-shell.service # do not allow system debugging
-          - kdump.service # disable kernel core dumps
-          - lvm2-monitor.service # lvm2 is unused in mapletree
-          - lvm2-lvmpolld.socket
-          - nis-domainname.service # nis service is unused
-          - rsyslog.service # we use systemd-journal instead of rsyslog
-          - sssd.service # local authentication only
-          - sssd-kcm.socket # if sssd=disabled RH recommends disabling ALL sssd
-          - systemd-coredump.socket # disable coredumps
-          - NetworkManager-dispatcher.service # no scripts on network change
-        systemd_disabled_units: "{{ service_list }}"
-        systemd_masked_units: "{{ service_list }}"
-        systemd_stopped_units: "{{ service_list }}"
-        systemd_unit_file_templates:
-          - item: aidecheck.service.j2
-          - item: aidecheck.timer.j2
-      ansible.builtin.include_role:
-        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
-        name: fedora.linux_system_roles.systemd
-
-    - name: SYSTEMD | Flush systemd handlers
-      ansible.builtin.meta: flush_handlers
+- name: Install more robust auditing rules
+  ansible.builtin.copy:
+    src: auditd.rules
+    dest: /etc/audit/rules.d/999_auditd.rules
+    owner: root
+    group: root
+    mode: "0644"
 
 # WARNING: do NOT upgrade this module without testing it first. it can break
 #          podman rootless!
@@ -45,11 +23,14 @@
   block:
     - name: BENCHMARK | Run CIS server level 2 benchmark
       vars:
-        rhel9cis_aide_scan: timer
+        rhel9cis_auditd_admin_space_left_action: halt # something broke, halt
+        rhel9cis_auditd_disk_full_action: rotate # uptime > retention
         rhel9cis_auditd_extra_conf:
           admin_space_left: '10%' # should never be hit, if so halt system
-          space_left: '20%'  # give more time to get in to clear space
+          space_left: '25%'  # give more time to get in to clear space
         rhel9cis_auditd_extra_conf_usage: true
+        rhel9cis_auditd_max_log_file_action: rotate
+        rhel9cis_auditd_max_log_file_size: 256
         rhel9cis_auditd_space_left_action: email # notify when space is low
         rhel9cis_authselect_custom_profile_name: mapletree # must set for role
         # yamllint disable-line rule:line-length
@@ -127,6 +108,9 @@
         # currently using NO_PASSWD sudo and locked accounts, disable rule 5.2.4
         rhel9cis_rule_5_2_4: false # SECURITY: move to become with vcs password
         rhel9cis_rule_5_4_2_5: false  # FIXME: false positive on root_path
+        rhel9cis_rule_6_1_1: false # we handle aide configuration at the end
+        rhel9cis_rule_6_1_2: false #   of the hardening run, so disable these
+        rhel9cis_rule_6_1_3: false
         rhel9cis_rule_6_2_2_1_1: false # rules 6.2.2.1.x configures offsite
         rhel9cis_rule_6_2_2_1_2: false #   logging, which we don't use, disable
         rhel9cis_rule_6_2_2_1_3: false
@@ -440,4 +424,51 @@
         name: fedora.linux_system_roles.timesync
 
     - name: TIMESYNC | Flush timesync handlers
+      ansible.builtin.meta: flush_handlers
+
+# it is important to configure AIDE after all the files are done changing
+- name: Configure AIDE daemon to align with compliance policy
+  block:
+    - name: AIDE | Configure filesystem integrety scanning
+      vars:
+        aide_config_template: aide.conf.j2
+        aide_init: true
+        aide_install: true
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_aide/
+        name: fedora.linux_system_roles.aide
+
+    - name: AIDE | Flush aide handlers
+      ansible.builtin.meta: flush_handlers
+
+- name: Configure SystemD to align with compliance policy
+  block:
+    - name: SYSTEMD | Disable and mask unneeded services
+      vars:
+        service_list:
+          - ctrl-alt-del.target # disable ctrl-alt-del usage for reboot
+          - debug-shell.service # do not allow system debugging
+          - kdump.service # disable kernel core dumps
+          - lvm2-monitor.service # lvm2 is unused in mapletree
+          - lvm2-lvmpolld.socket
+          - nis-domainname.service # nis service is unused
+          - rsyslog.service # we use systemd-journal instead of rsyslog
+          - sssd.service # local authentication only
+          - sssd-kcm.socket # if sssd=disabled RH recommends disabling ALL sssd
+          - systemd-coredump.socket # disable coredumps
+          - NetworkManager-dispatcher.service # no scripts on network change
+        systemd_disabled_units: "{{ service_list }}"
+        systemd_masked_units: "{{ service_list }}"
+        systemd_stopped_units: "{{ service_list }}"
+        systemd_enabled_units:
+          - item: aidecheck.service
+          - item: aidecheck.timer
+        systemd_unit_file_templates:
+          - item: aidecheck.service.j2
+          - item: aidecheck.timer.j2
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
+        name: fedora.linux_system_roles.systemd
+
+    - name: SYSTEMD | Flush systemd handlers
       ansible.builtin.meta: flush_handlers
