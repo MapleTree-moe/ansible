@@ -19,11 +19,28 @@ on:
 
 env:
   ANSIBLE_HOST_KEY_CHECKING: false # needed for automation
-  HCLOUD_TOKEN: ${{secrets.HCLOUD_TOKEN}}
 
 jobs:
+  create-runner:
+    name: Create Hetzner Cloud runner
+    runs-on: ubuntu-24.04
+    outputs:
+      label: ${{ steps.create-hcloud-runner.outputs.label }}
+      server_id: ${{ steps.create-hcloud-runner.outputs.server_id }}
+    steps:
+      - name: Create runner
+        id: create-hcloud-runner
+        uses: Cyclenerd/hcloud-github-runner@v1
+        with:
+          mode: create
+          github_token: ${{ secrets.NAGATO_GITHUB_RUNNERS }}
+          hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          server_type: cx22
+          image: rocky-9
   deploy:
-    runs-on: ubuntu-latest
+    name: Deploy common role to all servers
+    needs: create-runner
+    runs-on: ${{ needs.create-runner.outputs.label }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -42,3 +59,19 @@ jobs:
           key: ${{secrets.SSH_PRIVATE_KEY}}
           vault_password: ${{secrets.VAULT_PASSWORD}}
           requirements: requirements.yaml
+  delete-runner:
+    name: Delete Hetzner Cloud runner
+    needs:
+      - create-runner # required to get output from the create-runner job
+      - deploy # required to wait when the main job is done
+    runs-on: ubuntu-24.04
+    if: ${{ always() }} # required to stop the runner even if the error happened in the previous jobs
+    steps:
+      - name: Delete runner
+        uses: Cyclenerd/hcloud-github-runner@v1
+        with:
+          mode: delete
+          github_token: ${{ secrets.NAGATO_GITHUB_RUNNERS }}
+          hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
+          name: ${{ needs.create-runner.outputs.label }}
+          server_id: ${{ needs.create-runner.outputs.server_id }}
