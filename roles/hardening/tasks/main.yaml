@@ -39,7 +39,8 @@
     - name: SYSTEMD | Flush systemd handlers
       ansible.builtin.meta: flush_handlers
 
-# use the cis level 2 server benchmark as a basis for policy
+# WARNING: do NOT upgrade this module without testing it first. it can break
+#          podman rootless!
 - name: Ensure system is compliant with CIS Server Level 2
   block:
     - name: BENCHMARK | Run CIS server level 2 benchmark
@@ -69,10 +70,10 @@
         rhel9cis_set_boot_pass: false  # this is done by a task post benchmark
         rhel9cis_sysctl_update: true
         rhel9cis_syslog: journald # prefer journald as its already present
-        rhel9cis_rule_1_1_1_1: false # these remove unused kernel modules, we
-        rhel9cis_rule_1_1_1_2: false #   can implement it faster in our own
-        rhel9cis_rule_1_1_1_3: false #   routine below, disable
-        rhel9cis_rule_1_1_1_4: false
+        rhel9cis_rule_1_1_1_1: false # rules 1.1.1.1 - 1.1.1.8 disable
+        rhel9cis_rule_1_1_1_2: false #   filesystem kernel modules. we can do
+        rhel9cis_rule_1_1_1_3: false #   this faster below in our own kernel
+        rhel9cis_rule_1_1_1_4: false #   handler so disable them
         rhel9cis_rule_1_1_1_5: false
         rhel9cis_rule_1_1_1_6: false
         rhel9cis_rule_1_1_1_7: false
@@ -100,6 +101,10 @@
         rhel9cis_rule_1_1_2_7_3: false
         rhel9cis_rule_1_1_2_7_4: false
         rhel9cis_rule_1_2_1_1: false # FIXME: ansible-lockdown/RHEL9-CIS #292
+        rhel9cis_rule_3_2_1: false # rules 3.2.1-3.2.4 disable networking
+        rhel9cis_rule_3_2_2: false #   kernel modules. we can do this faster
+        rhel9cis_rule_3_2_3: false #   below in our own kernel handler, disable
+        rhel9cis_rule_3_2_4: false
         rhel9cis_rule_5_1_4: false # rules 5.1.4 and after are sshd config
         rhel9cis_rule_5_1_5: false #   parameters that we handle ourselves down
         rhel9cis_rule_5_1_6: false #   in our own sshd policy, disable.
@@ -210,6 +215,10 @@
           - udf
           - atm # unused connection protocols
           - can
+          - dccp
+          - tipc
+          - rds
+          - sctp
           - firewire-core
           - usb-storage
           - bluetooth # no need for bluetooth on servers
@@ -290,7 +299,11 @@
     mode: "0644"
   notify: Restart System
 
-# NOTE: this effectively breaks SUM with our current configuration
+# NOTE: this effectively breaks SUM due to the current use of a locked root
+#       account, which means if the system goes down it will need to be
+#       reinstalled and reprovisioned from scratch.
+# SECURITY: this can only be resolved by implementing vcs password rotation for
+#           the root user
 - name: Require Authentication for Single User Mode
   community.general.ini_file:
     path: /etc/systemd/system/rescue.service.d/10-oscap.conf
@@ -311,9 +324,31 @@
     - "/etc/at.allow"
     - "/etc/cron.allow"
 
-# be even more paranoid than most paranoid people
 - name: Configure secure shell service
   block:
+    - name: SSHD | Ensure host has compliant 4096 bit RSA key
+      # this is required to be done first or the next role will fail
+      community.crypto.openssh_keypair:
+        group: root
+        mode: "0600"
+        owner: root
+        path: /etc/ssh/ssh_host_rsa_key
+        private_key_format: ssh
+        regenerate: full_idempotence
+        size: 4096
+        state: present
+        type: rsa
+    - name: SSHD | Ensure host has compliant ed25519 key
+      # this is required to be done first or the next role will fail
+      community.crypto.openssh_keypair:
+        group: root
+        mode: "0600"
+        owner: root
+        path: /etc/ssh/ssh_host_ed25519_key
+        private_key_format: ssh
+        regenerate: full_idempotence
+        state: present
+        type: ed25519
     - name: SSHD | Configure SSHD to align with policy
       vars:
         sshd_config:
@@ -335,7 +370,7 @@
           KexAlgorithms: sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha256
           ListenAddress:
             - 0.0.0.0 # IPV6: enable here as well
-          LoginGraceTime: 0 # regreSSHion fix
+          LoginGraceTime: 0 # regreSSHion (CVE-2024-6387) fix
           LogLevel: VERBOSE # CIS Level 2 & DISA STIG
           MACs: hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,umac-128-etm@openssh.com
           MaxAuthTries: 4
@@ -353,11 +388,15 @@
           UsePAM: true
           X11UseLocalhost: true
           # yamllint enable rule:line-length
+        sshd_config_file: /etc/ssh/sshd_config
+        sshd_config_owner: root
+        sshd_config_group: root
+        sshd_config_mode: "0600"
         sshd_manage_firewall: true
         sshd_manage_selinux: true
         sshd_skip_defaults: true
         sshd_sysconfig: true
-        sshd_sysconfig_override_crypto_policy: true
+        sshd_sysconfig_override_crypto_policy: true # this policy is stricter
         sshd_sysconfig_use_strong_rng: true
       ansible.builtin.include_role:
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_sshd/
