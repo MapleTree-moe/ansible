@@ -69,9 +69,8 @@
         rhel9cis_set_boot_pass: false  # this is done by a task post benchmark
         rhel9cis_sysctl_update: true
         rhel9cis_syslog: journald # prefer journald as its already present
-        # rules 1.1.2.x are for dedicated partitions, which we don't use
-        rhel9cis_rule_1_1_2_1_1: false
-        rhel9cis_rule_1_1_2_1_2: false
+        rhel9cis_rule_1_1_2_1_1: false # rules 1.1.2.x are for fs partitions
+        rhel9cis_rule_1_1_2_1_2: false #   which we don't use, disable
         rhel9cis_rule_1_1_2_1_3: false
         rhel9cis_rule_1_1_2_1_4: false
         rhel9cis_rule_1_1_2_3_1: false
@@ -93,18 +92,34 @@
         rhel9cis_rule_1_1_2_7_3: false
         rhel9cis_rule_1_1_2_7_4: false
         rhel9cis_rule_1_2_1_1: false # FIXME: ansible-lockdown/RHEL9-CIS #292
-        # we use sudo with NO_PASSWD for automation, as well as locked accounts
-        # so we disable this for now
-        # SECURITY: transition to using BECOME with a provided password secret
-        rhel9cis_rule_5_2_4: false
+        rhel9cis_rule_5_1_4: false # rules 5.1.4 and after are sshd config
+        rhel9cis_rule_5_1_5: false #   parameters that we handle ourselves down
+        rhel9cis_rule_5_1_6: false #   in our own sshd policy, disable.
+        rhel9cis_rule_5_1_7: false
+        rhel9cis_rule_5_1_8: false
+        rhel9cis_rule_5_1_9: false
+        rhel9cis_rule_5_1_10: false
+        rhel9cis_rule_5_1_11: false
+        rhel9cis_rule_5_1_12: false
+        rhel9cis_rule_5_1_13: false
+        rhel9cis_rule_5_1_14: false
+        rhel9cis_rule_5_1_15: false
+        rhel9cis_rule_5_1_16: false
+        rhel9cis_rule_5_1_17: false
+        rhel9cis_rule_5_1_18: false
+        rhel9cis_rule_5_1_19: false
+        rhel9cis_rule_5_1_20: false
+        rhel9cis_rule_5_1_21: false
+        rhel9cis_rule_5_1_22: false
+        # currently using NO_PASSWD sudo and locked accounts, disable rule 5.2.4
+        rhel9cis_rule_5_2_4: false # SECURITY: move to become with vcs password
         rhel9cis_rule_5_4_2_5: false  # FIXME: false positive on root_path
-        # rules 6.2.2.1.x configures offsite logging, which we don't use
-        rhel9cis_rule_6_2_2_1_1: false
-        rhel9cis_rule_6_2_2_1_2: false
+        rhel9cis_rule_6_2_2_1_1: false # rules 6.2.2.1.x configures offsite
+        rhel9cis_rule_6_2_2_1_2: false #   logging, which we don't use, disable
         rhel9cis_rule_6_2_2_1_3: false
         rhel9cis_rule_6_2_2_1_4: false
-        rhel9cis_rule_7_2_8: false # breaks podman
-        rhel9cis_rule_7_2_9: false # breaks podman
+        rhel9cis_rule_7_2_8: false # rules 7.2.8 and 7.2.9 break podman, disable
+        rhel9cis_rule_7_2_9: false
       ansible.builtin.include_role:
         # https://github.com/ansible-lockdown/RHEL9-CIS
         name: rhel9-cis
@@ -220,6 +235,8 @@
           value: 2
         - name: kernel.unprivileged_bpf_disabled # (DISA STIG)
           value: 1
+        - name: net.core.bpf_jit_harden # BPF ASLR (DISA STIG)
+          value: 2
 
 - name: Configure system packages and package manager
   block:
@@ -257,6 +274,7 @@
     mode: "0644"
   notify: Restart System
 
+# NOTE: this effectively breaks SUM with our current configuration
 - name: Require Authentication for Single User Mode
   community.general.ini_file:
     path: /etc/systemd/system/rescue.service.d/10-oscap.conf
@@ -298,7 +316,7 @@
           IgnoreRhosts: true
           IgnoreUserKnownHosts: true
           KerberosAuthentication: false
-          KexAlgorithms: sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha256,kex-strict-s-v00@openssh.com
+          KexAlgorithms: sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha256
           ListenAddress:
             - 0.0.0.0 # IPV6: enable here as well
           LoginGraceTime: 0 # regreSSHion fix
