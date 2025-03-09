@@ -38,7 +38,7 @@ jobs:
           enable_ipv6: false
           server_type: cx22
           ssh_key: 27836571
-          image: rocky-9
+          image: ubuntu-24.04
   deploy:
     name: Deploy containers role to all servers
     needs: create-runner
