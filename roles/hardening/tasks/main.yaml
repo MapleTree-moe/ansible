@@ -113,7 +113,7 @@
         # rhel9cis_rule_7_1_11: false
         # rhel9cis_rule_7_1_12: true
         # rhel9cis_rule_7_1_13: true
-        rhel9cis_rule_7_2_8: false
+        # rhel9cis_rule_7_2_8: false
         rhel9cis_rule_7_2_9: false
 
       ansible.builtin.include_role:
