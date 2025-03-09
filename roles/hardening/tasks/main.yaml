@@ -326,29 +326,33 @@
 
 - name: Configure secure shell service
   block:
-    - name: SSHD | Ensure host has compliant 4096 bit RSA key
-      # this is required to be done first or the next role will fail
-      community.crypto.openssh_keypair:
-        group: root
-        mode: "0600"
-        owner: root
-        path: /etc/ssh/ssh_host_rsa_key
-        private_key_format: ssh
-        regenerate: full_idempotence
-        size: 4096
-        state: present
-        type: rsa
-    - name: SSHD | Ensure host has compliant ed25519 key
-      # this is required to be done first or the next role will fail
-      community.crypto.openssh_keypair:
-        group: root
-        mode: "0600"
-        owner: root
-        path: /etc/ssh/ssh_host_ed25519_key
-        private_key_format: ssh
-        regenerate: full_idempotence
-        state: present
-        type: ed25519
+    - name: SSHD | Generate new compliant SSH host keys
+      # Generate new SSH keys to comply with the new policy. Required for the
+      # next task to succeed.
+      block:
+        - name: SSHD | HOST KEYS | Ensure host has compliant 4096 bit RSA key
+          community.crypto.openssh_keypair:
+            backend: cryptography
+            group: root
+            mode: "0600"
+            owner: root
+            path: /etc/ssh/ssh_host_rsa_key
+            private_key_format: ssh
+            regenerate: full_idempotence
+            size: 4096
+            state: present
+            type: rsa
+        - name: SSHD | HOST KEYS | Ensure host has compliant ed25519 key
+          community.crypto.openssh_keypair:
+            backend: cryptography
+            group: root
+            mode: "0600"
+            owner: root
+            path: /etc/ssh/ssh_host_ed25519_key
+            private_key_format: ssh
+            regenerate: full_idempotence
+            state: present
+            type: ed25519
     - name: SSHD | Configure SSHD to align with policy
       vars:
         sshd_config:
