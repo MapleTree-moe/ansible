@@ -101,7 +101,7 @@
             container_name_as_hostname: true
             log_driver: journald
             mounts: []
-            tz: "{{ ansible_date_time.tz }}"
+            tz: "{{ ansible_facts['date_time']['tz'] }}"
           engine:
             events_logger: journald
             # FIXME: linux-system-roles/podman #208

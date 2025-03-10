@@ -1,6 +1,6 @@
 {
   "id": "admin",
-  "email": "admin@{{ ansible_domain }}",
+  "email": "admin@{{ ansible_facts['domain'] }}",
   "password": "{{ lldap_ldap_user_pass }}",
   "displayName": "LDAP Administrator",
   "groups": [
