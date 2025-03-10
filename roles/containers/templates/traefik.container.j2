@@ -20,7 +20,7 @@ Sockets=traefik-web.socket traefik-websecure.socket
 AutoUpdate=registry
 ContainerName=traefik
 Image=docker.io/traefik:v3
-Network=traefik.network
+Network=frontend.network
 SecurityLabelType=traefik.process
 
 # environmental variables
@@ -43,13 +43,12 @@ Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP3_ADVERTISEDPORT="443"
 Environment=TRAEFIK_PING=true
 Environment=TRAEFIK_PROVIDERS_DOCKER="true"
 Environment=TRAEFIK_PROVIDERS_FILE_FILENAME="/etc/traefik/tls_options.yaml"
-Environment=TZ={{ ansible_date_time.tz }}
 
 # health check
 HealthCmd=traefik healthcheck
-HealthInterval=10s
+HealthInterval=5s
 HealthRetries=3
-HealthStartPeriod=10s
+HealthStartPeriod=15s
 HealthTimeout=30s
 
 # automatically configure traefik to proxy the web service

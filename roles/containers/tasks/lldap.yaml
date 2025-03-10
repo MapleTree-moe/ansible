@@ -5,8 +5,7 @@
 ### containers - lldap - deploy lldap to target system
 ###
 ---
-# TODOS: health checks
-#        automated database backups
+# TODOs: automated database backups
 #        automatic dependency resolution
 #        low priority - create local vault with secrets
 - name: CONTAINERS | LLDAP | Check dependencies
@@ -20,6 +19,48 @@
       !!!ERROR!!!
   when: "'traefik' not in containers_services_enabled"
 
+- name: CONTAINERS | LLDAP | Generate installation secrets for users
+  # while we generate new secrets in this step, they are NOT deployed later
+  # unless they are needed
+  ansible.builtin.set_fact:
+    # yamllint disable rule:line-length
+    lldap_bind_user_pass: "{{ lookup('community.general.random_string', special=false, length=32) }}"
+    lldap_jwt_secret: "{{ lookup('community.general.random_string', special=false, length=32) }}"
+    lldap_key_seed: "{{ lookup('community.general.random_string', special=false, length=32) }}"
+    lldap_ldap_user_pass: "{{ lookup('community.general.random_string', special=false, length=32) }}"
+    lldap_password_manager_pass: "{{ lookup('community.general.random_string', special=false, length=32) }}"
+    # yamllint enable rule:line-length
+
+- name: CONTAINERS | LLDAP | Deploy files for automated bootstrapping
+  block:
+    - name: CONTAINERS | LLDAP | BOOTSTRAP | Copy static JSON files
+      ansible.builtin.copy:
+        src: lldap
+        dest: /home/podman/containers
+        owner: podman
+        group: podman
+        mode: "0755"
+    # NOTE: writing out secrets to plain text is genuinely bad form, however if
+    #       an attacker is able to read these we're already very screwed
+    - name: CONTAINERS | LLDAP | BOOTSTRAP | Deploy JSON template files
+      ansible.builtin.template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: podman
+        group: podman
+        mode: "0640"
+        force: false # do NOT overwrite secrets if they exist
+      loop:
+        - src: lldap/user-configs/admin.json.j2
+          dest: /home/podman/containers/lldap/user-configs/admin.json
+        - src: lldap/user-configs/lldap_bind_user.json.j2
+          dest: /home/podman/containers/lldap/user-configs/lldap_bind_user.json
+        - src: lldap/user-configs/lldap_password_manager.json.j2
+          # yamllint disable-line rule:line-length
+          dest: /home/podman/containers/lldap/user-configs/lldap_password_manager.json
+      notify:
+        - Bootstrap LLDAP
+
 - name: CONTAINERS | LLDAP | Configure podman
   block:
     - name: CONTAINERS | LLDAP | PODMAN | Install containers
@@ -27,7 +68,8 @@
         podman_fail_if_too_old: true
         podman_quadlet_specs:
           # list order determined by dependencies - do NOT modify
-          - template_src: lldap.volume.j2
+          - template_src: lldap-db.volume.j2
+          - template_src: lldap-db.container.j2
           - template_src: lldap.container.j2
         podman_prune_images: true
         podman_pull_image: true
@@ -37,21 +79,19 @@
           - name: lldap-jwt-secret
             state: present
             skip_existing: true # do not overwrite if secret exists
-            # yamllint disable-line rule:line-length
-            data: "{{ lookup('community.general.random_string', special=false, length=20) }}"
+            data: "{{ lldap_jwt_secret }}"
           - name: lldap-key-seed
             state: present
             skip_existing: true # do not overwrite if secret exists
-            # yamllint disable-line rule:line-length
-            data: "{{ lookup('community.general.random_string', special=false, length=20) }}"
+            data: "{{ lldap_key_seed }}"
           - name: lldap-ldap-user-pass
             state: present
             skip_existing: true # do not overwrite if secret exists
-            # yamllint disable-line rule:line-length
-            data: "{{ lookup('community.general.random_string', special=false, length=20) }}"
+            data: "{{ lldap_ldap_user_pass }}"
         podman_validate_certs: true
       ansible.builtin.include_role:
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
         name: fedora.linux_system_roles.podman
+
     - name: CONTAINERS | LLDAP | PODMAN | Flush podman handlers
       ansible.builtin.meta: flush_handlers
