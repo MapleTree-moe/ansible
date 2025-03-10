@@ -6,8 +6,8 @@
 ### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
 
 [Unit]
-Description=Traefik network
-Documentation=https://traefik.io
+Description=Podman Frontend Network
+Documentation=https://docs.podman.io/en/stable/markdown/podman-network.1.html
 
 [Network]
-NetworkName=traefik
+NetworkName=frontend

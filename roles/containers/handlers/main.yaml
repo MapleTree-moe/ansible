@@ -1,0 +1,14 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### containers role - handlers
+###
+---
+- name: Run LLDAP Bootstrap script
+  become: true
+  become_user: podman
+  ansible.builtin.command:
+    cmd: podman exec -it lldap /app/bootstrap.sh
+  changed_when: true
+  listen: Bootstrap LLDAP

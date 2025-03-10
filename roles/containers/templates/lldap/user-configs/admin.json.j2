@@ -1,0 +1,10 @@
+{
+  "id": "admin",
+  "email": "admin@{{ ansible_domain }}",
+  "password": "{{ lldap_ldap_user_pass }}",
+  "displayName": "LDAP Administrator",
+  "groups": [
+    "lldap_admin",
+    "admins"
+  ]
+}
