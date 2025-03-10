@@ -9,6 +9,7 @@
 Description=LLDAP container
 Documentation=https://github.com/lldap/lldap
 After=traefik.service
+Requires=lldap-db.service
 
 [Service]
 Restart=on-failure
@@ -16,14 +17,32 @@ Restart=on-failure
 [Container]
 AutoUpdate=registry
 ContainerName=lldap
-Image=docker.io/lldap/lldap:stable-debian-rootless
-Network=traefik.network
+Image=docker.io/lldap/lldap:stable-debian
+Network=frontend.network
+Network=backend.network
 
 # environmental variables
 Environment=UID=1000
 Environment=GID=1000
 Environment=LLDAP_LDAP_BASE_DN=dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
-Environment=TZ={{ ansible_date_time.tz }}
+# SECURITY: one day it would be nice to use secrets for these
+Environment=LLDAP_DATABASE_URL=postgres://lldapuser:lldappass@lldap-db/lldap
+Environment=LLDAP_KEY_SEED_FILE=/run/secrets/lldap-key-seed
+Environment=LLDAP_JWT_SECRET_FILE=/run/secrets/lldap-jwt-secret
+Environment=LLDAP_LDAP_USER_EMAIL=admin@{{ ansible_domain }}
+Environment=LLDAP_LDAP_USER_PASS_FILE=/run/secrets/lldap-ldap-user-pass
+
+# bootstrap environmental variables
+Environment=LLDAP_URL=http://localhost:17170
+Environment=LLDAP_ADMIN_USERNAME=admin
+Environment=LLDAP_ADMIN_PASSWORD_FILE=/run/secrets/lldap-ldap-user-pass
+
+# health check
+HealthCmd=/app/lldap healthcheck
+HealthInterval=5s
+HealthRetries=3
+HealthStartPeriod=15s
+HealthTimeout=30s
 
 # automatically configure traefik to proxy the web service
 Label=traefik.enable="true"
@@ -32,11 +51,13 @@ Label=traefik.http.routers.lldap.middlewares="securityHeaders"
 Label=traefik.http.services.lldap.loadbalancer.server.port=17170
 
 # secrets
-Secret=lldap-jwt-secret,type=env,target=LLDAP_JWT_SECRET
-Secret=lldap-key-seed,type=env,target=LLDAP_KEY_SEED
-Secret=lldap-ldap-user-pass,type=env,target=LLDAP_LDAP_USER_PASS
+# FIXME: use files if possible
+Secret=lldap-jwt-secret,type=mount,uid=1000
+Secret=lldap-key-seed,type=mount,uid=1000
+Secret=lldap-ldap-user-pass,type=mount,uid=1000
 
-Volume=lldap.volume:/data
+# volumes
+Volume=%h/containers/lldap:/bootstrap:ro,Z
 
 [Install]
 WantedBy=default.target
