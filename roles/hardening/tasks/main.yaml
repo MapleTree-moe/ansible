@@ -9,27 +9,6 @@
 #       is intended to be used on fresh installs. this could break existing
 #       systems, so use with caution.
 
-- name: Install more robust auditing rules
-  ansible.builtin.copy:
-    src: auditd.rules
-    dest: /etc/audit/rules.d/80_auditd.rules
-    owner: root
-    group: root
-    mode: "0640"
-
-- name: Pre-install stricter aide rules
-  block:
-    - name: AIDE | Configure filesystem integrety scanning
-      vars:
-        aide_config_template: aide.conf.j2
-        aide_install: true
-      ansible.builtin.include_role:
-        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_aide/
-        name: fedora.linux_system_roles.aide
-
-    - name: AIDE | Flush aide handlers
-      ansible.builtin.meta: flush_handlers
-
 # WARNING: do NOT upgrade this module without testing it first. it can break
 #          podman rootless!
 - name: Ensure system is compliant with CIS Server Level 2
@@ -436,7 +415,6 @@
 
     - name: SYSTEMD | Flush systemd handlers
       ansible.builtin.meta: flush_handlers
-
 
 - name: Configure system time synchronization
   block:
