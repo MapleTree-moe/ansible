@@ -12,7 +12,7 @@
   ansible.builtin.fail:
     msg: |
       !!!ERROR!!!
-      !!!ERROR!!! {{ ansible.fqdn }} - roles/containers/lldap.yaml:19
+      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/lldap.yaml:19
       !!!ERROR!!! traefik is a hard dependency of lldap.
       !!!ERROR!!! you must add it to `containers_services_enabled` before the
       !!!ERROR!!! declaration of lldap.

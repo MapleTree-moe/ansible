@@ -1,6 +1,6 @@
 {
   "id": "lldap_bind_user",
-  "email": "admin+lldap_bind@{{ ansible_domain }}",
+  "email": "admin+lldap_bind@{{ ansible_facts['domain'] }}",
   "password": "{{ lldap_bind_user_pass }}",
   "displayName": "LDAP Bind User",
   "groups": [
