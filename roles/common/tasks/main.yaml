@@ -9,7 +9,9 @@
 # install a RHEL clone and then convert the clone to genuine RHEL. this is not
 # technically supported by redhat.
 - name: CONVERT | Convert RHEL Clones to genuine RHEL if conversion enabled
-  when: common_convert_enabled and ansible_distribution != "RedHat"
+  when:
+    - common_convert_enabled
+    - ansible_facts['distribution'] != "RedHat"
   block:
     - name: CONVERT | Update system packages and install required utilities
       block:
@@ -77,13 +79,13 @@
     - name: CONVERT | CLEANUP | Perform remediations after conversion is done
       block:
         - name: CONVERT | CLEANUP | Remove AlmaLinux GPG key from RPM keychain
-          when: ansible_distribution == "AlmaLinux"
+          when: ansible_facts['distribution'] == "AlmaLinux"
           ansible.builtin.rpm_key:
             key: http://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux-9
             state: absent
 
         - name: CONVERT | CLEANUP | Remove RockyLinux GPG key from RPM keychain
-          when: ansible_distribution == "Rocky"
+          when: ansible_facts['distribution'] == "Rocky"
           ansible.builtin.rpm_key:
             key: https://dl.rockylinux.org/pub/rocky/RPM-GPG-KEY-Rocky-9
             state: absent
@@ -113,7 +115,7 @@
         network_provider: nm
         network_state:
           interfaces:
-            - name: "{{ ansible_default_ipv4.interface }}"
+            - name: "{{ ansible_facts['default_ipv4']['interface'] }}"
               type: ethernet
               state: up
               ipv4:
@@ -268,23 +270,22 @@
           virtual_maps: "regexp:/etc/postfix/virtual_regexp"
         postfix_files:
           - name: sasl_passwd
-            # yamllint disable-line rule:line-length
+            # yamllint disable rule:line-length
             content: "[{{ common_relay_host }}]:{{ common_relay_port }} {{ common_relay_user }}:{{ common_relay_pass }}"
             postmap: true
           - name: sender_canonical_maps
             # rewrites sender address to allow mail to pass through relayhost
-            content: "/.+/ {{ ansible_hostname }}@{{ ansible_domain }}"
+            content: "/.+/ {{ ansible_facts['hostname'] }}@{{ ansible_facts['domain'] }}"
           - name: smtp_header_checks
             # rewrites headers to align with the new sender address
-            # yamllint disable-line rule:line-length
-            content: "/^From:.*/ REPLACE From: {{ ansible_hostname }}@{{ ansible_domain }}"
+            content: "/^From:.*/ REPLACE From: {{ ansible_facts['hostname'] }}@{{ ansible_facts['domain'] }}"
           - name: tls_policy
-            # yamllint disable-line rule:line-length
             content: "[{{ common_relay_host }}]:{{ common_relay_port }} {{ common_relay_tls }}"
             postmap: true
           - name: virtual_regexp
             # rewrite the "TO:" address of all emails to administrator email
-            content: "/.+@.+/ admin@{{ ansible_domain }}"
+            content: "/.+@.+/ admin@{{ ansible_facts['domain'] }}"
+            # yamllint enable rule:line-length
       ansible.builtin.include_role:
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_postfix/
         name: fedora.linux_system_roles.postfix
@@ -319,7 +320,7 @@
 - name: TUNED | Configure system tuning based on system type
   block:
     - name: TUNED | Set tuned to 'virtual-guest' on virtual systems
-      when: ansible_virtualization_role == "guest"
+      when: ansible_facts['virtualization_role'] == "guest"
       vars:
         tuned_active_builtin_profile: "virtual-guest"
       ansible.builtin.include_role:
@@ -327,7 +328,7 @@
         name: giovtorres.tuned
 
     - name: TUNED | Set tuned to 'throughput-performance' on bare metal
-      when: ansible_virtualization_role != "guest"
+      when: ansible_facts['virtualization_role'] != "guest"
       vars:
         tuned_active_builtin_profile: "virtual-guest"
       ansible.builtin.include_role:
