@@ -45,6 +45,7 @@
     - name: CONTAINERS | AUTHELIA | FILES | Create configuration directory
       ansible.builtin.file:
         path: /home/podman/containers/authelia
+        state: directory
         owner: podman
         group: podman
         mode: "0755"
