@@ -32,10 +32,10 @@ Environment=LDAP_BIND_DN=uid=admin,ou=people,dc={{ containers_lldap_base_dn_doma
 Environment=LDAP_BASE_DN=dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
 Environment=LLDAP_LOGIN_URL=http://lldap:17170
 Environment=LIFETIME_GROUP_ID=4
-Environment=LIFETIME_ROLE_NAME=Maple Admins
+Environment=LIFETIME_ROLE_NAME=Administrators
 Environment=PYTHONUNBUFFERED=1
 Environment=SUBSCRIBERS_GROUP_ID=5
-Environment=SUBSCRIBER_ROLE_NAME=Maple Users
+Environment=SUBSCRIBER_ROLE_NAME=Users
 Environment=SERVICE_NAME={{ ansible_facts['domain'] }}
 
 # secrets
