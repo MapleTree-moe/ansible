@@ -61,7 +61,7 @@ HealthTimeout=30s
 
 # automatically configure traefik to proxy the web service
 Label=traefik.enable="true"
-Label=traefik.http.routers.authelia.rule="Host(`auth.{{ ansible_facts['fqdn'] }}`)"
+Label=traefik.http.routers.authelia.rule="Host(`auth.{{ ansible_facts['domain'] }}`)"
 Label=traefik.http.routers.authelia.middlewares="securityHeaders"
 Label=traefik.http.services.authelia.loadbalancer.server.port=9091
 Label=traefik.http.middlewares.authelia.forwardauth.address: 'http://authelia:9091/api/authz/forward-auth'
