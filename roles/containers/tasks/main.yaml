@@ -117,7 +117,7 @@
             events_logger: journald
             # FIXME: linux-system-roles/podman #208 PR #209
             # healthcheck_events: false
-            # pull_policy: missing
+            pull_policy: missing
             # FIXME: this somehow breaks our sockets for traefik. why? how??
             # network:
             # default_rootless_network_cmd: pasta
