@@ -1,0 +1,26 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### hardening role - firewall - configure system firewall
+###
+---
+- name: HARDENING | FIREWALL | Configure firewall
+  vars:
+    firewall:
+      - service: cockpit
+        state: disabled # cockpit is unused within the org
+        permanent: true
+      - service: dhcpv6-client
+        state: disabled # IPV6: Enable when we start using ipv6
+        permanent: true
+      - service: ssh
+        state: enabled # explicitly prevent ssh lockout
+        permanent: true
+    firewall_disable_conflicting_services: true
+  ansible.builtin.include_role:
+    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_firewall/
+    name: fedora.linux_system_roles.firewall
+
+- name: HARDENING | FIREWALL | Flush firewall handlers
+  ansible.builtin.meta: flush_handlers

@@ -1,0 +1,30 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### hardening role - systemd - configure system services daemon
+###
+---
+- name: HARDENING | SYSTEMD | Disable and mask unneeded services
+  vars:
+    service_list:
+      - ctrl-alt-del.target # disable ctrl-alt-del usage for reboot
+      - debug-shell.service # do not allow system debugging
+      - kdump.service # disable kernel core dumps
+      - lvm2-monitor.service # lvm2 is unused in mapletree
+      - lvm2-lvmpolld.socket
+      - nis-domainname.service # nis service is unused
+      - rsyslog.service # we use systemd-journal instead of rsyslog
+      - sssd.service # local authentication only
+      - sssd-kcm.socket # if sssd=disabled RH recommends disabling ALL sssd
+      - systemd-coredump.socket # disable coredumps
+      - NetworkManager-dispatcher.service # no scripts on network change
+    systemd_disabled_units: "{{ service_list }}"
+    systemd_masked_units: "{{ service_list }}"
+    systemd_stopped_units: "{{ service_list }}"
+  ansible.builtin.include_role:
+    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
+    name: fedora.linux_system_roles.systemd
+
+- name: HARDENING | SYSTEMD | Flush systemd handlers
+  ansible.builtin.meta: flush_handlers
