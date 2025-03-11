@@ -22,35 +22,35 @@ Network=frontend.network
 Network=backend.network
 
 # environmental variables
-AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE=/run/secrets/authelia-encryption-key
+Environment=AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE=/run/secrets/authelia-encryption-key
 
 # ldap
-AUTHELIA_AUTHENTICATION_BACKEND_LDAP_ADDRESS=ldap://lldap:3890
-AUTHELIA_AUTHENTICATION_BACKEND_LDAP_BASE_DN=dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
-AUTHELIA_AUTHENTICATION_BACKEND_LDAP_IMPLEMENTATION=lldap
-AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE=/run/secrets/lldap-password-manager-pass
-AUTHELIA_AUTHENTICATION_BACKEND_LDAP_USER=uid=lldap_password_manager,ou=people,dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
-AUTHELIA_AUTHENTICATION_BACKEND_REFRESH_INTERVAL=1m
+Environment=AUTHELIA_AUTHENTICATION_BACKEND_LDAP_ADDRESS=ldap://lldap:3890
+Environment=AUTHELIA_AUTHENTICATION_BACKEND_LDAP_BASE_DN=dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
+Environment=AUTHELIA_AUTHENTICATION_BACKEND_LDAP_IMPLEMENTATION=lldap
+Environment=AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE=/run/secrets/lldap-password-manager-pass
+Environment=AUTHELIA_AUTHENTICATION_BACKEND_LDAP_USER=uid=lldap_password_manager,ou=people,dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
+Environment=AUTHELIA_AUTHENTICATION_BACKEND_REFRESH_INTERVAL=1m
 
 # postgres + redis
-AUTHELIA_SESSION_REDIS_HOST=authelia-redis
-AUTHELIA_STORAGE_POSTGRES_ADDRESS=tcp://authelia-db:5432
-AUTHELIA_STORAGE_POSTGRES_DATABASE=authelia
-AUTHELIA_STORAGE_POSTGRES_PASSWORD=authelia
-AUTHELIA_STORAGE_POSTGRES_USER=authelia
+Environment=AUTHELIA_SESSION_REDIS_HOST=authelia-redis
+Environment=AUTHELIA_STORAGE_POSTGRES_ADDRESS=tcp://authelia-db:5432
+Environment=AUTHELIA_STORAGE_POSTGRES_DATABASE=authelia
+Environment=AUTHELIA_STORAGE_POSTGRES_PASSWORD=authelia
+Environment=AUTHELIA_STORAGE_POSTGRES_USER=authelia
 
 # smtp
-AUTHELIA_NOTIFIER_SMTP_ADDRESS=smtp://{{ containers_authelia_smtp_host }}:{{ containers_authelia_smtp_port }}
-AUTHELIA_NOTIFIER_SMTP_USERNAME={{ containers_authelia_smtp_user }}
-AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE=/run/secrets/authelia-smtp-password
-AUTHELIA_NOTIFIER_SMTP_SENDER=Authelia <admin@{{ ansible_facts['domain'] }}>
-AUTHELIA_NOTIFIER_SMTP_IDENTIFIER={{ ansible_facts['fqdn'] }}
-AUTHELIA_NOTIFIER_SMTP_STARTUP_CHECK_ADDRESS=test@{{ ansible_facts['domain'] }}
+Environment=AUTHELIA_NOTIFIER_SMTP_ADDRESS=smtp://{{ containers_authelia_smtp_host }}:{{ containers_authelia_smtp_port }}
+Environment=AUTHELIA_NOTIFIER_SMTP_USERNAME={{ containers_authelia_smtp_user }}
+Environment=AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE=/run/secrets/authelia-smtp-password
+Environment=AUTHELIA_NOTIFIER_SMTP_SENDER=Authelia <admin@{{ ansible_facts['domain'] }}>
+Environment=AUTHELIA_NOTIFIER_SMTP_IDENTIFIER={{ ansible_facts['fqdn'] }}
+Environment=AUTHELIA_NOTIFIER_SMTP_STARTUP_CHECK_ADDRESS=test@{{ ansible_facts['domain'] }}
 
 # 2FA
-AUTHELIA_TOTP_ISSUER={{ ansible_facts['domain'] }}
-AUTHELIA_WEBAUTHN_DISPLAY_NAME={{ ansible_facts['domain'] }}
-AUTHELIA_WEBAUTHN_TIMEOUT=30s
+Environment=AUTHELIA_TOTP_ISSUER={{ ansible_facts['domain'] }}
+Environment=AUTHELIA_WEBAUTHN_DISPLAY_NAME={{ ansible_facts['domain'] }}
+Environment=AUTHELIA_WEBAUTHN_TIMEOUT=30s
 
 # health check
 HealthCmd=wget --quiet --no-check-certificate --tries=1 --spider "http://127.0.0.1:9091/api/health" || exit 1
