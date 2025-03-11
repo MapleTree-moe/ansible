@@ -7,8 +7,16 @@
 ---
 containers_services_enabled:
   - traefik
-  - lldap
   - whoami
+  - lldap
+  - authelia
+
+containers_authelia_smtp_host: smtp.example.com
+containers_authelia_smtp_port: 25
+containers_authelia_smtp_user: username
+containers_authelia_smtp_pass: password
+
 
 containers_lldap_base_dn_domain: example
 containers_lldap_base_dn_extension: com
+containers_lldap_discord_bot_token: TOKEN

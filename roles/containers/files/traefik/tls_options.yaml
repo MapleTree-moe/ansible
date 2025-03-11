@@ -1,5 +1,5 @@
 ###
-### mapletree.moe - webservices configuration
+### mapletree.moe - traefik configuration
 ### improve security by setting up TLS options for Traefik
 ###
 ---

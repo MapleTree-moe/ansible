@@ -1,0 +1,32 @@
+### {{ ansible_managed }} - {{ ansible_facts['fqdn'] }}
+###
+### mapletree.moe - podman quadlet file
+### https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
+###
+### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
+
+[Unit]
+Description=Authelia-Redis Container
+Documentation=https://hub.docker.com/_/redis
+After=podman-user-wait-network-online.service
+
+[Service]
+Restart=on-failure
+
+[Container]
+AutoUpdate=registry
+ContainerName=authelia-db
+Image=docker.io/redis:7
+Network=backend.network
+
+# health check
+HealthCmd=redis-cli ping
+HealthInterval=5s
+HealthRetries=3
+HealthStartPeriod=15s
+HealthTimeout=30s
+
+Volume=authelia-redis.volume:/data:Z
+
+[Install]
+WantedBy=default.target
