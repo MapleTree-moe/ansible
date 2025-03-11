@@ -5,8 +5,10 @@
 ###
 ### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
 
-# TODO: this bot has no source code license!! we should maybe rewrite it to our
-#       own use case to allow people to sign up for other services
+# HIGH TODO: this bot has no source code license!! we should maybe rewrite it
+#            to our own use case to allow people to sign up for other services
+#            edit: we def need to rewrite this at least a bit, the redirect
+#                  function wont work in the way we currently use it
 
 [Unit]
 Description=LLDAP Discord Bot
@@ -28,7 +30,7 @@ WorkingDir=/usr/src/app
 Environment=LDAP_SERVER_URL=ldap://lldap:3890
 Environment=LDAP_BIND_DN=uid=admin,ou=people,dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
 Environment=LDAP_BASE_DN=dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
-Environment=LLDAP_LOGIN_URL=https://auth.{{ ansible_facts['domain'] }}
+Environment=LLDAP_LOGIN_URL=http://lldap:17170
 Environment=LIFETIME_GROUP_ID=4
 Environment=LIFETIME_ROLE_NAME=Maple Admins
 Environment=PYTHONUNBUFFERED=1
