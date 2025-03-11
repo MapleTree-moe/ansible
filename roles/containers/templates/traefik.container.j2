@@ -51,6 +51,7 @@ Environment=TRAEFIK_ENTRYPOINTS_websecure_PROXYPROTOCOL_TRUSTEDIPS=172.16.0.0/24
 Environment=TRAEFIK_PING=true
 Environment=TRAEFIK_PROVIDERS_DOCKER="true"
 Environment=TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT="false"
+Environment=TRAEFIK_PROVIDERS_DOCKER_NETWORK="frontend"
 Environment=TRAEFIK_PROVIDERS_FILE_FILENAME="/etc/traefik/tls_options.yaml"
 
 # health check
