@@ -1,0 +1,9 @@
+[
+  {
+    "name": "discordid",
+    "attributeType": "STRING",
+    "isEditable": true,
+    "isList": false,
+    "isVisible": true
+  }
+]
