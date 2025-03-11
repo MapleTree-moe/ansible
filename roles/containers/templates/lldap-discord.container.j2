@@ -28,7 +28,7 @@ WorkingDir=/usr/src/app
 
 # environmental variables
 Environment=LDAP_SERVER_URL=ldap://lldap:3890
-Environment=LDAP_BIND_DN=uid=admin,ou=people,dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
+Environment=LDAP_BIND_DN=uid=lldap_password_manager,ou=people,dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
 Environment=LDAP_BASE_DN=dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
 Environment=LLDAP_LOGIN_URL=http://lldap:17170
 Environment=LIFETIME_GROUP_ID=4
@@ -39,7 +39,7 @@ Environment=SUBSCRIBER_ROLE_NAME=Users
 Environment=SERVICE_NAME={{ ansible_facts['domain'] }}
 
 # secrets
-Secret=lldap-ldap-user-pass,type=env,target=LDAP_BIND_PASSWORD
+Secret=lldap-password-manager-pass,type=env,target=LDAP_BIND_PASSWORD
 Secret=lldap-discord-bot-token,type=env,target=DISCORD_BOT_TOKEN
 
 [Install]
