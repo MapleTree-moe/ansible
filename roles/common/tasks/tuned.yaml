@@ -1,0 +1,29 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### common role - tuned - configure system tuning
+###
+---
+# NOTE: DISA STIG explicitly provides a rule for turning the tuned daemon OFF,
+#       however the potential performance benefits outweigh the security risks
+# TODO: we could probably pull the values out of tuned and just statically
+#       apply them and then avoid running the daemon
+- name: COMMON | TUNED | Set tuned to 'virtual-guest' on virtual systems
+  when: ansible_facts['virtualization_role'] == "guest"
+  vars:
+    tuned_active_builtin_profile: "virtual-guest"
+  ansible.builtin.include_role:
+    # https://github.com/giovtorres/ansible-role-tuned
+    name: giovtorres.tuned
+
+- name: COMMON | TUNED | Set tuned to 'throughput-performance' on bare metal
+  when: ansible_facts['virtualization_role'] != "guest"
+  vars:
+    tuned_active_builtin_profile: "virtual-guest"
+  ansible.builtin.include_role:
+    # https://github.com/giovtorres/ansible-role-tuned
+    name: giovtorres.tuned
+
+- name: TUNED | Flush tuned handlers
+  ansible.builtin.meta: flush_handlers

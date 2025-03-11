@@ -1,0 +1,45 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### common role - packages - configure packages and updates
+###
+---
+- name: COMMON | PACKAGES | Install standard utility packages
+  ansible.builtin.package:
+    name:
+      - dnf-automatic
+      - dnf-utils # ensure this is available since CONVERT is optional task
+      - git
+      - tmux
+    state: present
+    update_cache: true
+
+# https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/managing_software_with_the_dnf_tool/assembly_automating-software-updates-in-rhel-9_managing-software-with-the-dnf-tool
+- name: COMMON | PACKAGES | Configure automatic updates
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/automatic.conf
+    regexp: '^{{ item.name }}'
+    line: '{{ item.name }} = {{ item.value }}'
+  loop:
+    - name: upgrade_type
+      value: security
+    - name: download_updates
+      value: 'yes'
+    - name: apply_updates
+      value: 'yes'
+    - name: reboot
+      value: 'when-needed'
+
+- name: COMMON | PACKAGES | Enable automatic security updates
+  block:
+    - name: COMMON | PACKAGES | UPDATES | Enable Autoupdate services
+      vars:
+        systemd_enabled_units:
+          - dnf-automatic.timer
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
+        name: fedora.linux_system_roles.systemd
+
+    - name: COMMON | PACKAGES | UPDATES | Flush systemd handlers
+      ansible.builtin.meta: flush_handlers
