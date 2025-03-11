@@ -51,7 +51,6 @@ Label=traefik.http.routers.lldap.middlewares="securityHeaders"
 Label=traefik.http.services.lldap.loadbalancer.server.port=17170
 
 # secrets
-# FIXME: use files if possible
 Secret=lldap-jwt-secret,type=mount,uid=1000
 Secret=lldap-key-seed,type=mount,uid=1000
 Secret=lldap-ldap-user-pass,type=mount,uid=1000

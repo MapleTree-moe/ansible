@@ -1,0 +1,44 @@
+### {{ ansible_managed }} - {{ ansible_facts['fqdn'] }}
+###
+### mapletree.moe - podman quadlet file
+### https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
+###
+### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
+
+# TODO: this bot has no source code license!! we should maybe rewrite it to our
+#       own use case to allow people to sign up for other services
+
+[Unit]
+Description=LLDAP Discord Bot
+Documentation=https://github.com/JaidenW/LLDAP-Discord
+Requires=lldap.service
+
+[Service]
+Restart=on-failure
+
+[Container]
+AutoUpdate=registry
+ContainerName=lldap-discord
+Exec=python main.py
+Image=docker.io/watlingj/lldap-discord:latest
+Network=frontend.network
+WorkingDir=/usr/src/app
+
+# environmental variables
+Environment=LDAP_SERVER_URL=ldap://lldap:3890
+Environment=LDAP_BIND_DN=uid=admin,ou=people,dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
+Environment=LDAP_BASE_DN=dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
+Environment=LLDAP_LOGIN_URL=https://auth.{{ ansible_facts['domain'] }}
+Environment=LIFETIME_GROUP_ID=4
+Environment=LIFETIME_ROLE_NAME=Maple Admins
+Environment=PYTHONUNBUFFERED=1
+Environment=SUBSCRIBERS_GROUP_ID=5
+Environment=SUBSCRIBER_ROLE_NAME=Maple Users
+Environment=SERVICE_NAME={{ ansible_facts['domain'] }}
+
+# secrets
+Secret=lldap-ldap-user-pass,type=env,target=LDAP_BIND_PASSWORD
+Secret=lldap-discord-bot-token,type=env,target=DISCORD_BOT_TOKEN
+
+[Install]
+WantedBy=default.target

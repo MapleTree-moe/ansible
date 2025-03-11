@@ -32,14 +32,18 @@ Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_EMAIL="admin@{{ ansib
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_CASERVER="https://acme-staging-v02.api.letsencrypt.org/directory"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_STORAGE="/etc/traefik/acme.json"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_TLSCHALLENGE="true"
+Environment=TRAEFIK_ENTRYPOINTS_web_FORWARDEDHEADERS_INSECURE=false
 Environment=TRAEFIK_ENTRYPOINTS_web_HTTP_REDIRECTIONS_ENTRYPOINT_TO="websecure"
 Environment=TRAEFIK_ENTRYPOINTS_web_HTTP_REDIRECTIONS_ENTRYPOINT_SCHEME="https"
 Environment=TRAEFIK_ENTRYPOINTS_web_HTTP_REDIRECTIONS_ENTRYPOINT_PERMANENT="true"
+Environment=TRAEFIK_ENTRYPOINTS_web_PROXYPROTOCOL_INSECURE=false
+Environment=TRAEFIK_ENTRYPOINTS_web_FORWARDEDHEADERS_INSECURE=false
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP_TLS="true"
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP_TLS_CERTRESOLVER="letsencrypt"
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP2_MAXCONCURRENTSTREAMS="250"
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP3="true"
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP3_ADVERTISEDPORT="443"
+Environment=TRAEFIK_ENTRYPOINTS_web_PROXYPROTOCOL_INSECURE=false
 Environment=TRAEFIK_PING=true
 Environment=TRAEFIK_PROVIDERS_DOCKER="true"
 Environment=TRAEFIK_PROVIDERS_FILE_FILENAME="/etc/traefik/tls_options.yaml"
@@ -57,7 +61,7 @@ Label=traefik.enable="true"
 # configure the traefik dashboard
 Label=traefik.http.routers.dashboard.rule="Host(`traefik.{{ ansible_facts['fqdn'] }}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
 Label=traefik.http.routers.dashboard.service="api@internal"
-Label=traefik.http.routers.dashboard.middlewares="auth"
+Label=traefik.http.routers.dashboard.middlewares="authelia@docker"
 Label=traefik.http.routers.dashboard.tls="true"
 Label=traefik.http.routers.dashboard.tls.certresolver="letsencrypt"
 

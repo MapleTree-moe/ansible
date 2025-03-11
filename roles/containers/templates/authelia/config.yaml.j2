@@ -1,0 +1,18 @@
+### {{ ansible_managed }} - {{ ansible_facts['fqdn'] }}
+###
+### mapletree.moe - authelia configuration
+### some items cannot be done via environmental variables, set those here
+###
+### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
+---
+server:
+  endpoints:
+    authz:
+      forward-auth:
+        implementation: 'ForwardAuth'
+
+session:
+  cookies:
+    - domain: "{{ ansible_facts['domain'] }}"
+      authelia_url: "https://auth.{{ ansible_facts['domain'] }}"
+      default_redirection_url: "https://{{ ansible_facts['domain'] }}"
