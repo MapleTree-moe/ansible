@@ -23,6 +23,9 @@ Network=backend.network
 
 # environmental variables
 Environment=AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE=/run/secrets/authelia-encryption-key
+Environment=AUTHELIA_ACCESS_CONTROL_DEFAULT_POLICY=deny
+Environment=AUTHELIA_THEME=dark
+Environment=AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET_FILE=/run/secrets/authelia-oidc-hmac-secret
 
 # ldap
 Environment=AUTHELIA_AUTHENTICATION_BACKEND_LDAP_ADDRESS=ldap://lldap:3890
@@ -32,20 +35,38 @@ Environment=AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE=/run/secrets/llda
 Environment=AUTHELIA_AUTHENTICATION_BACKEND_LDAP_USER=uid=lldap_password_manager,ou=people,dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
 Environment=AUTHELIA_AUTHENTICATION_BACKEND_REFRESH_INTERVAL=1m
 
-# postgres + redis
-Environment=AUTHELIA_SESSION_REDIS_HOST=authelia-redis
-Environment=AUTHELIA_STORAGE_POSTGRES_ADDRESS=tcp://authelia-db:5432
-Environment=AUTHELIA_STORAGE_POSTGRES_DATABASE=authelia
-Environment=AUTHELIA_STORAGE_POSTGRES_PASSWORD=authelia
-Environment=AUTHELIA_STORAGE_POSTGRES_USER=authelia
+# identity validation
+Environment=AUTHELIA_IDENTITY_VALIDATION_ELEVATED_SESSION_REQUIRE_SECOND_FACTOR=true
+Environment=AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_ALGORITHM=hs512
+Environment=AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_LIFESPAN=5m
+Environment=AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE=/run/secrets/authelia-reset-password-jwt-secret
 
-# smtp
+# smtp notifier
 Environment=AUTHELIA_NOTIFIER_SMTP_ADDRESS=smtp://{{ containers_authelia_smtp_host }}:{{ containers_authelia_smtp_port }}
 Environment=AUTHELIA_NOTIFIER_SMTP_USERNAME={{ containers_authelia_smtp_user }}
 Environment=AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE=/run/secrets/authelia-smtp-password
-Environment=AUTHELIA_NOTIFIER_SMTP_SENDER=Authelia <admin@{{ ansible_facts['domain'] }}>
+Environment=AUTHELIA_NOTIFIER_SMTP_SENDER="Authelia <admin@{{ ansible_facts['domain'] }}>"
 Environment=AUTHELIA_NOTIFIER_SMTP_IDENTIFIER={{ ansible_facts['fqdn'] }}
 Environment=AUTHELIA_NOTIFIER_SMTP_STARTUP_CHECK_ADDRESS=test@{{ ansible_facts['domain'] }}
+
+# password policy
+Environment=AUTHELIA_PASSWORD_POLICY_ZXCVBN_ENABLED=true
+Environment=AUTHELIA_PASSWORD_POLICY_ZXCVBN_MIN_SCORE=3
+
+# TODO: Privacy Policy
+
+# regulator
+Environment=AUTHELIA_REGULATION_MAX_RETRIES=3
+Environment=AUTHELIA_REGULATION_FIND_TIME=2m
+Environment=AUTHELIA_REGULATION_BAN_TIME=5m
+
+# postgres + redis
+Environment=AUTHELIA_SESSION_REDIS_HOST=authelia-redis
+Environment=AUTHELIA_SESSION_SECRET_FILE=/run/secrets/authelia-session-secret
+Environment=AUTHELIA_STORAGE_POSTGRES_ADDRESS=tcp://authelia-db:5432
+Environment=AUTHELIA_STORAGE_POSTGRES_DATABASE=authelia
+Environment=AUTHELIA_STORAGE_POSTGRES_PASSWORD=authelia
+Environment=AUTHELIA_STORAGE_POSTGRES_USERNAME=authelia
 
 # 2FA
 Environment=AUTHELIA_TOTP_ISSUER={{ ansible_facts['domain'] }}
@@ -70,6 +91,9 @@ Label=traefik.http.middlewares.authelia.forwardauth.authResponseHeaders: 'Remote
 
 # secrets
 Secret=authelia-encryption-key,type=mount,uid=1000
+Secret=authelia-oidc-hmac-secret,type=mount,uid=1000
+Secret=authelia-reset-password-jwt-secret,type=mount,uid=1000
+Secret=authelia-session-secret,type=mount,uid=1000
 Secret=authelia-smtp-password,type=mount,uid=1000
 Secret=lldap-password-manager-pass,type=mount,uid=1000
 
