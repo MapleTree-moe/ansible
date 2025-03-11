@@ -8,98 +8,16 @@
 # the cloud we use does not natively provide RHEL images, so we use terraform to
 # install a RHEL clone and then convert the clone to genuine RHEL. this is not
 # technically supported by redhat.
-- name: CONVERT | Convert RHEL Clones to genuine RHEL if conversion enabled
+- name: COMMON | Convert RHEL Clones to genuine RHEL
   when:
     - common_convert_enabled
     - ansible_facts['distribution'] != "RedHat"
-  block:
-    - name: CONVERT | Update system packages and install required utilities
-      block:
-        - name: CONVERT | UPDATE | Update all system packages to latest version
-          # conversion will fail if packages are not latest versions
-          ansible.builtin.package:
-            name: '*'
-            state: latest # noqa package-latest
-            update_cache: true
-
-        - name: CONVERT | UPDATE | Install dnf-utils to for required restarts
-          ansible.builtin.package:
-            name: 'dnf-utils'
-            state: present
-
-        - name: CONVERT | UPDATE | Remove packages orphaned by upgrade
-          ansible.builtin.dnf:
-            autoremove: true
-
-        - name: CONVERT | UPDATE | Check and perform system reboot if required
-          block:
-            - name: CONVERT | UPDATE | REBOOT | Set output of `needs-restarting`
-              ansible.builtin.command:
-                cmd: needs-restarting -r
-              register: reboot_required
-              changed_when: true
-              failed_when: reboot_required.rc not in [0, 1]
-
-            - name: CONVERT | UPDATE | REBOOT | Reboot the server if required
-              ansible.builtin.reboot:
-                reboot_timeout: 600
-              when: reboot_required.rc == 1
-
-    - name: CONVERT | CONVERSION | Deploy `convert2rhel` script
-      vars:
-        # UPGRADE: change the specified repo url on a major upgrade i.e. RHEL10
-        # yamllint disable-line rule:line-length
-        convert2rhel_repofile_url: "https://cdn-public.redhat.com/content/public/repofiles/convert2rhel-for-rhel-9-x86_64.repo"
-        rhsm_username: "{{ common_redhat_user }}"
-        rhsm_password: "{{ common_redhat_pass }}"
-        rhsm_activation_key: "{{ common_redhat_key }}"
-        rhsm_org: "{{ common_redhat_org }}"
-      block:
-        - name: CONVERT | CONVERSION | ANALYSIS | Run convert2rhel analysis
-          # conversion will fail unless the analysis report json is available
-          ansible.builtin.include_role:
-            # https://galaxy.ansible.com/ui/repo/published/infra/convert2rhel/content/role/analysis/
-            name: infra.convert2rhel.analysis
-
-        - name: CONVERT | CONVERSION | CONVERT | Run convert2rhel conversion
-          vars:
-            # remove conversion tooling after successful conversion
-            convert_convert2rhel_repo_remove: true
-            convert_convert2rhel_package_remove: true
-            convert_reboot_requested: true # reboot after conversion
-            convert_reboot_timeout: 600
-          ansible.builtin.include_role:
-            # https://galaxy.ansible.com/ui/repo/published/infra/convert2rhel/content/role/convert/
-            name: infra.convert2rhel.convert
-
-        - name: CONVERT | CONVERSION | Flush conversion handlers
-          ansible.builtin.meta: flush_handlers
-
-    # TODO: this should be done by the convert2rhel script, why is it not?
-    - name: CONVERT | CLEANUP | Perform remediations after conversion is done
-      block:
-        - name: CONVERT | CLEANUP | Remove AlmaLinux GPG key from RPM keychain
-          when: ansible_facts['distribution'] == "AlmaLinux"
-          ansible.builtin.rpm_key:
-            key: http://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux-9
-            state: absent
-
-        - name: CONVERT | CLEANUP | Remove RockyLinux GPG key from RPM keychain
-          when: ansible_facts['distribution'] == "Rocky"
-          ansible.builtin.rpm_key:
-            key: https://dl.rockylinux.org/pub/rocky/RPM-GPG-KEY-Rocky-9
-            state: absent
-
-        - name: CONVERT | CLEANUP | Remove packages orphaned by conversion
-          ansible.builtin.dnf:
-            autoremove: true
-
-    - name: CONVERT | ANSIBLE | Re-run ansible setup due to distribution change
-      ansible.builtin.setup:
+  ansible.builtin.include_tasks:
+    file: convert.yaml
 
 # disable cloud-init after first boot configuration
 # https://cloudinit.readthedocs.io/en/stable/howto/disable_cloud_init.html
-- name: CLOUD-INIT | Create file disabling cloud-init
+- name: COMMON | CLOUD-INIT | Create file disabling cloud-init
   ansible.builtin.file:
     path: /etc/cloud/cloud-init.disabled
     state: touch
@@ -107,327 +25,38 @@
     group: root
     mode: "0644"
 
-# TODO: this sometimes seizes up in the CI/CD pipeline, why?
-- name: NETWORK | Configure networking on target system
-  block:
-    - name: NETWORK | NM | Configure NM to use DHCP with static DNS Servers
-      vars:
-        network_provider: nm
-        network_state:
-          interfaces:
-            - name: "{{ ansible_facts['default_ipv4']['interface'] }}"
-              type: ethernet
-              state: up
-              ipv4:
-                enabled: true
-                auto-dns: false
-                auto-gateway: true
-                auto-routes: true
-                dhcp: true
-              ipv6:
-                enabled: false # TODO: enable ipv6 then modify "IPV6" comments
-                auto-dns: false
-                auto-gateway: false
-                auto-routes: false
-                autoconf: false
-                dhcp: false
-          dns-resolver:
-            config:
-              server:
-                - 1.1.1.1
-                - 1.0.0.1
-      ansible.builtin.include_role:
-        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_network/
-        name: fedora.linux_system_roles.network
+- name: COMMON | Configure system network
+  ansible.builtin.include_tasks:
+    file: network.yaml
 
-    - name: NETWORK | NM | Flush network handlers
-      ansible.builtin.meta: flush_handlers
+- name: COMMON | PACKAGES | Configure packages and updates
+  ansible.builtin.include_tasks:
+    file: packages.yaml
 
-    # IPV6: this is an ugly hack because we don't have ipv6
-    # without this hack postfix will fail to start, causing the postfix role to
-    # fail since it first starts the service to check for a successful install
-    - name: NETWORK | HOSTS | Remove ipv6 localhost from /etc/hosts
-      ansible.builtin.lineinfile:
-        dest: /etc/hosts
-        regexp: ^::1
-        state: absent
-
-- name: PACKAGES | Install standard pkgs & configure automatic security updates
-  block:
-    - name: PACKAGES | Install standard utility packages
-      ansible.builtin.package:
-        name:
-          - dnf-automatic
-          - dnf-utils # ensure this is available since CONVERT is optional task
-          - git
-          - tmux
-        state: present
-        update_cache: true
-
-    # https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/managing_software_with_the_dnf_tool/assembly_automating-software-updates-in-rhel-9_managing-software-with-the-dnf-tool
-    - name: PACKAGES | Configure automatic updates
-      ansible.builtin.lineinfile:
-        path: /etc/dnf/automatic.conf
-        regexp: '^{{ item.name }}'
-        line: '{{ item.name }} = {{ item.value }}'
-      loop:
-        - name: upgrade_type
-          value: security
-        - name: download_updates
-          value: 'yes'
-        - name: apply_updates
-          value: 'yes'
-        - name: reboot
-          value: 'when-needed'
-
-    - name: PACKAGES | Enable automatic security updates
-      block:
-        - name: PACKAGES | AUTO-UPDATES | Enable Autoupdate services
-          vars:
-            systemd_enabled_units:
-              - dnf-automatic.timer
-          ansible.builtin.include_role:
-            # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
-            name: fedora.linux_system_roles.systemd
-
-        - name: PACKAGES | AUTO-UPDATES | Flush systemd handlers
-          ansible.builtin.meta: flush_handlers
-
-# https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/index.html#red-hat-enterprise-linux
-- name: NVIDIA | Install nvidia compute driver and container utilities
+- name: COMMON | Install nvidia compute driver and container utilities
   when: common_nvidia_enabled
-  block:
-    # install gpg key to avoid interactive prompt on package install
-    - name: NVIDIA | Install NVIDIA software repository public key
-      ansible.builtin.rpm_key:
-        # yamllint disable-line rule:line-length
-        key: https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/D42D0685.pub
-        fingerprint: 610C 7B14 E068 A878 070D A4E9 9CD0 A493 D42D 068
-        state: present
+  ansible.builtin.include_tasks:
+    file: nvidia.yaml
 
-    - name: NVIDIA | Install NVIDIA dnf software repository
-      ansible.builtin.yum_repository:
-        name: cuda-rhel9-x86_64
-        # UPGRADE: change this on upgrade
-        # yamllint disable-line rule:line-length
-        baseurl: https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64
-        description: nvidia-driver repository
-        enabled: true
-        gpgcheck: true
-        # yamllint disable-line rule:line-length
-        gpgkey: https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/D42D0685.pub
-        mode: "0644"
-
-    # TODO: if nvidia decides we deserve a 570 precompiled kmod, update this
-    - name: NVIDIA | Set nvidia driver to 565 branch to access precompiled kmod
-      ansible.builtin.dnf:
-        name: "@nvidia-driver:565"
-        state: present
-
-    - name: NVIDIA | Install NVIDIA drivers and container-tools
-      ansible.builtin.dnf:
-        # TODO: when 570 kABI package is available explicitly include it
-        name:
-          - nvidia-driver-cuda
-          - nvidia-container-toolkit
-        state: present
-
-    - name: NVIDIA | Enable nvidia driver on reboot
-      ansible.builtin.copy:
-        dest: /etc/modules-load.d/nvidia.conf
-        content: "nvidia"
-        owner: root
-        group: root
-        mode: "0644"
-
-- name: POSTFIX | Enable Postfix acting as a null-relay on target host
+- name: COMMON | Enable Postfix acting as a null-relay on target host
   when: common_postfix_enabled
-  block:
-    - name: POSTFIX | Install SASL authentication package
-      ansible.builtin.package:
-        name: "{{ common_relay_sasl }}"
-        state: present
-        update_cache: true
+  ansible.builtin.include_tasks:
+    file: postfix.yaml
 
-    - name: POSTFIX | Install & Configure Postfix
-      vars:
-        # NOTE: these are set according to the relay mail server's requirements
-        postfix_conf:
-          inet_interfaces: "loopback-only" # do not allow external connections
-          inet_protocols: "ipv4" # IPV6: enable ipv6
-          mydestination: "" # null config, handle routing with virtual maps
-          relayhost: "[{{ common_relay_host }}]:{{ common_relay_port }}"
-          sender_canonical_classes: "envelope_sender, header_sender"
-          sender_canonical_maps: "regexp:/etc/postfix/sender_canonical_maps"
-          smtp_header_checks: "regexp:/etc/postfix/smtp_header_checks"
-          smtp_sasl_auth_enable: "yes"
-          smtp_sasl_password_maps: "hash:/etc/postfix/sasl_passwd"
-          smtp_sasl_security_options: "noanonymous"
-          smtp_sasl_tls_security_options: "noanonymous"
-          smtp_tls_policy_maps: "hash:/etc/postfix/tls_policy"
-          smtp_use_tls: "yes"
-          smtpd_client_restrictions: "permit_mynetworks,reject"
-          virtual_maps: "regexp:/etc/postfix/virtual_regexp"
-        postfix_files:
-          - name: sasl_passwd
-            # yamllint disable rule:line-length
-            content: "[{{ common_relay_host }}]:{{ common_relay_port }} {{ common_relay_user }}:{{ common_relay_pass }}"
-            postmap: true
-          - name: sender_canonical_maps
-            # rewrites sender address to allow mail to pass through relayhost
-            content: "/.+/ {{ ansible_facts['hostname'] }}@{{ ansible_facts['domain'] }}"
-          - name: smtp_header_checks
-            # rewrites headers to align with the new sender address
-            content: "/^From:.*/ REPLACE From: {{ ansible_facts['hostname'] }}@{{ ansible_facts['domain'] }}"
-          - name: tls_policy
-            content: "[{{ common_relay_host }}]:{{ common_relay_port }} {{ common_relay_tls }}"
-            postmap: true
-          - name: virtual_regexp
-            # rewrite the "TO:" address of all emails to administrator email
-            content: "/.+@.+/ admin@{{ ansible_facts['domain'] }}"
-            # yamllint enable rule:line-length
-      ansible.builtin.include_role:
-        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_postfix/
-        name: fedora.linux_system_roles.postfix
-
-    - name: POSTFIX | Flush postfix handlers
-      ansible.builtin.meta: flush_handlers
-
-# conversion script still uses individual account authentication, this converts
-# the rhel license to the organizational license and enables insights
-- name: REDHAT | Configure RedHat services
+- name: COMMON | REDHAT | Configure RedHat services
   when: common_redhat_enabled
-  block:
-    - name: REDHAT | Authenticate system with Redhat, Enable Insights
-      vars:
-        rhc_auth:
-          activation_keys:
-            keys:
-              - "{{ common_redhat_key }}"
-        rhc_organization: "{{ common_redhat_org }}"
-        rhc_insights:
-          state: present
-          remediation: absent
-      ansible.builtin.include_role:
-        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_rhc/
-        name: fedora.linux_system_roles.rhc
+  ansible.builtin.include_tasks:
+    file: redhat.yaml
 
-    - name: REDHAT | Flush rhc handlers
-      ansible.builtin.meta: flush_handlers
+- name: COMMON | TUNED | Configure system tuning based on system type
+  ansible.builtin.include_tasks:
+    file: tuned.yaml
 
-# NOTE: DISA STIG explicitly provides a rule for turning the tuned daemon OFF,
-#       however the potential performance benefits outweigh the security risks
-- name: TUNED | Configure system tuning based on system type
-  block:
-    - name: TUNED | Set tuned to 'virtual-guest' on virtual systems
-      when: ansible_facts['virtualization_role'] == "guest"
-      vars:
-        tuned_active_builtin_profile: "virtual-guest"
-      ansible.builtin.include_role:
-        # https://github.com/giovtorres/ansible-role-tuned
-        name: giovtorres.tuned
+- name: COMMON | USERS | Configure standard users & groups for target system
+  ansible.builtin.include_tasks:
+    file: users.yaml
 
-    - name: TUNED | Set tuned to 'throughput-performance' on bare metal
-      when: ansible_facts['virtualization_role'] != "guest"
-      vars:
-        tuned_active_builtin_profile: "virtual-guest"
-      ansible.builtin.include_role:
-        # https://github.com/giovtorres/ansible-role-tuned
-        name: giovtorres.tuned
-
-    - name: TUNED | Flush tuned handlers
-      ansible.builtin.meta: flush_handlers
-
-- name: GROUPS | Configure standard groups for target system
-  block:
-    - name: GROUPS | Ensure group 'mapletree' - GID '1001' exists
-      ansible.builtin.group:
-        name: mapletree
-        gid: 1001
-        state: present
-
-    - name: GROUPS | Ensure group 'podman' - GID '1000' exists
-      ansible.builtin.group:
-        name: podman
-        gid: 1000
-        state: present
-
-# TODO: Eventually we should actually roll out version controlled passwords
-#       for mapletree, root, and podman, and transition to using become with the
-#       vaulted password.
-- name: USERS | Configure standard users for target system
-  block:
-    - name: USERS | Ensure user "mapletree" - UID '1001' - locked exists
-      ansible.builtin.user:
-        name: mapletree
-        comment: Mapletree.moe Administrator
-        uid: 1001
-        group: mapletree
-        password_lock: true
-        groups: mapletree,users,wheel
-        state: present
-
-    - name: USERS | Ensure user "podman" - UID '1000' - locked exists
-      ansible.builtin.user:
-        name: podman
-        comment: Mapletree.moe Container User
-        uid: 1000
-        group: podman
-        password_lock: true
-        groups: podman,users
-        state: present
-
-    - name: USERS | Ensure user "root" is locked to prevent login
-      ansible.builtin.user:
-        name: root
-        password_lock: true
-
-    - name: USERS | MAPLETREE | Set up ssh authorized_keys
-      ansible.posix.authorized_key:
-        user: mapletree
-        state: present
-        key: '{{ item }}'
-      loop: "{{ common_mapletree_authorized_keys }}"
-
-# https://openzfs.github.io/openzfs-docs/Getting%20Started/RHEL-based%20distro/index.html
-- name: ZFS | Install ZFS kernel module and tools
+- name: COMMON | Install ZFS kernel module and tools
   when: common_zfs_enabled
-  block:
-    - name: ZFS | Install OpenZFS Public Key
-      ansible.builtin.rpm_key:
-        # UPGRADE: check if key is still correct on upgrade
-        # yamllint disable-line rule:line-length
-        key: https://raw.githubusercontent.com/zfsonlinux/zfsonlinux.github.com/master/zfs-release/RPM-GPG-KEY-openzfs-key2
-        fingerprint: 7DC7 299D CF7C 7FD9 CD87 701B A599 FD5E 9DB8 4141
-        state: present
-
-    - name: ZFS | Install OpenZFS `zfs-release` package
-      ansible.builtin.dnf:
-        # UPGRADE: change this on upgrade
-        name: https://zfsonlinux.org/epel/zfs-release-2-3.el9.noarch.rpm
-        state: present
-
-    - name: ZFS | Disable DKMS zfs repository
-      # DKMS requires build tools to be present on the system, which is not
-      # appropriate for a production server
-      community.general.dnf_config_manager:
-        name: zfs
-        state: disabled
-
-    - name: ZFS | Enable kABI kmod zfs repository
-      community.general.dnf_config_manager:
-        name: zfs-kmod
-        state: enabled
-
-    - name: ZFS | Install `zfs` package from `zfs-kmod` repository
-      ansible.builtin.package:
-        name: zfs
-        state: present
-
-    - name: ZFS | Enable `zfs-kmod` kernel modules to auto-load on boot
-      ansible.builtin.copy:
-        dest: /etc/modules-load.d/zfs.conf
-        content: "zfs"
-        owner: root
-        group: root
-        mode: "0644"
+  ansible.builtin.include_tasks:
+    file: zfs.yaml

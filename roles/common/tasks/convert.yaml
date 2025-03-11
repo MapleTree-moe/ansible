@@ -1,0 +1,90 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### common role - convert - convert RHEL clone to genuine RHEL
+###
+---
+- name: COMMON | CONVERT | Update system packages and install required utilities
+  block:
+    - name: COMMON | CONVERT | UPDATE | Update all system packages
+      # conversion will fail if packages are not latest versions
+      ansible.builtin.package:
+        name: '*'
+        state: latest # noqa package-latest
+        update_cache: true
+
+    - name: COMMON | CONVERT | UPDATE | Install dnf-utils for required restarts
+      ansible.builtin.package:
+        name: 'dnf-utils'
+        state: present
+
+    - name: COMMON | CONVERT | UPDATE | Remove packages orphaned by upgrade
+      ansible.builtin.dnf:
+        autoremove: true
+
+    - name: COMMON | CONVERT | UPDATE | Perform system reboot if required
+      block:
+        - name: COMMON | CONVERT | UPDATE | REBOOT | Check `needs-restarting`
+          ansible.builtin.command:
+            cmd: needs-restarting -r
+          register: reboot_required
+          changed_when: true
+          failed_when: reboot_required.rc not in [0, 1]
+
+        - name: COMMON | CONVERT | UPDATE | REBOOT | Reboot the server
+          ansible.builtin.reboot:
+            reboot_timeout: 600
+          when: reboot_required.rc == 1
+
+- name: COMMON | CONVERT | Deploy `convert2rhel` script
+  vars:
+    # UPGRADE: change the specified repo url on a major upgrade i.e. RHEL10
+    # yamllint disable-line rule:line-length
+    convert2rhel_repofile_url: "https://cdn-public.redhat.com/content/public/repofiles/convert2rhel-for-rhel-9-x86_64.repo"
+    rhsm_username: "{{ common_redhat_user }}"
+    rhsm_password: "{{ common_redhat_pass }}"
+    rhsm_activation_key: "{{ common_redhat_key }}"
+    rhsm_org: "{{ common_redhat_org }}"
+  block:
+    - name: COMMON | CONVERT2RHEL | CONVERSION | ANALYSIS | Run analysis
+      # conversion will fail unless the analysis report json is available
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/infra/convert2rhel/content/role/analysis/
+        name: infra.convert2rhel.analysis
+
+    - name: COMMON | CONVERT2RHEL | CONVERSION | CONVERT | Run conversion
+      vars:
+        # remove conversion tooling after successful conversion
+        convert_convert2rhel_repo_remove: true
+        convert_convert2rhel_package_remove: true
+        convert_reboot_requested: true # reboot after conversion
+        convert_reboot_timeout: 600
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/infra/convert2rhel/content/role/convert/
+        name: infra.convert2rhel.convert
+
+    - name: COMMON | CONVERT | CONVERT2RHEL | Flush conversion handlers
+      ansible.builtin.meta: flush_handlers
+
+# TODO: this should be done by the convert2rhel script, why is it not?
+- name: COMMON | CONVERT | CLEANUP | Perform remediations
+  block:
+    - name: COMMON | CONVERT | CLEANUP | Remove AlmaLinux GPG key
+      when: ansible_facts['distribution'] == "AlmaLinux"
+      ansible.builtin.rpm_key:
+        key: http://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux-9
+        state: absent
+
+    - name: COMMON | CONVERT | CLEANUP | Remove RockyLinux GPG key
+      when: ansible_facts['distribution'] == "Rocky"
+      ansible.builtin.rpm_key:
+        key: https://dl.rockylinux.org/pub/rocky/RPM-GPG-KEY-Rocky-9
+        state: absent
+
+    - name: COMMON | CONVERT | CLEANUP | Remove packages orphaned by conversion
+      ansible.builtin.dnf:
+        autoremove: true
+
+- name: COMMON | CONVERT | ANSIBLE | Re-run ansible setup
+  ansible.builtin.setup:
