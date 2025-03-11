@@ -38,6 +38,9 @@
   ansible.builtin.set_fact:
     # yamllint disable rule:line-length
     authelia_encryption_key: "{{ lookup('community.general.random_string', special=false, length=64) }}"
+    authelia_oidc_hmac_secret: "{{ lookup('community.general.random_string', special=false, length=64) }}"
+    authelia_reset_password_jwt_secret: "{{ lookup('community.general.random_string', special=false, length=64) }}"
+    authelia_session_secret: "{{ lookup('community.general.random_string', special=false, length=64) }}"
     # yamllint enable rule:line-length
 
 - name: CONTAINERS | AUTHELIA | Install configuration file
@@ -78,6 +81,18 @@
             state: present
             skip_existing: true # do not overwrite if secret exists
             data: "{{ authelia_encryption_key }}"
+          - name: authelia-session-secret
+            state: present
+            skip_existing: true # do not overwrite if secret exists
+            data: "{{ authelia_session_secret }}"
+          - name: authelia-oidc-hmac-secret
+            state: present
+            skip_existing: true # do not overwrite if secret exists
+            data: "{{ authelia_oidc_hmac_secret }}"
+          - name: authelia-reset-password-jwt-secret
+            state: present
+            skip_existing: true # do not overwrite if secret exists
+            data: "{{ authelia_reset_password_jwt_secret }}"
           - name: authelia-smtp-password
             state: present
             skip_existing: true # do not overwrite if secret exists

@@ -5,6 +5,16 @@
 ###
 ### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
 ---
+default_redirection_url: "https://{{ ansible_facts['domain'] }}"
+default_2fa_method: totp
+
+access_control:
+  rules:
+    domain:
+      - "{{ ansible_facts['domain'] }}"
+      - "*.{{ ansible_facts['domain'] }}"
+    policy: two_factor
+
 server:
   endpoints:
     authz:
