@@ -66,7 +66,7 @@ Label=traefik.enable="true"
 # configure the traefik dashboard
 Label=traefik.http.routers.dashboard.rule="Host(`traefik.{{ ansible_facts['fqdn'] }}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
 Label=traefik.http.routers.dashboard.service="api@internal"
-Label=traefik.http.routers.dashboard.middlewares="authelia@docker"
+Label=traefik.http.routers.dashboard.middlewares="auth"
 Label=traefik.http.routers.dashboard.tls="true"
 Label=traefik.http.routers.dashboard.tls.certresolver="letsencrypt"
 
