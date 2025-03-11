@@ -1,0 +1,42 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### hardening role - general task - configure additional system settings
+###
+---
+# prevent rapidfire Ctrl-Alt-Del bursts from triggering system reboot
+- name: HARDENING | GENERAL | Disable Ctrl-Alt-Del Burst Action
+  ansible.builtin.lineinfile:
+    dest: /etc/systemd/system.conf
+    state: present
+    regexp: ^CtrlAltDelBurstAction
+    line: CtrlAltDelBurstAction=none
+    create: true
+    mode: "0644"
+  notify: Restart System
+
+# NOTE: this effectively breaks SUM due to the current use of a locked root
+#       account, which means if the system goes down it will need to be
+#       reinstalled and reprovisioned from scratch.
+# SECURITY: this can only be resolved by implementing vcs password rotation for
+#           the root user
+- name: HARDENING | GENERAL | Require Authentication for Single User Mode
+  community.general.ini_file:
+    path: /etc/systemd/system/rescue.service.d/10-oscap.conf
+    section: Service
+    option: ExecStart
+    value: -/usr/lib/systemd/systemd-sulogin-shell rescue
+    mode: "0644"
+
+# rhel9-cis misses some critical files, so we'll add them here
+- name: HARDENING | GENERAL | Enable restrictive permissions on critical files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    mode: '0600'
+  loop:
+    - "/boot/grub2/grub.cfg"
+    - "/etc/at.allow"
+    - "/etc/cron.allow"

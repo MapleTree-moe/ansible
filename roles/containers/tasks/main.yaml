@@ -110,7 +110,7 @@
           containers:
             # FIXME: linux-system-roles/podman #208 PR #209
             # container_name_as_hostname: true
-            # log_driver: journald
+            log_driver: journald
             mounts: []
             tz: "{{ ansible_facts['date_time']['tz'] }}"
           engine:
@@ -118,10 +118,10 @@
             # FIXME: linux-system-roles/podman #208 PR #209
             # healthcheck_events: false
             # pull_policy: missing
-          # FIXME: this somehow breaks our sockets for traefik. why? how??
-          # network:
-          #   default_rootless_network_cmd: pasta
-          #   network_backend: netavark
+            # FIXME: this somehow breaks our sockets for traefik. why? how??
+            # network:
+            # default_rootless_network_cmd: pasta
+            # network_backend: netavark
         podman_fail_if_too_old: true
         podman_prune_images: true
         podman_pull_image: true

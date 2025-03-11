@@ -1,0 +1,148 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### hardening role - benchmark task - configure system to align with CIS Level 2
+###
+---
+# NOTE: this role is extremely aggressive in applying compliance settings as it
+#       is intended to be used on fresh installs. this could break existing
+#       systems, so use with caution.
+
+# WARNING: do NOT upgrade this module without testing it first. it can break
+#          podman rootless!
+- name: HARDENING | BENCHMARK | Execute external role
+  vars:
+    # For new or compliant systems, aggressive settings are fine.
+    rhel9cis_disruption_high: true
+    rhel9cis_authselect_pkg_update: true
+    rhel9cis_sysctl_update: true
+
+    # If disk space is exceeded despite log rotation, halt for investigation
+    rhel9cis_auditd_admin_space_left_action: halt
+    rhel9cis_auditd_disk_full_action: halt
+    rhel9cis_auditd_max_log_file_size: 512 # megabytes
+    # keeping the system online is more vital than auditing logs
+    rhel9cis_auditd_max_log_file_action: rotate
+    rhel9cis_auditd_space_left_action: email # email goes to admin@domain
+    rhel9cis_auditd_extra_conf_usage: true
+    rhel9cis_auditd_extra_conf:
+      admin_space_left: '10%'
+      space_left: '25%'
+    rhel9cis_syslog: journald # prefer journald as its already present
+    rhel9cis_journald_systemkeepfree: 20G
+    rhel9cis_journald_runtimekeepfree: 20G
+
+    rhel9cis_authselect_custom_profile_name: mapletree
+    # yamllint disable-line rule:line-length
+    rhel9cis_authselect_default_profile_to_copy: minimal --symlink-meta --symlink-pam
+    rhel9cis_flush_ipv4_route: true
+    rhel9cis_flush_ipv6_route: false # IPV6: set to same as IPv4
+    rhel9cis_ipv6_required: false  # IPV6: implement ipv6
+
+    # SECURITY: we would ideally use "FUTURE" here, but some websites
+    #       (openzfs) use ssl certificates that are too weak for this, so we
+    #       fall back to "DEFAULT"
+    # NOTE: in some cases it seems like changing this post initial run
+    #       doesn't actually change the crypto policy on the target system.
+    rhel9cis_crypto_policy: DEFAULT
+
+    # this is handled by the bootloader subtask
+    rhel9cis_set_boot_pass: false
+
+    ###
+    # rule overrides
+    ###
+    # rules 1.1.1.X and 3.2.X disable kernel modules
+    #   we do this in the kernel settings subtask, so disable them here.
+    rhel9cis_rule_1_1_1_1: false
+    rhel9cis_rule_1_1_1_2: false
+    rhel9cis_rule_1_1_1_3: false
+    rhel9cis_rule_1_1_1_4: false
+    rhel9cis_rule_1_1_1_5: false
+    rhel9cis_rule_1_1_1_6: false
+    rhel9cis_rule_1_1_1_7: false
+    rhel9cis_rule_1_1_1_8: false
+    rhel9cis_rule_3_2_1: false
+    rhel9cis_rule_3_2_2: false
+    rhel9cis_rule_3_2_3: false
+    rhel9cis_rule_3_2_4: false
+
+    # rules 1.1.2.X are pertaining to dedicated filesystem partitions and
+    #               permissions, which we don't use.
+    rhel9cis_rule_1_1_2_1_1: false
+    rhel9cis_rule_1_1_2_1_2: false
+    rhel9cis_rule_1_1_2_1_3: false
+    rhel9cis_rule_1_1_2_1_4: false
+    rhel9cis_rule_1_1_2_3_1: false
+    rhel9cis_rule_1_1_2_3_2: false
+    rhel9cis_rule_1_1_2_3_3: false
+    rhel9cis_rule_1_1_2_4_1: false
+    rhel9cis_rule_1_1_2_4_2: false
+    rhel9cis_rule_1_1_2_4_3: false
+    rhel9cis_rule_1_1_2_5_1: false
+    rhel9cis_rule_1_1_2_5_2: false
+    rhel9cis_rule_1_1_2_5_3: false
+    rhel9cis_rule_1_1_2_5_4: false
+    rhel9cis_rule_1_1_2_6_1: false
+    rhel9cis_rule_1_1_2_6_2: false
+    rhel9cis_rule_1_1_2_6_3: false
+    rhel9cis_rule_1_1_2_6_4: false
+    rhel9cis_rule_1_1_2_7_1: false
+    rhel9cis_rule_1_1_2_7_2: false
+    rhel9cis_rule_1_1_2_7_3: false
+    rhel9cis_rule_1_1_2_7_4: false
+
+    # BUG: this is a bug due to how we deploy RHEL. our GPG key doesn't match
+    #      what is expected despite being valid. ansible-lockdown/RHEL9-CIS#292
+    rhel9cis_rule_1_2_1_1: false
+
+    # rules 5.1.4 to 5.1.22 are sshd configuration.
+    # we handle this in the sshd subtask, disable them. our policy is stricter.
+    rhel9cis_rule_5_1_4: false
+    rhel9cis_rule_5_1_5: false
+    rhel9cis_rule_5_1_6: false
+    rhel9cis_rule_5_1_7: false
+    rhel9cis_rule_5_1_8: false
+    rhel9cis_rule_5_1_9: false
+    rhel9cis_rule_5_1_10: false
+    rhel9cis_rule_5_1_11: false
+    rhel9cis_rule_5_1_12: false
+    rhel9cis_rule_5_1_13: false
+    rhel9cis_rule_5_1_14: false
+    rhel9cis_rule_5_1_15: false
+    rhel9cis_rule_5_1_16: false
+    rhel9cis_rule_5_1_17: false
+    rhel9cis_rule_5_1_18: false
+    rhel9cis_rule_5_1_19: false
+    rhel9cis_rule_5_1_20: false
+    rhel9cis_rule_5_1_21: false
+    rhel9cis_rule_5_1_22: false
+
+    # SECURITY: we are currently using NO_PASSWD along with become in ansible to
+    #           roll out system configuration, this rule can break that.
+    #           we should migrate to VCS based rotating passwords for users.
+    rhel9cis_rule_5_2_4: false
+
+    # FIXME: this rule is generating a false positive on the root path that
+    #        can't be duplicated by hand. needs investigation
+    rhel9cis_rule_5_4_2_5: false
+
+    # rules 6.2.2.1.x configure offsite logging, which we don't use yet
+    rhel9cis_rule_6_2_2_1_1: false
+    rhel9cis_rule_6_2_2_1_2: false
+    rhel9cis_rule_6_2_2_1_3: false
+    rhel9cis_rule_6_2_2_1_4: false
+
+    # NOTE: these two rules break podman in an extremely hard to diagnose and
+    #       debug way. the only option is to disable them for now.
+    # SECURITY: see if there is a way to make these work
+    rhel9cis_rule_7_2_8: false
+    rhel9cis_rule_7_2_9: false
+
+  ansible.builtin.include_role:
+    # https://github.com/ansible-lockdown/RHEL9-CIS
+    name: rhel9-cis
+
+- name: HARDENING | BENCHMARK | Flush benchmark handlers
+  ansible.builtin.meta: flush_handlers

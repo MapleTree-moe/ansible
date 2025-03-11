@@ -1,0 +1,34 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### hardening role - timesync - configure system time
+###
+---
+- name: HARDENING | TIMESYNC | Configure chrony
+  vars:
+    timesync_dhcp_ntp_servers: false
+    timesync_chrony_custom_settings:
+      - "cmdport 0" # disable server functionality (DISA STIG)
+      - "logdir /var/log/chrony"
+      - "port 0" # disable server functionality (DISA STIG)
+    timesync_ntp_provider: chrony
+    timesync_ntp_servers:
+      - hostname: 0.pool.ntp.org
+        minpoll: 8
+        maxpoll: 16
+      - hostname: 1.pool.ntp.org
+        minpoll: 8
+        maxpoll: 16
+      - hostname: 2.pool.ntp.org
+        minpoll: 8
+        maxpoll: 16
+      - hostname: 3.pool.ntp.org
+        minpoll: 8
+        maxpoll: 16
+  ansible.builtin.include_role:
+    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_timesync/
+    name: fedora.linux_system_roles.timesync
+
+- name: HARDENING | TIMESYNC | Flush timesync handlers
+  ansible.builtin.meta: flush_handlers
