@@ -1,0 +1,48 @@
+### {{ ansible_managed }} - {{ ansible_facts['fqdn'] }}
+###
+### mapletree.moe - podman quadlet file
+### https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
+###
+### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
+
+[Unit]
+Description=Database Automated Backup
+Documentation=https://github.com/tiredofit/docker-db-backup/
+After=podman-user-wait-network-online.service
+
+[Service]
+Restart=on-failure
+
+[Container]
+AutoUpdate=registry
+ContainerName=db-backup
+Image=docker.io/ltiredofit/db-backup
+# TODO: really don't like this network bridging.
+Network=frontend.network
+Network=backend.network
+
+# environmental variables
+Environment=CONTAINER_NAME=db-backup
+Environment=CONTAINER_ENABLE_MONITORING=false
+
+# configuration defaults
+Environment=DEFAULT_BACKUP_BEGIN=0000
+Environment=DEFAULT_BACKUP_INTERVAL=1440
+Environment=DEFAULT_BACKUP_LOCATION=S3
+Environment=DEFAULT_CHECKSUM=
+Environment=DEFAULT_CLEANUP_TIME=86400
+Environment=DEFAULT_COMPRESSION=zstd
+Environment=DEFAULT_COMPRESSION_LEVEL=10
+Environment=DEFAULT_RESOURCE_OPTIMIZED=true
+Environment=DEFAULT_S3_BUCKET={{ containers_db_backup_s3_bucket }}
+Environment=DEFAULT_S3_KEY_ID_FILE=/run/secrets/db-backup-s3-key-id
+Environment=DEFAULT_S3_KEY_SECRET_FILE=/run/secrets/db-backup-s3-key-secret
+Environment=DEFAULT_S3_HOST={{ containers_db_backup_s3_host }}
+
+
+# secrets
+Secret=lldap-ldap-user-pass,type=env,target=LDAP_BIND_PASSWORD
+Secret=lldap-discord-bot-token,type=env,target=DISCORD_BOT_TOKEN
+
+[Install]
+WantedBy=default.target

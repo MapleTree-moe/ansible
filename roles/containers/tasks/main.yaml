@@ -5,12 +5,17 @@
 ### containers role - setup podman on target systems
 ###
 ---
+# TODOs: automated database backups
+#        automatic dependency resolution
+#        low priority - create local vault with secrets
 - name: PODMAN SOCKET | Check if podman socket is required for target host
   # SECURITY: a podman socket proxy could be useful to boost security
   ansible.builtin.set_fact:
     podman_socket_required: true
   # TODO: this is just traefik for now, but it would be nice to check multiple
   #       services against `containers_services_enabled`
+  # URGENT TODO: without traefik the code will fail because the fact is never
+  #              at all. we need some way to set it to false when this fails
   when: '"traefik" in containers_services_enabled'
 
 - name: PACKAGES | Install packages
@@ -20,6 +25,9 @@
     state: present
     update_cache: true
 
+# TODO: we should implement this ourselves. the current role fails if you remove
+#       ansible variable injection, and we should also try to keep the podman
+#       user on a static group of subuids and subgids
 - name: USERS | Configure subuid and subgid for podman user
   # podman is installed after the user is created in the `common` role so we
   # need to manually set subuid and subgid
@@ -91,25 +99,29 @@
 # TODO: it would be nice to one day have every container network isolated except
 #       for the services it needs. it seems like this would be expensive on
 #       podman, maybe this is a use for consul?
+# SECURITY TODO: podman by default stores secrets unencrypted in a file, just
+#                encoded. we should transition to either gpg or a proper secrets
+#                store.
 - name: NETWORKS | Install the standard networks used by containers
   block:
     - name: NETWORKS | PODMAN | Install the container networks
       vars:
         podman_containers_conf:
           containers:
-            # FIXME: linux-system-roles/podman #208
+            # FIXME: linux-system-roles/podman #208 PR #209
             container_name_as_hostname: true
             log_driver: journald
             mounts: []
             tz: "{{ ansible_facts['date_time']['tz'] }}"
           engine:
             events_logger: journald
-            # FIXME: linux-system-roles/podman #208
+            # FIXME: linux-system-roles/podman #208 PR #209
             healthcheck_events: false
             pull_policy: missing
-          network:
-            default_rootless_network_cmd: pasta
-            network_backend: netavark
+          # FIXME: this somehow breaks our sockets for traefik. why? how??
+          # network:
+          #   default_rootless_network_cmd: pasta
+          #   network_backend: netavark
         podman_fail_if_too_old: true
         podman_prune_images: true
         podman_pull_image: true

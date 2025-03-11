@@ -29,8 +29,14 @@ hardening_bootloader_password: "{{ vault_hardening_bootloader_password }}"
 #
 # global container configuration
 #
+containers_authelia_smtp_host: mail.smtp2go.com
+containers_authelia_smtp_port: 587
+containers_authelia_smtp_user: "{{ vault_common_relay_user }}"
+containers_authelia_smtp_pass: "{{ vault_common_relay_pass }}"
 containers_lldap_base_dn_domain: mapletree
 containers_lldap_base_dn_extension: moe
+# yamllint disable-line rule:line-length
+containers_lldap_discord_bot_token: "{{ vault_containers_lldap_discord_bot_token }}"
 
 ###
 ### Container Secrets Section
