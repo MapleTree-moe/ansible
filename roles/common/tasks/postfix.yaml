@@ -1,0 +1,56 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### common role - postfix - configure postfix for null relay
+###
+---
+- name: COMMON | POSTFIX | Install SASL authentication package
+  ansible.builtin.package:
+    name: "{{ common_relay_sasl }}"
+    state: present
+    update_cache: true
+
+- name: COMMON | POSTFIX | Install & Configure Postfix
+  vars:
+    # NOTE: these are set according to the relay mail server's requirements
+    postfix_conf:
+      inet_interfaces: "loopback-only" # do not allow external connections
+      inet_protocols: "ipv4" # IPV6: enable ipv6
+      mydestination: "" # null config, handle routing with virtual maps
+      relayhost: "[{{ common_relay_host }}]:{{ common_relay_port }}"
+      sender_canonical_classes: "envelope_sender, header_sender"
+      sender_canonical_maps: "regexp:/etc/postfix/sender_canonical_maps"
+      smtp_header_checks: "regexp:/etc/postfix/smtp_header_checks"
+      smtp_sasl_auth_enable: "yes"
+      smtp_sasl_password_maps: "hash:/etc/postfix/sasl_passwd"
+      smtp_sasl_security_options: "noanonymous"
+      smtp_sasl_tls_security_options: "noanonymous"
+      smtp_tls_policy_maps: "hash:/etc/postfix/tls_policy"
+      smtp_use_tls: "yes"
+      smtpd_client_restrictions: "permit_mynetworks,reject"
+      virtual_maps: "regexp:/etc/postfix/virtual_regexp"
+    postfix_files:
+      - name: sasl_passwd
+        # yamllint disable rule:line-length
+        content: "[{{ common_relay_host }}]:{{ common_relay_port }} {{ common_relay_user }}:{{ common_relay_pass }}"
+        postmap: true
+      - name: sender_canonical_maps
+        # rewrites sender address to allow mail to pass through relayhost
+        content: "/.+/ {{ ansible_facts['hostname'] }}@{{ ansible_facts['domain'] }}"
+      - name: smtp_header_checks
+        # rewrites headers to align with the new sender address
+        content: "/^From:.*/ REPLACE From: {{ ansible_facts['hostname'] }}@{{ ansible_facts['domain'] }}"
+      - name: tls_policy
+        content: "[{{ common_relay_host }}]:{{ common_relay_port }} {{ common_relay_tls }}"
+        postmap: true
+      - name: virtual_regexp
+        # rewrite the "TO:" address of all emails to administrator email
+        content: "/.+@.+/ admin@{{ ansible_facts['domain'] }}"
+        # yamllint enable rule:line-length
+  ansible.builtin.include_role:
+    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_postfix/
+    name: fedora.linux_system_roles.postfix
+
+- name: COMMON | POSTFIX | Flush postfix handlers
+  ansible.builtin.meta: flush_handlers
