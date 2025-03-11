@@ -25,15 +25,14 @@ SecurityLabelType=traefik.process
 
 # environmental variables
 # https://doc.traefik.io/traefik/reference/static-configuration/env/
-Environment=TRAEFIK_API_DASHBOARD="true"
-# https://doc.traefik.io/traefik/https/acme/
+Environment=TRAEFIK_API="true"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt="true"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_EMAIL="admin@{{ ansible_facts['domain'] }}"
-Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_CASERVER="https://acme-staging-v02.api.letsencrypt.org/directory"
+#Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_CASERVER="https://acme-staging-v02.api.letsencrypt.org/directory"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_STORAGE="/etc/traefik/acme.json"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_TLSCHALLENGE="true"
-Environment=TRAEFIK_ENTRYPOINTS_web_FORWARDEDHEADERS_INSECURE=false
-Environment=TRAEFIK_ENTRYPOINTS_web_FORWARDEDHEADERS_TRUSTEDIPS=172.16.0.0/24
+Environment=TRAEFIK_ENTRYPOINTS_web_FORWARDEDHEADERS_INSECURE="false"
+Environment=TRAEFIK_ENTRYPOINTS_web_FORWARDEDHEADERS_TRUSTEDIPS="172.16.0.0/24"
 Environment=TRAEFIK_ENTRYPOINTS_web_HTTP_REDIRECTIONS_ENTRYPOINT_TO="websecure"
 Environment=TRAEFIK_ENTRYPOINTS_web_HTTP_REDIRECTIONS_ENTRYPOINT_SCHEME="https"
 Environment=TRAEFIK_ENTRYPOINTS_web_HTTP_REDIRECTIONS_ENTRYPOINT_PERMANENT="true"

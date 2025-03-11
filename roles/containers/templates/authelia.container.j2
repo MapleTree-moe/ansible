@@ -85,9 +85,9 @@ Label=traefik.enable="true"
 Label=traefik.http.routers.authelia.rule="Host(`auth.{{ ansible_facts['domain'] }}`)"
 Label=traefik.http.routers.authelia.middlewares="securityHeaders"
 Label=traefik.http.services.authelia.loadbalancer.server.port=9091
-Label=traefik.http.middlewares.authelia.forwardauth.address: 'http://authelia:9091/api/authz/forward-auth'
-Label=traefik.http.middlewares.authelia.forwardauth.trustForwardHeader: 'true'
-Label=traefik.http.middlewares.authelia.forwardauth.authResponseHeaders: 'Remote-User,Remote-Groups,Remote-Name,Remote-Email'
+Label=traefik.http.middlewares.authelia.forwardauth.address="http://authelia:9091/api/authz/forward-auth"
+Label=traefik.http.middlewares.authelia.forwardauth.trustForwardHeader="true"
+Label=traefik.http.middlewares.authelia.forwardauth.authResponseHeaders="Remote-User,Remote-Groups,Remote-Name,Remote-Email"
 
 # secrets
 Secret=authelia-encryption-key,type=mount,uid=1000

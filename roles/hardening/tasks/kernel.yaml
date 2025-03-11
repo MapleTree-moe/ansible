@@ -1,0 +1,82 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### hardening role - kernel - lockdown system kernel
+###
+---
+# remove unused kernel modules with potential CVEs (DISA STIG)
+- name: HARDENING | KERNEL | MODULES | Block kernel modules
+  vars:
+    compliance_kernel_blacklist:
+      - cachefiles # disable unused filesystems
+      - ceph
+      - cramfs
+      - dlm
+      - erofs
+      - exfat
+      - fscache
+      - freevxfs
+      - fuse
+      - gfs2
+      - hfs
+      - hfsplus
+      - isofs
+      - jffs2
+      - netfs
+      - lockd # disable nfs and modules used by nfs
+      - nfs_common
+      - nfs
+      - nfsd
+      - smb # do not use samba on root system
+      - squashfs
+      - udf
+      - atm # unused connection protocols
+      - can
+      - dccp
+      - tipc
+      - rds
+      - sctp
+      - firewire-core
+      - usb-storage
+      - bluetooth # no need for bluetooth on servers
+  block:
+    - name: HARDENING | KERNEL | MODULES | Assign modules to /bin/true
+      # this assigns the kernel modules to /bin/true which prevents them
+      # from being loaded even if the modprobe blacklist is somehow bypassed
+      ansible.builtin.lineinfile:
+        path: /etc/modprobe.d/mapletree.conf
+        regexp: "^(#)?install {{ item }}(\\s|$)"
+        line: "install {{ item }} /bin/true"
+        create: true
+        mode: 'go-rwx'
+      loop: "{{ compliance_kernel_blacklist }}"
+      notify: Restart System
+
+    - name: HARDENING | KERNEL | MODULES | Blacklist kernel modules
+      # add files to modprobes blacklisted entries
+      community.general.kernel_blacklist:
+        name: "{{ item }}"
+      loop: "{{ compliance_kernel_blacklist }}"
+      notify: Restart System
+
+- name: KERNEL | SYSCTL | Configure restrictive variables
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_file: /etc/sysctl.d/60-kernel_sysctl.conf
+    state: present
+    reload: true
+  loop:
+    - name: kernel.core_pattern # prevent core dumps (DISA STIG)
+      value: "|/bin/false"
+    - name: kernel.dmesg_restrict # restrict kernel logs (DISA STIG)
+      value: 1
+    - name: kernel.kexec_load_disabled # prevent livepatching (DISA STIG)
+      value: 1
+    - name: kernel.perf_event_paranoid # restrict metrics (DISA STIG)
+      value: 2
+    - name: kernel.unprivileged_bpf_disabled # (DISA STIG)
+      value: 1
+    - name: net.core.bpf_jit_harden # BPF ASLR (DISA STIG)
+      value: 2
