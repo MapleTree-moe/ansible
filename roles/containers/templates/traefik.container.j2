@@ -87,6 +87,7 @@ Label=traefik.http.middlewares.securityHeaders.headers.referrerPolicy="same-orig
 Label=traefik.http.middlewares.securityHeaders.headers.stsIncludeSubdomains="true"
 Label=traefik.http.middlewares.securityHeaders.headers.stsPreload="true"
 Label=traefik.http.middlewares.securityHeaders.headers.stsSeconds="31536000"
+Label=traefik.http.middlewares.secured.chain.middlewares="securityHeaders,authelia"
 
 # volumes
 Volume=/%t/podman/podman.sock:/var/run/docker.sock:ro
