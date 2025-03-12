@@ -18,8 +18,7 @@ Restart=on-failure
 AutoUpdate=registry
 ContainerName=authelia
 Image=docker.io/authelia/authelia:4.38
-Network=frontend.network
-IP=172.16.0.5
+Network=frontend.network:ip=172.16.0.5
 Network=backend.network
 
 # environmental variables
