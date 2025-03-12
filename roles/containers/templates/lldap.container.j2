@@ -8,8 +8,8 @@
 [Unit]
 Description=LLDAP container
 Documentation=https://github.com/lldap/lldap
-After=traefik.service
 Requires=lldap-db.service
+After=podman-user-wait-network-online.service
 
 [Service]
 Restart=on-failure

@@ -9,6 +9,7 @@
 Description=Traefik container
 Documentation=https://traefik.io
 Requires=traefik-web.socket traefik-websecure.socket
+PartOf=authelia.service
 After=podman-user-wait-network-online.service
 
 [Service]
@@ -53,6 +54,7 @@ Environment=TRAEFIK_PROVIDERS_DOCKER="true"
 Environment=TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT="false"
 Environment=TRAEFIK_PROVIDERS_DOCKER_ALLOWEMPTYSERVICES="true"
 Environment=TRAEFIK_PROVIDERS_DOCKER_NETWORK="frontend"
+Environment=TRAEFIK_PROVIDERS_DOCKER_WATCH="true"
 Environment=TRAEFIK_PROVIDERS_FILE_FILENAME="/etc/traefik/tls_options.yaml"
 
 # health check
