@@ -5,7 +5,7 @@
 ### perform compliance configuration for server
 ###
 ---
-- name: PLAY | Run hardening role to apply compliance policy
+- name: HARDENING | Run hardening role to apply compliance policy
   hosts: all
   become: true
   tasks:
