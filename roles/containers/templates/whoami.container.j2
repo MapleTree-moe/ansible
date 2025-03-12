@@ -11,8 +11,9 @@ Documentation=https://traefik.io
 After=traefik.service
 
 [Container]
-Image=docker.io/traefik/whoami
 ContainerName=whoami
+Image=docker.io/traefik/whoami
+IP=172.16.0.3
 Network=frontend.network
 
 # traefik configuration labels
