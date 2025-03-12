@@ -13,8 +13,7 @@ After=traefik.service
 [Container]
 ContainerName=whoami
 Image=docker.io/traefik/whoami
-IP=172.16.0.3
-Network=frontend.network
+Network=frontend.network:ip=172.16.0.3
 
 # traefik configuration labels
 Label=traefik.enable="true"
