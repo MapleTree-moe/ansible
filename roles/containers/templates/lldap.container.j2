@@ -49,7 +49,8 @@ HealthTimeout=30s
 # automatically configure traefik to proxy the web service
 Label=traefik.enable="true"
 Label=traefik.http.routers.lldap.rule="Host(`lldap.{{ ansible_facts['fqdn'] }}`)"
-Label=traefik.http.routers.lldap.middlewares="securityHeaders"
+# TODO: chain middlewares
+Label=traefik.http.routers.lldap.middlewares="authelia@docker"
 Label=traefik.http.services.lldap.loadbalancer.server.port=17170
 
 # secrets
