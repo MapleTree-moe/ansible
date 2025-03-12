@@ -37,8 +37,7 @@ jobs:
           hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
           enable_ipv6: false
           server_type: cx22
-          # TODO: make this a repo variable
-          ssh_key: 27836571
+          ssh_key: ${{ vars.HCLOUD_SSH_KEY }}
           image: ubuntu-24.04
   deploy:
     name: Deploy containers role to all servers
