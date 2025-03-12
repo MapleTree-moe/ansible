@@ -102,26 +102,33 @@
 # SECURITY TODO: podman by default stores secrets unencrypted in a file, just
 #                encoded. we should transition to either gpg or a proper secrets
 #                store.
-- name: NETWORKS | Install the standard networks used by containers
+- name: PODMAN | Configure basic podman setup
   block:
-    - name: NETWORKS | PODMAN | Install the container networks
+    # FIXME: this is a temporary workaround for the below bug and PR
+    - name: PODMAN | Install configuration file
+      ansible.builtin.copy:
+        src: containers.conf.d/50-systemroles.conf
+        # yamllint disable-line rule:line-length
+        dest: /home/podman/.config/containers/containers.conf.d/50-systemroles.conf
+        owner: podman
+        group: podman
+        mode: "0644"
+    - name: PODMAN | Install the container networks
       vars:
-        podman_containers_conf:
-          containers:
-            # FIXME: linux-system-roles/podman #208 PR #209
-            # container_name_as_hostname: true
-            log_driver: journald
-            mounts: []
-            tz: "{{ ansible_facts['date_time']['tz'] }}"
-          engine:
-            events_logger: journald
-            # FIXME: linux-system-roles/podman #208 PR #209
-            # healthcheck_events: false
-            pull_policy: missing
-            # FIXME: this somehow breaks our sockets for traefik. why? how??
-            # network:
-            # default_rootless_network_cmd: pasta
-            # network_backend: netavark
+        # FIXME: linux-system-roles/podman #208 PR #209
+        # podman_containers_conf:
+        #   containers:
+        #     container_name_as_hostname: true
+        #     log_driver: journald
+        #     mounts: []
+        #     tz: "{{ ansible_facts['date_time']['tz'] }}"
+        #   engine:
+        #     events_logger: journald
+        #     healthcheck_events: false
+        #     pull_policy: missing
+        #   network:
+        #     default_rootless_network_cmd: pasta
+        #     network_backend: netavark
         podman_fail_if_too_old: true
         podman_prune_images: true
         podman_pull_image: true
