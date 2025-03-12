@@ -25,7 +25,7 @@ Exec=python main.py
 # FIXME: change back to `watlingj/lldap-discord:latest` after
 #        jaidenw/lldap-discord#2 is merged and new image is built
 Image=docker.io/zyradyl/lldap-discord:latest
-Network=frontend.network
+Network=frontend.network:ip=172.16.0.5
 WorkingDir=/usr/src/app
 
 # environmental variables
