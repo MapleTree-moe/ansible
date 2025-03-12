@@ -54,10 +54,10 @@ jobs:
       - name: Install Ansible & Dependencies
         shell: bash
         run: pip install -r requirements.txt
-      - name: Run Ansible Playbook - deploy-containers.yaml
+      - name: Run Ansible Playbook - deploy-podman.yaml
         uses: dawidd6/action-ansible-playbook@v3
         with:
-          playbook: plays/deploy-containers.yaml
+          playbook: plays/deploy-podman.yaml
           key: ${{secrets.SSH_PRIVATE_KEY}}
           vault_password: ${{secrets.VAULT_PASSWORD}}
           requirements: requirements.yaml
