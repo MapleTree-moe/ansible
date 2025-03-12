@@ -22,7 +22,9 @@ Restart=on-failure
 AutoUpdate=registry
 ContainerName=lldap-discord
 Exec=python main.py
-Image=docker.io/watlingj/lldap-discord:latest
+# FIXME: change back to `watlingj/lldap-discord:latest` after
+#        jaidenw/lldap-discord#2 is merged and new image is built
+Image=docker.io/zyradyl/lldap-discord:latest
 Network=frontend.network
 WorkingDir=/usr/src/app
 
