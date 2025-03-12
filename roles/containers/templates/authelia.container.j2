@@ -12,6 +12,13 @@ Requires=authelia-db.service authelia-redis.service
 After=podman-user-wait-network-online.service
 
 [Service]
+# TODO: this hideous hack is the result of the way authelia and traefik
+# interact under podman. for some reason if authelia is restarted traefik cannot
+# reconnect to _specifically_ authelia even if it can reconnect to other
+# restarted services. this has to have something to do with podman. find a
+# better way to do this.
+ExecStartPost=/bin/sh -c "sleep 5"
+ExecStartPost=/usr/bin/systemctl --user try-restart traefik.service
 Restart=on-failure
 
 [Container]
