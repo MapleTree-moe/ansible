@@ -18,7 +18,7 @@ Network=frontend.network:ip=172.16.0.3
 # traefik configuration labels
 Label=traefik.enable="true"
 Label=traefik.http.routers.whoami.rule="Host(`{{ ansible_fqdn }}`)"
-Label=traefik.http.routers.whoami.middlewares="securityHeaders"
+Label=traefik.http.routers.whoami.middlewares="secured"
 
 [Install]
 WantedBy=default.target
