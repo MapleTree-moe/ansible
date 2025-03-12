@@ -5,7 +5,7 @@
 ### Run containers playbook on github actions
 ###
 ---
-name: Deploy containers playbook
+name: Deploy podman playbook
 
  # yamllint disable-line rule:truthy
 on:
@@ -14,7 +14,7 @@ on:
     branches:
       - main
     paths:
-      - 'play/deploy-containers.yaml'
+      - 'play/deploy-podman.yaml'
       - 'roles/containers/**'
 
 env:
@@ -37,6 +37,7 @@ jobs:
           hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
           enable_ipv6: false
           server_type: cx22
+          # TODO: make this a repo variable
           ssh_key: 27836571
           image: ubuntu-24.04
   deploy:
