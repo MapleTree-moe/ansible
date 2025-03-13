@@ -34,6 +34,8 @@ containers_authelia_smtp_port: 587
 containers_authelia_smtp_user: "{{ vault_common_relay_user }}"
 containers_authelia_smtp_pass: "{{ vault_common_relay_pass }}"
 containers_db_backup_enable_notifications: true
+containers_db_backup_rocketchat_recipient: bakayuki
+containers_db_backup_rocketchat_username: Nagato - Database Backups
 # yamllint disable-line rule:line-length
 containers_db_backup_rocketchat_webhook_url: "{{ vault_containers_db_backup_rocketchat_webhook_url }}"
 containers_db_backup_s3_bucket: mapletree-moe-database-repo

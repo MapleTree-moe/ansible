@@ -40,8 +40,10 @@ Environment=DEFAULT_S3_KEY_SECRET_FILE=/run/secrets/db-backup-s3-key-secret
 Environment=DEFAULT_S3_HOST={{ containers_db_backup_s3_host }}
 
 {% if containers_db_backup_enable_notifications == true %}
-Environment=ENABLE_NOTIFICATIONS={{ containers_db_backup_enable_notifications }}
+Environment=ENABLE_NOTIFICATIONS=true
 Environment=ROCKETCHAT_WEBHOOK_URL_FILE=/run/secrets/db-backup-rocketchat-webhook-url
+Environment=ROCKETCHAT_RECIPIENT={{ containers_db_backup_rocketchat_recipient }}
+Environment=ROCKETCHAT_USERNAME={{ containers_db_backup_rocketchat_username }}
 {% endif %}
 
 # databases to backup

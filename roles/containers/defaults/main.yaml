@@ -25,6 +25,8 @@ containers_authelia_smtp_user: username
 containers_authelia_smtp_pass: password
 
 containers_db_backup_enable_notifications: false
+containers_db_backup_rocketchat_recipient: someone
+containers_db_backup_rocketchat_username: DB Backup
 containers_db_backup_rocketchat_webhook_url: https://some.url/here
 
 containers_db_backup_s3_bucket: my-bucket
