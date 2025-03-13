@@ -5,25 +5,14 @@
 ### containers role - setup podman on target systems
 ###
 ---
-# TODOs: automated database backups
-#        automatic dependency resolution
+# TODOs: automatic dependency resolution
 #        podman using gpg secrets protection
 #        low priority - create local vault with secrets
 - name: CONTAINERS | PODMAN | Check if podman.socket is required
   # SECURITY: a podman socket proxy could be useful to boost security
   ansible.builtin.set_fact:
     containers_podman_socket_required: true
-  # TODO: this is just traefik for now, but it would be nice to check multiple
-  #       services against `containers_services_enabled`
   when: '"traefik" in containers_services_enabled'
-
-# this is used for the automated database backup system
-# all containers which use databases and do NOT have their own backup systems
-# will have a task inside them that appends their information to this dict
-# which is then used to generate the final template for the backup
-- name: CONTAINERS | DB BACKUP | Initialize blank databases list
-  ansible.builtin.set_fact:
-    containers_database_list: []
 
 - name: CONTAINERS | PACKAGES | Install packages
   ansible.builtin.package:
@@ -69,7 +58,7 @@
   block:
       # yamllint disable-line rule:line-length
     - name: CONTAINERS | SYSTEMD | PODMAN SOCKET | Install podman.socket (and podman-user-wait service)
-      when: containers_podman_socket_required
+      when: containers_podman_socket_required is defined
       vars:
         systemd_enabled_units:
           - item: podman.socket
@@ -161,14 +150,11 @@
       loop_control:
         loop_var: service_name
 
+      # this must be done last, so it's removed from the normal service list
     - name: CONTAINERS | DB BACKUP | Deploy automated database backups
       when: containers_enable_db_backup
-      vars:
-        podman_quadlet_specs:
-          - template_src: db-backup.container.j2
-      ansible.builtin.include_role:
-        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
-        name: fedora.linux_system_roles.podman
+      ansible.builtin.include_tasks:
+        file: db-backup.yaml
 
     - name: CONTAINERS | NETWORKS | PODMAN | Flush podman handlers
       ansible.builtin.meta: flush_handlers

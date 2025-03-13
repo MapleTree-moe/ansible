@@ -16,7 +16,7 @@ Restart=on-failure
 [Container]
 AutoUpdate=registry
 ContainerName=db-backup
-Image=docker.io/ltiredofit/db-backup
+Image=docker.io/tiredofit/db-backup
 Network=frontend.network
 Network=backend.network
 
@@ -34,22 +34,31 @@ Environment=DEFAULT_COMPRESSION=zstd
 Environment=DEFAULT_COMPRESSION_LEVEL=10
 Environment=DEFAULT_RESOURCE_OPTIMIZED=true
 Environment=DEFAULT_S3_BUCKET={{ containers_db_backup_s3_bucket }}
+Environment=DEFAULT_S3_CERT_SKIP_VERIFY=FALSE
 Environment=DEFAULT_S3_KEY_ID_FILE=/run/secrets/db-backup-s3-key-id
 Environment=DEFAULT_S3_KEY_SECRET_FILE=/run/secrets/db-backup-s3-key-secret
 Environment=DEFAULT_S3_HOST={{ containers_db_backup_s3_host }}
 
+{% if containers_db_backup_enable_notifications == true %}
+Environment=ENABLE_NOTIFICATIONS={{ containers_db_backup_enable_notifications }}
+Environment=ROCKETCHAT_WEBHOOK_URL_FILE=/run/secrets/db-backup-rocketchat-webhook-url
+{% endif %}
+
 # databases to backup
 {% for database in containers_database_list %}
-Environment=DB{{ '%02d' % loop.index }}_TYPE={{ database["type"] }}
-Environment=DB{{ '%02d' % loop.index }}_HOST={{ database["host"] }}
-Environment=DB{{ '%02d' % loop.index }}_NAME={{ database["name"] }}
-Environment=DB{{ '%02d' % loop.index }}_USER={{ database["user"] }}
-Environment=DB{{ '%02d' % loop.index }}_PASS={{ database["pass"] }}
+{% set outer_loop = loop %}
+{% for key, value in database.items() %}
+Environment=DB{{ '%02d' % outer_loop.index }}_{{ key|upper }}={{ value }}
+{% endfor %}
 {% endfor %}
 
 # secrets
 Secret=db-backup-s3-key-id,type=mount,uid=1000
 Secret=db-backup-s3-key-secret,type=mount,uid=1000
+
+{% if containers_db_backup_enable_notifications == true %}
+Secret=db-backup-rocketchat-webhook-url,type=mount,uid=1000
+{% endif %}
 
 [Install]
 WantedBy=default.target
