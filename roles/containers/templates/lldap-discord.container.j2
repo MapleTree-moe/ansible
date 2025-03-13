@@ -5,11 +5,6 @@
 ###
 ### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
 
-# HIGH TODO: this bot has no source code license!! we should maybe rewrite it
-#            to our own use case to allow people to sign up for other services
-#            edit: we def need to rewrite this at least a bit, the redirect
-#                  function wont work in the way we currently use it
-
 [Unit]
 Description=LLDAP Discord Bot
 Documentation=https://github.com/JaidenW/LLDAP-Discord
@@ -22,9 +17,7 @@ Restart=on-failure
 AutoUpdate=registry
 ContainerName=lldap-discord
 Exec=python main.py
-# FIXME: change back to `watlingj/lldap-discord:latest` after
-#        jaidenw/lldap-discord#2 is merged and new image is built
-Image=docker.io/zyradyl/lldap-discord:latest
+Image=docker.io/watlingj/lldap-discord:latest
 Network=frontend.network:ip=172.16.0.5
 WorkingDir=/usr/src/app
 
@@ -39,6 +32,7 @@ Environment=PYTHONUNBUFFERED=1
 Environment=SUBSCRIBERS_GROUP_ID=5
 Environment=SUBSCRIBER_ROLE_NAME=Users
 Environment=SERVICE_NAME={{ ansible_facts['domain'] }}
+Environment=PUBLIC_URL="https://auth.{{ ansible_facts['domain'] }}/reset-password/step1"
 
 # secrets
 Secret=lldap-ldap-user-pass,type=env,target=LDAP_BIND_PASSWORD
