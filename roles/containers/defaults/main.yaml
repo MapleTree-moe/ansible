@@ -5,6 +5,13 @@
 ### containers - main role - default variable configuration
 ###
 ---
+# the db backup system will automatically configure itself, this just turns
+# it on or off
+containers_enable_db_backup: true
+
+# do not change, this is detected and changed automatically
+containers_podman_socket_required: false
+
 containers_services_enabled:
   - traefik
   - whoami
@@ -16,6 +23,10 @@ containers_authelia_smtp_port: 25
 containers_authelia_smtp_user: username
 containers_authelia_smtp_pass: password
 
+containers_db_backup_s3_bucket: my-bucket
+containers_db_backup_s3_host: https://s3.host.example
+containers_db_backup_s3_key_id: my-key-id
+containers_db_backup_s3_key_secret: my-secret-key
 
 containers_lldap_base_dn_domain: example
 containers_lldap_base_dn_extension: com

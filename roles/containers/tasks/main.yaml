@@ -7,18 +7,25 @@
 ---
 # TODOs: automated database backups
 #        automatic dependency resolution
+#        podman using gpg secrets protection
 #        low priority - create local vault with secrets
-- name: PODMAN SOCKET | Check if podman socket is required for target host
+- name: CONTAINERS | PODMAN | Check if podman.socket is required
   # SECURITY: a podman socket proxy could be useful to boost security
   ansible.builtin.set_fact:
-    podman_socket_required: true
+    containers_podman_socket_required: true
   # TODO: this is just traefik for now, but it would be nice to check multiple
   #       services against `containers_services_enabled`
-  # URGENT TODO: without traefik the code will fail because the fact is never
-  #              at all. we need some way to set it to false when this fails
   when: '"traefik" in containers_services_enabled'
 
-- name: PACKAGES | Install packages
+# this is used for the automated database backup system
+# all containers which use databases and do NOT have their own backup systems
+# will have a task inside them that appends their information to this dict
+# which is then used to generate the final template for the backup
+- name: CONTAINERS | DB BACKUP | Initialize blank databases list
+  ansible.builtin.set_fact:
+    containers_database_list: []
+
+- name: CONTAINERS | PACKAGES | Install packages
   ansible.builtin.package:
     name:
       - container-tools
@@ -28,7 +35,7 @@
 # TODO: we should implement this ourselves. the current role fails if you remove
 #       ansible variable injection, and we should also try to keep the podman
 #       user on a static group of subuids and subgids
-- name: USERS | Configure subuid and subgid for podman user
+- name: CONTAINERS | USERS | Configure subuid and subgid for podman user
   # podman is installed after the user is created in the `common` role so we
   # need to manually set subuid and subgid
   # https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/building_running_and_managing_containers/assembly_starting-with-containers_building-running-and-managing-containers
@@ -40,9 +47,9 @@
     name: subuid_subgid
 
 # using containers with SELinux requires additional policy options to be enabled
-- name: SELINUX | Configure SELinux
+- name: CONTAINERS | SELINUX | Configure SELinux
   block:
-    - name: SELINUX | POLICY | Install SELinux policy modules
+    - name: CONTAINERS | SELINUX | POLICY | Install SELinux policy modules
       vars:
         selinux_modules:
           # TODO: these two modules are actually udica templates. we should
@@ -55,36 +62,32 @@
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_selinux/
         name: fedora.linux_system_roles.selinux
 
-    - name: SELINUX | POLICY | Flush SELinux handlers
+    - name: CONTAINERS | SELINUX | POLICY | Flush SELinux handlers
       ansible.builtin.meta: flush_handlers
 
-- name: SYSTEMD | Configure SystemD
+- name: CONTAINERS | SYSTEMD | Configure SystemD
   block:
-    - name: SYSTEMD | PODMAN SOCKET | Install podman.sock if required
-      when: podman_socket_required
+      # yamllint disable-line rule:line-length
+    - name: CONTAINERS | SYSTEMD | PODMAN SOCKET | Install podman.socket (and podman-user-wait service)
+      when: containers_podman_socket_required
       vars:
         systemd_enabled_units:
           - item: podman.socket
             user: podman
+            # UPGRADE: see below
+          - item: podman-user-wait-network-online.service
+            user: podman
         systemd_started_units:
           - item: podman.socket
             user: podman
-      ansible.builtin.include_role:
-        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
-        name: fedora.linux_system_roles.systemd
-
-    # because systemD doesn't allow user units to interact with system units, we
-    # can't use `network-online.target` for podman, so we make our own
-    # https://access.redhat.com/solutions/7004860
-    # UPGRADE: this isn't needed in v5.3
-    - name: SYSTEMD | NETWORK | Install podman-user-wait-network-online.service
-      vars:
-        systemd_enabled_units:
+            # UPGRADE: see below
           - item: podman-user-wait-network-online.service
             user: podman
-        systemd_started_units:
-          - item: podman-user-wait-network-online.service
-            user: podman
+        # because systemD doesn't allow user units to interact with system units
+        # we can't use `network-online.target` for podman, so we make our own
+        # https://access.redhat.com/solutions/7004860
+        # UPGRADE: this isn't needed in v5.3, it is added by default
+        # UPGRADE: _all_ unit files will need to be adapted
         systemd_unit_file_templates:
           - item: podman-user-wait-network-online.service.j2
             user: podman
@@ -93,8 +96,18 @@
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
         name: fedora.linux_system_roles.systemd
 
-    - name: SYSTEMD | Flush systemd handlers
+    - name: CONTAINERS | SYSTEMD | Flush systemd handlers
       ansible.builtin.meta: flush_handlers
+
+# FIXME: this is a temporary workaround for the below bug and PR
+- name: CONTAINERS | PODMAN | Install configuration file
+  ansible.builtin.copy:
+    src: containers.conf.d/50-systemroles.conf
+    # yamllint disable-line rule:line-length
+    dest: /home/podman/.config/containers/containers.conf.d/50-systemroles.conf
+    owner: podman
+    group: podman
+    mode: "0644"
 
 # TODO: it would be nice to one day have every container network isolated except
 #       for the services it needs. it seems like this would be expensive on
@@ -102,55 +115,60 @@
 # SECURITY TODO: podman by default stores secrets unencrypted in a file, just
 #                encoded. we should transition to either gpg or a proper secrets
 #                store.
-- name: PODMAN | Configure basic podman setup
+- name: CONTAINERS | Configure podman and deploy services
+  vars:
+    # these variables will be applied to all invocations of the podman role
+    # in this block
+    podman_fail_if_too_old: true
+    podman_prune_images: true
+    podman_pull_image: true
+    podman_run_as_user: podman
+    podman_run_as_group: podman
+    podman_validate_certs: true
   block:
-    # FIXME: this is a temporary workaround for the below bug and PR
-    - name: PODMAN | Install configuration file
-      ansible.builtin.copy:
-        src: containers.conf.d/50-systemroles.conf
-        # yamllint disable-line rule:line-length
-        dest: /home/podman/.config/containers/containers.conf.d/50-systemroles.conf
-        owner: podman
-        group: podman
-        mode: "0644"
-    - name: PODMAN | Install the container networks
+    - name: CONTAINERS | PODMAN | Configure basic podman setup
+      block:
+        - name: CONTAINERS | PODMAN | Install the container networks
+          vars:
+            # FIXME: linux-system-roles/podman #208 PR #209
+            # podman_containers_conf:
+            #   containers:
+            #     container_name_as_hostname: true
+            #     log_driver: journald
+            #     mounts: []
+            #     tz: "{{ ansible_facts['date_time']['tz'] }}"
+            #   engine:
+            #     events_logger: journald
+            #     healthcheck_events: false
+            #     pull_policy: missing
+            #   network:
+            #     default_rootless_network_cmd: pasta
+            #     network_backend: netavark
+            podman_quadlet_specs:
+              - template_src: backend.network.j2
+              - template_src: frontend.network.j2
+            podman_storage_conf:
+              storage:
+                driver: overlay
+          ansible.builtin.include_role:
+            # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
+            name: fedora.linux_system_roles.podman
+
+    - name: CONTAINERS | SERVICES | Install and configure enabled containers
+      ansible.builtin.include_tasks:
+        file: "{{ service_name }}.yaml"
+      loop: "{{ containers_services_enabled }}"
+      loop_control:
+        loop_var: service_name
+
+    - name: CONTAINERS | DB BACKUP | Deploy automated database backups
+      when: containers_enable_db_backup
       vars:
-        # FIXME: linux-system-roles/podman #208 PR #209
-        # podman_containers_conf:
-        #   containers:
-        #     container_name_as_hostname: true
-        #     log_driver: journald
-        #     mounts: []
-        #     tz: "{{ ansible_facts['date_time']['tz'] }}"
-        #   engine:
-        #     events_logger: journald
-        #     healthcheck_events: false
-        #     pull_policy: missing
-        #   network:
-        #     default_rootless_network_cmd: pasta
-        #     network_backend: netavark
-        podman_fail_if_too_old: true
-        podman_prune_images: true
-        podman_pull_image: true
         podman_quadlet_specs:
-          - template_src: backend.network.j2
-          - template_src: frontend.network.j2
-        podman_run_as_user: podman
-        podman_run_as_group: podman
-        podman_storage_conf:
-          storage:
-            driver: overlay
-        podman_validate_certs: true
+          - template_src: db-backup.container.j2
       ansible.builtin.include_role:
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
         name: fedora.linux_system_roles.podman
 
-    - name: NETWORKS | PODMAN | Flush podman handlers
+    - name: CONTAINERS | NETWORKS | PODMAN | Flush podman handlers
       ansible.builtin.meta: flush_handlers
-
-- name: SERVICES | Install and configure enabled containers
-  ansible.builtin.include_tasks:
-    file: "{{ service_name }}.yaml"
-  loop: "{{ containers_services_enabled }}"
-  loop_control:
-    loop_var: service_name
