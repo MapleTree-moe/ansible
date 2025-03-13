@@ -13,24 +13,11 @@
         msg: |
           !!!ERROR!!!
           !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/authelia.yaml:21
-          !!!ERROR!!! traefik is a hard dependency of authelia.
-          !!!ERROR!!! you must add it to `containers_services_enabled` before the
-          !!!ERROR!!! declaration of authelia.
+          !!!ERROR!!! authelia has unsatisfied dependencies. please review.
           !!!ERROR!!!
         # yamllint enable rule:line-length
-      when: "'traefik' not in containers_services_enabled"
-    - name: CONTAINERS | AUTHELIA | Check dependencies - lldap
-      ansible.builtin.fail:
-        # yamllint disable rule:line-length
-        msg: |
-          !!!ERROR!!!
-          !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/authelia.yaml:33
-          !!!ERROR!!! lldap is a hard dependency of authelia.
-          !!!ERROR!!! you must add it to `containers_services_enabled` before the
-          !!!ERROR!!! declaration of authelia.
-          !!!ERROR!!!
-        # yamllint enable rule:line-length
-      when: "'lldap' not in containers_services_enabled"
+      when: "'traefik' not in containers_services_enabled or
+             'lldap' not in containers_services_enabled"
 
 - name: CONTAINERS | AUTHELIA | Generate secrets
   # while we generate new secrets in this step, they are NOT deployed later

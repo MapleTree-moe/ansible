@@ -10,9 +10,7 @@
     msg: |
       !!!ERROR!!!
       !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/lldap.yaml:17
-      !!!ERROR!!! traefik is a hard dependency of lldap.
-      !!!ERROR!!! you must add it to `containers_services_enabled` before the
-      !!!ERROR!!! declaration of lldap.
+      !!!ERROR!!! lldap has unsatisfied dependencies. please review.
       !!!ERROR!!!
   when: "'traefik' not in containers_services_enabled"
 

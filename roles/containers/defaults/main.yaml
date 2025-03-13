@@ -8,9 +8,10 @@
 # the db backup system will automatically configure itself, this just turns
 # it on or off
 containers_enable_db_backup: true
-
-# do not change, this is detected and changed automatically
-containers_podman_socket_required: false
+# all containers which use databases and do NOT have their own backup systems
+# will have a task inside them that appends their information to the dict
+# which is then used to generate the final template for the backup
+containers_database_list: [] # do NOT change
 
 containers_services_enabled:
   - traefik
@@ -23,8 +24,12 @@ containers_authelia_smtp_port: 25
 containers_authelia_smtp_user: username
 containers_authelia_smtp_pass: password
 
+containers_db_backup_enable_notifications: false
+containers_db_backup_rocketchat_webhook_url: https://some.url/here
+
 containers_db_backup_s3_bucket: my-bucket
-containers_db_backup_s3_host: https://s3.host.example
+# do NOT add schema (http:// or https://) to this, your backups will fail
+containers_db_backup_s3_host: s3.host.example
 containers_db_backup_s3_key_id: my-key-id
 containers_db_backup_s3_key_secret: my-secret-key
 
