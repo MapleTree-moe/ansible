@@ -33,8 +33,12 @@ containers_authelia_smtp_host: mail.smtp2go.com
 containers_authelia_smtp_port: 587
 containers_authelia_smtp_user: "{{ vault_common_relay_user }}"
 containers_authelia_smtp_pass: "{{ vault_common_relay_pass }}"
+containers_db_backup_enable_notifications: true
+# yamllint disable-line rule:line-length
+containers_db_backup_rocketchat_webhook_url: "{{ vault_containers_db_backup_rocketchat_webhook_url }}"
 containers_db_backup_s3_bucket: mapletree-moe-database-repo
-containers_db_backup_s3_host: https://s3.eu-central-003.backblazeb2.com
+# do NOT add schema (http:// or https://) to this, your backups will fail
+containers_db_backup_s3_host: s3.eu-central-003.backblazeb2.com
 containers_db_backup_s3_key_id: "{{ vault_containers_db_backup_s3_key_id }}"
 # yamllint disable-line rule:line-length
 containers_db_backup_s3_key_secret: "{{ vault_containers_db_backup_s3_key_secret }}"
