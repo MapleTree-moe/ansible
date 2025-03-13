@@ -33,13 +33,12 @@ containers_authelia_smtp_host: mail.smtp2go.com
 containers_authelia_smtp_port: 587
 containers_authelia_smtp_user: "{{ vault_common_relay_user }}"
 containers_authelia_smtp_pass: "{{ vault_common_relay_pass }}"
+containers_db_backup_s3_bucket: my-bucket
+containers_db_backup_s3_host: https://s3.host.example
+containers_db_backup_s3_key_id: "{{ vault_containers_db_backup_s3_key_id }}"
+# yamllint disable-line rule:line-length
+containers_db_backup_s3_key_secret: "{{ vault_containers_db_backup_s3_key_secret }}"
 containers_lldap_base_dn_domain: mapletree
 containers_lldap_base_dn_extension: moe
 # yamllint disable-line rule:line-length
 containers_lldap_discord_bot_token: "{{ vault_containers_lldap_discord_bot_token }}"
-
-###
-### Container Secrets Section
-###
-# yamllint disable-line rule:line-length
-containers_traefik_dashboard_password: "{{ vault_containers_traefik_dashboard_password }}"

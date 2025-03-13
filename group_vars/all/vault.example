@@ -19,4 +19,6 @@ vault_common_relay_user: "USERNAME"
 vault_common_relay_pass: "PASSWORD"
 
 ## containers
-vault_containers_traefik_dashboard_password: "PASSWORD"
+vault_containers_db_backup_s3_key_secret: mysecret
+vault_containers_db_backup_s3_key_id: mykeyid
+vault_containers_lldap_discord_bot_token: mydiscordtoken

@@ -64,7 +64,6 @@
   block:
     - name: CONTAINERS | AUTHELIA | PODMAN | Install containers
       vars:
-        podman_fail_if_too_old: true
         podman_quadlet_specs:
           # list order determined by dependencies - do NOT modify
           - template_src: authelia-db.volume.j2
@@ -72,10 +71,6 @@
           - template_src: authelia-redis.volume.j2
           - template_src: authelia-redis.container.j2
           - template_src: authelia.container.j2
-        podman_prune_images: true
-        podman_pull_image: true
-        podman_run_as_user: podman
-        podman_run_as_group: podman
         podman_secrets:
           - name: authelia-encryption-key
             state: present
@@ -97,10 +92,17 @@
             state: present
             skip_existing: true # do not overwrite if secret exists
             data: "{{ containers_authelia_smtp_pass }}"
-        podman_validate_certs: true
       ansible.builtin.include_role:
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
         name: fedora.linux_system_roles.podman
 
-    - name: CONTAINERS | AUTHELIA | PODMAN | Flush podman handlers
-      ansible.builtin.meta: flush_handlers
+- name: CONTAINERS | AUTHELIA | Append database information to automated backup
+  vars:
+    authelia_db:
+      - type: pgsql
+        host: authelia-db
+        name: authelia
+        user: authelia
+        pass: authelia
+  ansible.builtin.set_fact:
+    containers_database_list: "{{ containers_database_list + authelia_db }}"

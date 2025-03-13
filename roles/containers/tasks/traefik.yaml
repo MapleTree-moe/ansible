@@ -107,20 +107,11 @@
   block:
     - name: SERVICES | TRAEFIK | PODMAN | Install containers
       vars:
-        podman_fail_if_too_old: true
-        podman_prune_images: true
-        podman_pull_image: true
         podman_quadlet_specs:
           # list order determined by dependencies - do NOT modify
           # NOTE: the volume is needed to store the acme certificates
           - template_src: traefik.volume.j2
           - template_src: traefik.container.j2
-        podman_run_as_user: podman
-        podman_run_as_group: podman
-        podman_validate_certs: true
       ansible.builtin.include_role:
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
         name: fedora.linux_system_roles.podman
-
-    - name: SERVICES | TRAEFIK | PODMAN | Flush podman handlers
-      ansible.builtin.meta: flush_handlers
