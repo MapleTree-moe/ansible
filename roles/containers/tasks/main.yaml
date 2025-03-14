@@ -98,6 +98,12 @@
     group: podman
     mode: "0644"
 
+- name: CONTAINERS | Import image versions from variable file
+  # this is a hack to get renovate to automatically update our quadlet image
+  # versions
+  ansible.builtin.include_vars:
+    file: compose.yaml
+
 # TODO: it would be nice to one day have every container network isolated except
 #       for the services it needs. it seems like this would be expensive on
 #       podman, maybe this is a use for consul?

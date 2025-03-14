@@ -20,7 +20,7 @@ Sockets=traefik-web.socket traefik-websecure.socket
 [Container]
 AutoUpdate=registry
 ContainerName=traefik
-Image=docker.io/traefik:v3
+Image={{ services['traefik']['image'] }}
 Network=frontend.network:ip=172.16.0.2
 SecurityLabelType=traefik.process
 
