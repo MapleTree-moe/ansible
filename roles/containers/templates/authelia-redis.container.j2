@@ -16,7 +16,7 @@ Restart=on-failure
 [Container]
 AutoUpdate=registry
 ContainerName=authelia-redis
-Image=docker.io/redis:7
+Image={{ services['redis']['image'] }}
 Network=backend.network
 
 # health check

@@ -24,7 +24,7 @@ Restart=on-failure
 [Container]
 AutoUpdate=registry
 ContainerName=authelia
-Image=docker.io/authelia/authelia:4.38
+Image={{ services['authelia']['image'] }}
 Network=frontend.network:ip=172.16.0.6
 Network=backend.network
 

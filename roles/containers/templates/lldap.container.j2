@@ -17,8 +17,7 @@ Restart=on-failure
 [Container]
 AutoUpdate=registry
 ContainerName=lldap
-# TODO: investigate rootless container
-Image=docker.io/lldap/lldap:stable-debian
+Image={{ services['lldap']['image'] }}
 Network=frontend.network:ip=172.16.0.4
 Network=backend.network
 

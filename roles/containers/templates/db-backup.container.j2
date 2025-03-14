@@ -16,7 +16,7 @@ Restart=on-failure
 [Container]
 AutoUpdate=registry
 ContainerName=db-backup
-Image=docker.io/tiredofit/db-backup
+Image={{ services['db-backup']['image'] }}
 Network=frontend.network
 Network=backend.network
 

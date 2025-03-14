@@ -17,7 +17,7 @@ Restart=on-failure
 AutoUpdate=registry
 ContainerName=lldap-discord
 Exec=python main.py
-Image=docker.io/watlingj/lldap-discord:latest
+Image={{ services['lldap-discord']['image'] }}
 Network=frontend.network:ip=172.16.0.5
 WorkingDir=/usr/src/app
 
