@@ -20,7 +20,7 @@ services: # noqa var-naming
   authelia:
     image: docker.io/authelia/authelia:4.38@sha256:46021dc20efdcc5cdc38a29e3050b8835429a155ae6215388ed3b793a02eb0ab
   db-backup:
-    image: docker.io/tiredofit/db-backup:4.1.6@sha256:26541bb600bc817d9a69edd46141b03e6e6ff7612ac011f3a0264882f8435765
+    image: docker.io/tiredofit/db-backup:4.1.16@sha256:26541bb600bc817d9a69edd46141b03e6e6ff7612ac011f3a0264882f8435765
   lldap-discord:
     image: docker.io/watlingj/lldap-discord:1.0.2@sha256:e3d99fef4b3c04de5d6c6e701c3819b6c87a734babd23931b591f8c906bf1c27
   lldap:
