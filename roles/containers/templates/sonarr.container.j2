@@ -1,0 +1,50 @@
+### {{ ansible_managed }} - {{ ansible_facts['fqdn'] }}
+###
+### mapletree.moe - podman quadlet file
+### https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
+###
+### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
+
+[Unit]
+Description=Sonarr container
+Documentation=https://github.com/Sonarr/Sonarr
+Requires=sonarr.service
+After=podman-user-wait-network-online.service
+
+[Service]
+Restart=on-failure
+
+[Container]
+AutoUpdate=registry
+ContainerName=sonarr
+Image={{ services['sonarr']['image'] }}
+Network=frontend.network:ip=172.16.0.7
+
+# environmental variables
+Environment=SONARR__APP__THEME=dark
+Environment=SONARR__APP__INSTANCENAME=sonarr
+Environment=SONARR__AUTH__METHOD=Basic
+Environment=SONARR__AUTH__REQUIRED=DisabledForLocalAddresses
+
+# health check
+#HealthCmd=/app/lldap healthcheck
+#HealthInterval=5s
+#HealthRetries=3
+#HealthStartPeriod=15s
+#HealthTimeout=30s
+
+# automatically configure traefik to proxy the web service
+Label=traefik.enable="true"
+Label=traefik.http.routers.lldap.rule="Host(`sonarr.{{ ansible_facts['fqdn'] }}`)"
+Label=traefik.http.routers.lldap.middlewares="secured"
+Label=traefik.http.services.lldap.loadbalancer.server.port=8989
+
+# secrets
+Secret=sonarr-api-key,type=env,target=SONARR__AUTH__APIKEY
+
+# volumes
+Volume=sonarr.volume:/config:Z
+Volume=/home/podman/containers/backup/sonarr:/config/backup
+
+[Install]
+WantedBy=default.target

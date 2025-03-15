@@ -40,3 +40,7 @@
 - name: HARDENING | Configure system time
   ansible.builtin.include_tasks:
     file: timesync.yaml
+
+# FIXME: there should be a task here to post hardening rebuild the AIDE database
+#        and move the newly created one into place otherwise you get constant
+#        emails

@@ -18,6 +18,7 @@ containers_services_enabled:
   - whoami
   - lldap
   - authelia
+  - sonarr
 
 containers_authelia_smtp_host: smtp.example.com
 containers_authelia_smtp_port: 25

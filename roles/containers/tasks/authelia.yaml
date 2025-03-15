@@ -6,18 +6,14 @@
 ###
 ---
 - name: CONTAINERS | AUTHELIA | Check dependencies
-  block:
-    - name: CONTAINERS | AUTHELIA | Check dependencies - traefik
-      ansible.builtin.fail:
-        # yamllint disable rule:line-length
-        msg: |
-          !!!ERROR!!!
-          !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/authelia.yaml:21
-          !!!ERROR!!! authelia has unsatisfied dependencies. please review.
-          !!!ERROR!!!
-        # yamllint enable rule:line-length
-      when: "'traefik' not in containers_services_enabled or
-             'lldap' not in containers_services_enabled"
+  when: "'traefik' not in containers_services_enabled or
+         'lldap' not in containers_services_enabled"
+  ansible.builtin.fail:
+    msg: |
+      !!!ERROR!!!
+      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/authelia.yaml:9
+      !!!ERROR!!! authelia has unsatisfied dependencies. please review.
+      !!!ERROR!!!
 
 - name: CONTAINERS | AUTHELIA | Generate secrets
   # while we generate new secrets in this step, they are NOT deployed later
@@ -34,54 +30,52 @@
   block:
     - name: CONTAINERS | AUTHELIA | FILES | Create configuration directory
       ansible.builtin.file:
-        path: /home/podman/containers/authelia
+        path: /home/podman/containers/config/authelia
         state: directory
         owner: podman
         group: podman
         mode: "0755"
     - name: CONTAINERS | AUTHELIA | FILES | Template configuration file
       ansible.builtin.template:
-        src: authelia/config.yaml.j2
-        dest: /home/podman/containers/authelia/config.yaml
+        src: config/authelia/config.yaml.j2
+        dest: /home/podman/containers/config/authelia/config.yaml
         owner: podman
         group: podman
         mode: "0640"
 
-- name: CONTAINERS | AUTHELIA | Configure podman
-  block:
-    - name: CONTAINERS | AUTHELIA | PODMAN | Install containers
-      vars:
-        podman_quadlet_specs:
-          # list order determined by dependencies - do NOT modify
-          - template_src: authelia-db.volume.j2
-          - template_src: authelia-db.container.j2
-          - template_src: authelia-redis.volume.j2
-          - template_src: authelia-redis.container.j2
-          - template_src: authelia.container.j2
-        podman_secrets:
-          - name: authelia-encryption-key
-            state: present
-            skip_existing: true # do not overwrite if secret exists
-            data: "{{ authelia_encryption_key }}"
-          - name: authelia-session-secret
-            state: present
-            skip_existing: true # do not overwrite if secret exists
-            data: "{{ authelia_session_secret }}"
-          - name: authelia-oidc-hmac-secret
-            state: present
-            skip_existing: true # do not overwrite if secret exists
-            data: "{{ authelia_oidc_hmac_secret }}"
-          - name: authelia-reset-password-jwt-secret
-            state: present
-            skip_existing: true # do not overwrite if secret exists
-            data: "{{ authelia_reset_password_jwt_secret }}"
-          - name: authelia-smtp-password
-            state: present
-            skip_existing: true # do not overwrite if secret exists
-            data: "{{ containers_authelia_smtp_pass }}"
-      ansible.builtin.include_role:
-        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
-        name: fedora.linux_system_roles.podman
+- name: CONTAINERS | AUTHELIA | Install container
+  vars:
+    podman_quadlet_specs:
+      # list order determined by dependencies - do NOT modify
+      - template_src: authelia-db.volume.j2
+      - template_src: authelia-db.container.j2
+      - template_src: authelia-redis.volume.j2
+      - template_src: authelia-redis.container.j2
+      - template_src: authelia.container.j2
+    podman_secrets:
+      - name: authelia-encryption-key
+        state: present
+        skip_existing: true # do not overwrite if secret exists
+        data: "{{ authelia_encryption_key }}"
+      - name: authelia-session-secret
+        state: present
+        skip_existing: true # do not overwrite if secret exists
+        data: "{{ authelia_session_secret }}"
+      - name: authelia-oidc-hmac-secret
+        state: present
+        skip_existing: true # do not overwrite if secret exists
+        data: "{{ authelia_oidc_hmac_secret }}"
+      - name: authelia-reset-password-jwt-secret
+        state: present
+        skip_existing: true # do not overwrite if secret exists
+        data: "{{ authelia_reset_password_jwt_secret }}"
+      - name: authelia-smtp-password
+        state: present
+        skip_existing: true # do not overwrite if secret exists
+        data: "{{ containers_authelia_smtp_pass }}"
+  ansible.builtin.include_role:
+    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
+    name: fedora.linux_system_roles.podman
 
 - name: CONTAINERS | AUTHELIA | Append database information to automated backup
   vars:

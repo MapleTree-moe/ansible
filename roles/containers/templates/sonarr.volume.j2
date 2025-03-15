@@ -1,0 +1,13 @@
+### {{ ansible_managed }} - {{ ansible_facts['fqdn'] }}
+###
+### mapletree.moe - podman quadlet file
+### https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
+###
+### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
+
+[Unit]
+Description=Sonarr configuration volume
+Documentation=https://github.com/Sonarr/Sonarr
+
+[Volume]
+VolumeName=sonarr
