@@ -110,7 +110,7 @@
 - name: CONTAINERS | FILESYSTEM | Create containers storage area
   ansible.builtin.file:
     path:
-      - /home/podman/containers/backup
+      #  - /home/podman/containers/backup
       - /home/podman/containers/config
     state: directory
     owner: podman
