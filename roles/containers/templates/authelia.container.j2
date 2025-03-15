@@ -22,7 +22,6 @@ ExecStartPost=/usr/bin/systemctl --user try-restart traefik.service
 Restart=on-failure
 
 [Container]
-AutoUpdate=registry
 ContainerName=authelia
 Image={{ services['authelia']['image'] }}
 Network=frontend.network:ip=172.16.0.6
