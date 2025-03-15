@@ -15,7 +15,6 @@ After=podman-user-wait-network-online.service
 Restart=on-failure
 
 [Container]
-AutoUpdate=registry
 ContainerName=sonarr
 Image={{ services['sonarr']['image'] }}
 Network=frontend.network:ip=172.16.0.7
@@ -35,9 +34,9 @@ Environment=SONARR__AUTH__REQUIRED=DisabledForLocalAddresses
 
 # automatically configure traefik to proxy the web service
 Label=traefik.enable="true"
-Label=traefik.http.routers.lldap.rule="Host(`sonarr.{{ ansible_facts['fqdn'] }}`)"
-Label=traefik.http.routers.lldap.middlewares="secured"
-Label=traefik.http.services.lldap.loadbalancer.server.port=8989
+Label=traefik.http.routers.sonarr.rule="Host(`sonarr.{{ ansible_facts['fqdn'] }}`)"
+Label=traefik.http.routers.sonarr.middlewares="secured"
+Label=traefik.http.services.sonarr.loadbalancer.server.port=8989
 
 # secrets
 Secret=sonarr-api-key,type=env,target=SONARR__AUTH__APIKEY
