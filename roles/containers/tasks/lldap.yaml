@@ -6,13 +6,13 @@
 ###
 ---
 - name: CONTAINERS | LLDAP | Check dependencies
+  when: "'traefik' not in containers_services_enabled"
   ansible.builtin.fail:
     msg: |
       !!!ERROR!!!
-      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/lldap.yaml:17
+      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/lldap.yaml:9
       !!!ERROR!!! lldap has unsatisfied dependencies. please review.
       !!!ERROR!!!
-  when: "'traefik' not in containers_services_enabled"
 
 - name: CONTAINERS | LLDAP | Generate secrets
   # while we generate new secrets in this step, they are NOT deployed later
@@ -30,7 +30,7 @@
   block:
     - name: CONTAINERS | LLDAP | BOOTSTRAP | Copy static JSON files
       ansible.builtin.copy:
-        src: lldap
+        src: config/lldap
         dest: /home/podman/containers
         owner: podman
         group: podman
@@ -46,54 +46,52 @@
         mode: "0640"
         force: false # do NOT overwrite secrets if they exist
       loop:
-        - src: lldap/user-configs/admin.json.j2
+        - src: config/lldap/user-configs/admin.json.j2
           dest: /home/podman/containers/lldap/user-configs/admin.json
-        - src: lldap/user-configs/lldap_bind_user.json.j2
+        - src: config/lldap/user-configs/lldap_bind_user.json.j2
           dest: /home/podman/containers/lldap/user-configs/lldap_bind_user.json
-        - src: lldap/user-configs/lldap_password_manager.json.j2
+        - src: config/lldap/user-configs/lldap_password_manager.json.j2
           # yamllint disable-line rule:line-length
           dest: /home/podman/containers/lldap/user-configs/lldap_password_manager.json
       notify:
         - Bootstrap LLDAP
 
-- name: CONTAINERS | LLDAP | Configure podman
-  block:
-    - name: CONTAINERS | LLDAP | PODMAN | Install containers
-      vars:
-        podman_quadlet_specs:
-          # list order determined by dependencies - do NOT modify
-          - template_src: lldap-db.volume.j2
-          - template_src: lldap-db.container.j2
-          - template_src: lldap.container.j2
-          - template_src: lldap-discord.container.j2
-        podman_secrets:
-          - name: lldap-bind-user-pass
-            state: present
-            skip_existing: true # do not overwrite if secret exists
-            data: "{{ lldap_bind_user_pass }}"
-          - name: lldap-discord-bot-token
-            state: present
-            skip_existing: true # do not overwrite if secret exists
-            data: "{{ containers_lldap_discord_bot_token }}"
-          - name: lldap-jwt-secret
-            state: present
-            skip_existing: true # do not overwrite if secret exists
-            data: "{{ lldap_jwt_secret }}"
-          - name: lldap-key-seed
-            state: present
-            skip_existing: true # do not overwrite if secret exists
-            data: "{{ lldap_key_seed }}"
-          - name: lldap-ldap-user-pass
-            state: present
-            skip_existing: true # do not overwrite if secret exists
-            data: "{{ lldap_ldap_user_pass }}"
-          - name: lldap-password-manager-pass
-            state: present
-            skip_existing: true # do not overwrite if secret exists
-            data: "{{ lldap_password_manager_pass }}"
-      ansible.builtin.include_role:
-        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
-        name: fedora.linux_system_roles.podman
+- name: CONTAINERS | LLDAP | Install containers
+  vars:
+    podman_quadlet_specs:
+      # list order determined by dependencies - do NOT modify
+      - template_src: lldap-db.volume.j2
+      - template_src: lldap-db.container.j2
+      - template_src: lldap.container.j2
+      - template_src: lldap-discord.container.j2
+    podman_secrets:
+      - name: lldap-bind-user-pass
+        state: present
+        skip_existing: true # do not overwrite if secret exists
+        data: "{{ lldap_bind_user_pass }}"
+      - name: lldap-discord-bot-token
+        state: present
+        skip_existing: true # do not overwrite if secret exists
+        data: "{{ containers_lldap_discord_bot_token }}"
+      - name: lldap-jwt-secret
+        state: present
+        skip_existing: true # do not overwrite if secret exists
+        data: "{{ lldap_jwt_secret }}"
+      - name: lldap-key-seed
+        state: present
+        skip_existing: true # do not overwrite if secret exists
+        data: "{{ lldap_key_seed }}"
+      - name: lldap-ldap-user-pass
+        state: present
+        skip_existing: true # do not overwrite if secret exists
+        data: "{{ lldap_ldap_user_pass }}"
+      - name: lldap-password-manager-pass
+        state: present
+        skip_existing: true # do not overwrite if secret exists
+        data: "{{ lldap_password_manager_pass }}"
+  ansible.builtin.include_role:
+    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
+    name: fedora.linux_system_roles.podman
 
 - name: CONTAINERS | LLDAP | Append database information to automated backup
   vars:

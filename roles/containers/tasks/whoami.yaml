@@ -5,14 +5,19 @@
 ### containers - whoami - deploy lldap to target system
 ###
 ---
-- name: CONTAINERS | WHOAMI | Configure podman
-  block:
-    - name: CONTAINERS | WHOAMI | PODMAN | Install traefik containers
-      vars:
-        podman_quadlet_specs:
-          - template_src: whoami.container.j2
-      ansible.builtin.include_role:
-        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
-        name: fedora.linux_system_roles.podman
-    - name: CONTAINERS | WHOAMI | PODMAN | Flush podman handlers
-      ansible.builtin.meta: flush_handlers
+- name: CONTAINERS | WHOAMI | Check dependencies
+  when: "'traefik' not in containers_services_enabled"
+  ansible.builtin.fail:
+    msg: |
+      !!!ERROR!!!
+      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/whoami.yaml:9
+      !!!ERROR!!! whoami has unsatisfied dependencies. please review.
+      !!!ERROR!!!
+
+- name: CONTAINERS | WHOAMI | Install containers
+  vars:
+    podman_quadlet_specs:
+      - template_src: whoami.container.j2
+  ansible.builtin.include_role:
+    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
+    name: fedora.linux_system_roles.podman
