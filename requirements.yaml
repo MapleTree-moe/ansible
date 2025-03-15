@@ -21,6 +21,3 @@ roles:
     #          podman rootless!
     src: https://github.com/ansible-lockdown/RHEL9-CIS
     version: 2.0.0
-  - name: subuid_subgid
-    src: https://github.com/rwxd/ansible-role-subuid_subgid
-    version: v1.1.0

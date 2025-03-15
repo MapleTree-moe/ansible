@@ -5,9 +5,9 @@
 ### containers - traefik - deploy traefik to target system
 ###
 ---
-- name: SERVICES | TRAEFIK | Configure firewall
+- name: CONTAINERS | TRAEFIK | Configure firewall
   block:
-    - name: SERVICES | TRAEFIK | FIREWALL | Set firewall policy
+    - name: CONTAINERS | TRAEFIK | FIREWALL | Set firewall policy
       vars:
         firewall:
           - zone: public
@@ -25,8 +25,8 @@
                 proto: udp
                 toport: 8443
             state: enabled
-          # enable the http, https, and http3 services within firewalld.
-          # prefer to use services over ports to keep policy cleaner
+          # enable the http, https, and http3 CONTAINERS within firewalld.
+          # prefer to use CONTAINERS over ports to keep policy cleaner
           - service: http
             state: enabled
           - service: https
@@ -37,14 +37,14 @@
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_firewall/
         name: fedora.linux_system_roles.firewall
 
-    - name: SERVICES | TRAEFIK | FIREWALL | Flush firewall handlers
+    - name: CONTAINERS | TRAEFIK | FIREWALL | Flush firewall handlers
       ansible.builtin.meta: flush_handlers
 
-- name: SERVICES | TRAEFIK | Configure SELinux
+- name: CONTAINERS | TRAEFIK | Configure SELinux
   # allow traefik to access `podman.socket` for dynamic configuration
   # https://kcore.org/2023/12/13/adventures-with-rootless-containers/
   block:
-    - name: SERVICES | TRAEFIK | SELINUX | Install SELinux policy modules
+    - name: CONTAINERS | TRAEFIK | SELINUX | Install SELinux policy modules
       vars:
         selinux_modules:
           - path: selinux/traefik.cil
@@ -66,12 +66,12 @@
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_selinux/
         name: fedora.linux_system_roles.selinux
 
-    - name: SERVICES | TRAEFIK | SELINUX | Flush SELinux handlers
+    - name: CONTAINERS | TRAEFIK | SELINUX | Flush SELinux handlers
       ansible.builtin.meta: flush_handlers
 
-- name: SERVICES | TRAEFIK | Configure SystemD
+- name: CONTAINERS | TRAEFIK | Configure SystemD
   block:
-    - name: SERVICES | TRAEFIK | SYSTEMD | Install SystemD sockets
+    - name: CONTAINERS | TRAEFIK | SYSTEMD | Install SystemD sockets
       # systemd-socket-activation results in faster networking than standard
       # rootless podman networks
       # https://www.redhat.com/en/blog/socket-activation-podman
@@ -92,26 +92,24 @@
         # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
         name: fedora.linux_system_roles.systemd
 
-    - name: SERVICES | TRAEFIK | SYSTEMD | Flush systemd handlers
+    - name: CONTAINERS | TRAEFIK | SYSTEMD | Flush systemd handlers
       ansible.builtin.meta: flush_handlers
 
-- name: SERVICES | TRAEFIK | Copy configuration files
+- name: CONTAINERS | TRAEFIK | Copy configuration files
   ansible.builtin.copy:
-    src: traefik
-    dest: /home/podman/containers
+    src: config/traefik
+    dest: /home/podman/containers/config
     owner: podman
     group: podman
-    mode: "0755"
+    mode: "0750"
 
-- name: SERVICES | TRAEFIK | Configure podman
-  block:
-    - name: SERVICES | TRAEFIK | PODMAN | Install containers
-      vars:
-        podman_quadlet_specs:
-          # list order determined by dependencies - do NOT modify
-          # NOTE: the volume is needed to store the acme certificates
-          - template_src: traefik.volume.j2
-          - template_src: traefik.container.j2
-      ansible.builtin.include_role:
-        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
-        name: fedora.linux_system_roles.podman
+- name: CONTAINERS | TRAEFIK | Install containers
+  vars:
+    podman_quadlet_specs:
+      # list order determined by dependencies - do NOT modify
+      # NOTE: the volume is needed to store the acme certificates
+      - template_src: traefik.volume.j2
+      - template_src: traefik.container.j2
+  ansible.builtin.include_role:
+    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
+    name: fedora.linux_system_roles.podman
