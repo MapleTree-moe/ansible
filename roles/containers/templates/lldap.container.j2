@@ -15,7 +15,6 @@ After=podman-user-wait-network-online.service
 Restart=on-failure
 
 [Container]
-AutoUpdate=registry
 ContainerName=lldap
 Image={{ services['lldap']['image'] }}
 Network=frontend.network:ip=172.16.0.4

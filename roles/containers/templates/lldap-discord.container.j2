@@ -14,7 +14,6 @@ Requires=lldap.service
 Restart=on-failure
 
 [Container]
-AutoUpdate=registry
 ContainerName=lldap-discord
 Exec=python main.py
 Image={{ services['lldap-discord']['image'] }}
