@@ -90,13 +90,22 @@
 
 # FIXME: this is a temporary workaround for the below bug and PR
 - name: CONTAINERS | PODMAN | Install configuration file
-  ansible.builtin.copy:
-    src: containers.conf.d/50-systemroles.conf
-    # yamllint disable-line rule:line-length
-    dest: /home/podman/.config/containers/containers.conf.d/50-systemroles.conf
-    owner: podman
-    group: podman
-    mode: "0644"
+  block:
+    - name: CONTAINERS | PODMAN | Create configuration directory
+      ansible.builtin.file:
+        path: /home/podman/.config/containers/containers.conf.d/
+        state: directory
+        owner: podman
+        group: podman
+        mode: "750"
+    - name: CONTAINERS | PODMAN | Install file
+      ansible.builtin.copy:
+        src: containers.conf.d/50-systemroles.conf
+        # yamllint disable-line rule:line-length
+        dest: /home/podman/.config/containers/containers.conf.d/50-systemroles.conf
+        owner: podman
+        group: podman
+        mode: "0644"
 
 - name: CONTAINERS | FILESYSTEM | Create containers storage area
   ansible.builtin.file:
