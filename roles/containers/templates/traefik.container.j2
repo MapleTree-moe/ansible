@@ -90,7 +90,7 @@ Label=traefik.http.middlewares.secured.chain.middlewares="securityHeaders,authel
 # volumes
 Volume=/%t/podman/podman.sock:/var/run/docker.sock:ro
 Volume=traefik.volume:/etc/traefik
-Volume=%h/containers/traefik/tls_options.yaml:/etc/traefik/tls_options.yaml:ro,Z
+Volume=%h/containers/config/traefik/tls_options.yaml:/etc/traefik/tls_options.yaml:ro,Z
 
 [Install]
 WantedBy=default.target
