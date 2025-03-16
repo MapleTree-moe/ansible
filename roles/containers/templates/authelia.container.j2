@@ -103,7 +103,7 @@ Secret=authelia-smtp-password,type=mount,uid=1000
 Secret=lldap-password-manager-pass,type=mount,uid=1000
 
 # volumes
-Volume=%h/containers/authelia/config.yaml:/config/configuration.yml:ro,Z
+Volume=%h/containers/config/authelia/config.yaml:/config/configuration.yml:ro,Z
 
 [Install]
 WantedBy=default.target
