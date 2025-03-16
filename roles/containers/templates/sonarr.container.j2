@@ -23,10 +23,9 @@ Environment=SONARR__APP__THEME=dark
 Environment=SONARR__APP__INSTANCENAME=sonarr
 Environment=SONARR__AUTH__METHOD=External
 Environment=SONARR__AUTH__REQUIRED=DisabledForLocalAddresses
-Environment=SONARR__SERVER__PORT=80
 
 # health check
-HealthCmd=curl http://127.0.0.1/ping
+HealthCmd=curl http://127.0.0.1:8989/ping
 HealthInterval=5s
 HealthRetries=3
 HealthStartPeriod=15s
@@ -36,7 +35,7 @@ HealthTimeout=30s
 Label=traefik.enable="true"
 Label=traefik.http.routers.sonarr.rule="Host(`sonarr.{{ ansible_facts['fqdn'] }}`)"
 Label=traefik.http.routers.sonarr.middlewares="secured"
-Label=traefik.http.services.sonarr.loadbalancer.server.port=80
+Label=traefik.http.services.sonarr.loadbalancer.server.port=8989
 
 # secrets
 Secret=sonarr-api-key,type=env,target=SONARR__AUTH__APIKEY

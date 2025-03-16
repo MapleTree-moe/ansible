@@ -23,10 +23,9 @@ Environment=RADARR__APP__THEME=dark
 Environment=RADARR__APP__INSTANCENAME=radarr
 Environment=RADARR__AUTH__METHOD=External
 Environment=RADARR__AUTH__REQUIRED=DisabledForLocalAddresses
-Environment=RADARR__SERVER__PORT=80
 
 # health check
-HealthCmd=curl http://127.0.0.1/ping
+HealthCmd=curl http://127.0.0.1:7878/ping
 HealthInterval=5s
 HealthRetries=3
 HealthStartPeriod=15s
@@ -36,7 +35,7 @@ HealthTimeout=30s
 Label=traefik.enable="true"
 Label=traefik.http.routers.radarr.rule="Host(`radarr.{{ ansible_facts['fqdn'] }}`)"
 Label=traefik.http.routers.radarr.middlewares="secured"
-Label=traefik.http.services.radarr.loadbalancer.server.port=80
+Label=traefik.http.services.radarr.loadbalancer.server.port=7878
 
 # secrets
 Secret=radarr-api-key,type=env,target=RADARR__AUTH__APIKEY
