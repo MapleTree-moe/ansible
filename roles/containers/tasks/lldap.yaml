@@ -19,11 +19,11 @@
   # unless they are needed
   ansible.builtin.set_fact:
     # yamllint disable rule:line-length
-    lldap_bind_user_pass: "{{ lookup('community.general.random_string', special=false, length=64) }}"
+    lldap_bind_user_pass: "{{ lookup('community.general.random_string', special=false, length=32) }}"
     lldap_jwt_secret: "{{ lookup('community.general.random_string', special=false, length=64) }}"
     lldap_key_seed: "{{ lookup('community.general.random_string', special=false, length=64) }}"
-    lldap_ldap_user_pass: "{{ lookup('community.general.random_string', special=false, length=64) }}"
-    lldap_password_manager_pass: "{{ lookup('community.general.random_string', special=false, length=64) }}"
+    lldap_ldap_user_pass: "{{ lookup('community.general.random_string', special=false, length=32) }}"
+    lldap_password_manager_pass: "{{ lookup('community.general.random_string', special=false, length=32) }}"
     # yamllint enable rule:line-length
 
 - name: CONTAINERS | LLDAP | Deploy files for automated bootstrapping
