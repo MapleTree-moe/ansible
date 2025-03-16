@@ -12,6 +12,7 @@ Requires=authelia-db.service authelia-redis.service
 After=podman-user-wait-network-online.service
 
 [Service]
+Restart=on-failure
 # TODO: I don't know why, I don't want to know why, I shouldn't have to know why
 #       but unless you call for traefik to be restarted upon starting authelia
 #       it will error out with an internal server error that traefik debug logs
@@ -19,7 +20,6 @@ After=podman-user-wait-network-online.service
 #       part of authelias definition, and yet this is still required. Why? How?
 ExecStartPost=/bin/sh -c "sleep 5"
 ExecStartPost=/usr/bin/systemctl --user try-restart traefik.service
-Restart=on-failure
 
 [Container]
 ContainerName=authelia
