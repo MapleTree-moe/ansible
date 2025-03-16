@@ -13,6 +13,9 @@ After=podman-user-wait-network-online.service
 
 [Service]
 Restart=on-failure
+# lldap won't run the bootstrap script automatically regardless of how much i want it too.
+ExecStartPost=/bin/sh -c "sleep 3"
+ExecStartPost=/usr/bin/podman exec lldap /app/bootstrap.sh
 
 [Container]
 ContainerName=lldap
