@@ -2,39 +2,39 @@
 
 ###
 ### mapletree.moe - system configuration management
-### containers - sonarr - deploy sonarr to target system
+### containers - prowlarr - deploy prowlarr to target system
 ###
 ---
-- name: CONTAINERS | SONARR | Check dependencies
+- name: CONTAINERS | PROWLARR | Check dependencies
   when: "'traefik' not in containers_services_enabled"
   ansible.builtin.fail:
     msg: |
       !!!ERROR!!!
-      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/sonarr.yaml:9
-      !!!ERROR!!! sonarr has unsatisfied dependencies. please review.
+      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/prowlarr.yaml:9
+      !!!ERROR!!! prowlarr has unsatisfied dependencies. please review.
       !!!ERROR!!!
 
-- name: CONTAINERS | SONARR | Generate secrets
+- name: CONTAINERS | PROWLARR | Generate secrets
   # while we generate new secrets in this step, they are NOT deployed later
   # unless they are needed
   ansible.builtin.set_fact:
-    # sonarr's api key is 32 characters
+    # prowlarr's api key is 32 characters
     # Sonarr/src/NzbDrone.Core/Configuration/ConfigFileProvider.cs:463
     # yamllint disable-line rule:line-length
-    sonarr_api_key: "{{ lookup('community.general.random_string', special=false, length=32) }}"
+    prowlarr_api_key: "{{ lookup('community.general.random_string', special=false, length=32) }}"
 
-- name: CONTAINERS | SONARR | Install containers
+- name: CONTAINERS | PROWLARR | Install containers
   vars:
     podman_quadlet_specs:
       # list order determined by dependencies - do NOT modify
-      - template_src: sonarr.volume.j2
-      - template_src: sonarr-backup.volume.j2
-      - template_src: sonarr.container.j2
+      - template_src: prowlarr.volume.j2
+      - template_src: prowlarr-backup.volume.j2
+      - template_src: prowlarr.container.j2
     podman_secrets:
-      - name: sonarr-api-key
+      - name: prowlarr-api-key
         state: present
         skip_existing: true # do not overwrite if secret exists
-        data: "{{ sonarr_api_key }}"
+        data: "{{ prowlarr_api_key }}"
   ansible.builtin.include_role:
     # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
     name: fedora.linux_system_roles.podman
