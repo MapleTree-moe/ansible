@@ -15,8 +15,7 @@
       !!!ERROR!!!
 
 - name: CONTAINERS | LLDAP | Generate secrets
-  # while we generate new secrets in this step, they are NOT deployed later
-  # unless they are needed
+  # here we generate new secrets but we wont deploy unless needed.
   ansible.builtin.set_fact:
     # yamllint disable rule:line-length
     lldap_bind_user_pass: "{{ lookup('community.general.random_string', special=false, length=64) }}"
@@ -31,7 +30,7 @@
     - name: CONTAINERS | LLDAP | BOOTSTRAP | Copy static JSON files
       ansible.builtin.copy:
         src: config/lldap
-        dest: /home/podman/containers
+        dest: /home/podman/containers/config
         owner: podman
         group: podman
         mode: "0755"
