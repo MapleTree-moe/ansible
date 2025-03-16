@@ -13,19 +13,28 @@
 
 # yamllint disable rule:line-length
 services: # noqa var-naming
-  postgres:
-    image: docker.io/postgres:17.4@sha256:81f32a88ec561664634637dd446487efd5f9d90996304b96210078e90e5c8b21
-  redis:
-    image: docker.io/redis:7@sha256:6aafb7f25fc93c4ff74e99cff8e85899f03901bc96e61ba12cd3c39e95503c73
   authelia:
     image: docker.io/authelia/authelia:4.38@sha256:46021dc20efdcc5cdc38a29e3050b8835429a155ae6215388ed3b793a02eb0ab
+  bazarr:
+    image: docker pull ghcr.io/onedr0p/bazarr:1.5.1@sha256:b8fa3c3c2a5b7fe045e8f8eb95feac3c50b37837478ecc11d49db8fa8ddff683
   db-backup:
     image: docker.io/tiredofit/db-backup:4.1.16@sha256:26541bb600bc817d9a69edd46141b03e6e6ff7612ac011f3a0264882f8435765
   lldap-discord:
     image: docker.io/watlingj/lldap-discord:1.0.2@sha256:e3d99fef4b3c04de5d6c6e701c3819b6c87a734babd23931b591f8c906bf1c27
   lldap:
-    # TODO: investigate rootless container
     image: docker.io/lldap/lldap:stable@sha256:4931eeeb841b1bbf5774161b5fd9dab88f41ffeb4b08ca656f0b7595cd7cb52a
+  postgres:
+    image: docker.io/postgres:17.4@sha256:81f32a88ec561664634637dd446487efd5f9d90996304b96210078e90e5c8b21
+  prowlarr:
+    image: ghcr.io/onedr0p/prowlarr:1.31.2@sha256:f1c8615cab30b98b2a71254ceafea5b99fa8000d71276df3347cb230e9e5af01
+  qbittorrent:
+    image: ghcr.io/onedr0p/qbittorrent:5.0.4@sha256:3b7e6671b4e6b8ab1366ca8a038776638c77cc8110dc74c257eb14568d43c614
+  radarr:
+    image: ghcr.io/onedr0p/radarr:5.19.3@sha256:7218cd42b646bb773a2c683b95860c51103c3ca7e0b9171b4bc549b95ddc6896
+  redis:
+    image: docker.io/redis:7@sha256:6aafb7f25fc93c4ff74e99cff8e85899f03901bc96e61ba12cd3c39e95503c73
+  sabnzbd:
+    image: ghcr.io/onedr0p/sabnzbd:4.4.1@sha256:b7380cd5a93a0a232c5ce25803531b1575453953e99de4e6b8a1398e73442e5b
   sonarr:
     image: ghcr.io/onedr0p/sonarr:4.0.13@sha256:b2217e5c81155ba002e0497932c2de197b8f5c1ac9c9fff7210e9a6381caab41
   traefik:

@@ -6,23 +6,23 @@
 ### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
 
 [Unit]
-Description=Sonarr container
-Documentation=https://github.com/Sonarr/Sonarr
+Description=Radarr container
+Documentation=https://github.com/radarr/radarr
 After=podman-user-wait-network-online.service
 
 [Service]
 Restart=on-failure
 
 [Container]
-ContainerName=sonarr
-Image={{ services['sonarr']['image'] }}
+ContainerName=radarr
+Image={{ services['radarr']['image'] }}
 Network=frontend.network
 
 # environmental variables
-Environment=SONARR__APP__THEME=dark
-Environment=SONARR__APP__INSTANCENAME=sonarr
-Environment=SONARR__AUTH__METHOD=External
-Environment=SONARR__AUTH__REQUIRED=DisabledForLocalAddresses
+Environment=RADARR__APP__THEME=dark
+Environment=RADARR__APP__INSTANCENAME=radarr
+Environment=RADARR__AUTH__METHOD=External
+Environment=RADARR__AUTH__REQUIRED=DisabledForLocalAddresses
 
 # health check
 HealthCmd=curl http://127.0.0.1:8989/ping
@@ -33,16 +33,16 @@ HealthTimeout=30s
 
 # automatically configure traefik to proxy the web service
 Label=traefik.enable="true"
-Label=traefik.http.routers.sonarr.rule="Host(`sonarr.{{ ansible_facts['fqdn'] }}`)"
-Label=traefik.http.routers.sonarr.middlewares="secured"
-Label=traefik.http.services.sonarr.loadbalancer.server.port=8989
+Label=traefik.http.routers.radarr.rule="Host(`radarr.{{ ansible_facts['fqdn'] }}`)"
+Label=traefik.http.routers.radarr.middlewares="secured"
+Label=traefik.http.services.radarr.loadbalancer.server.port=8989
 
 # secrets
-Secret=sonarr-api-key,type=env,target=SONARR__AUTH__APIKEY
+Secret=radarr-api-key,type=env,target=RADARR__AUTH__APIKEY
 
 # volumes
-Volume=sonarr.volume:/config:Z
-Volume=sonarr-backup.volume:/config/Backups:Z
+Volume=radarr.volume:/config:Z
+Volume=radarr-backup.volume:/config/Backups:Z
 
 [Install]
 WantedBy=default.target
