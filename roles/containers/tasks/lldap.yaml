@@ -19,11 +19,11 @@
   # unless they are needed
   ansible.builtin.set_fact:
     # yamllint disable rule:line-length
-    lldap_bind_user_pass: "{{ lookup('community.general.random_string', special=false, length=32) }}"
+    lldap_bind_user_pass: "{{ lookup('community.general.random_string', special=false, length=64) }}"
     lldap_jwt_secret: "{{ lookup('community.general.random_string', special=false, length=64) }}"
     lldap_key_seed: "{{ lookup('community.general.random_string', special=false, length=64) }}"
-    lldap_ldap_user_pass: "{{ lookup('community.general.random_string', special=false, length=32) }}"
-    lldap_password_manager_pass: "{{ lookup('community.general.random_string', special=false, length=32) }}"
+    lldap_ldap_user_pass: "{{ lookup('community.general.random_string', special=false, length=64) }}"
+    lldap_password_manager_pass: "{{ lookup('community.general.random_string', special=false, length=64) }}"
     # yamllint enable rule:line-length
 
 - name: CONTAINERS | LLDAP | Deploy files for automated bootstrapping
@@ -46,13 +46,14 @@
         mode: "0640"
         force: false # do NOT overwrite secrets if they exist
       loop:
+        # yamllint disable rule:line-length
         - src: config/lldap/user-configs/admin.json.j2
-          dest: /home/podman/containers/lldap/user-configs/admin.json
+          dest: /home/podman/containers/config/lldap/user-configs/admin.json
         - src: config/lldap/user-configs/lldap_bind_user.json.j2
-          dest: /home/podman/containers/lldap/user-configs/lldap_bind_user.json
+          dest: /home/podman/containers/config/lldap/user-configs/lldap_bind_user.json
         - src: config/lldap/user-configs/lldap_password_manager.json.j2
-          # yamllint disable-line rule:line-length
-          dest: /home/podman/containers/lldap/user-configs/lldap_password_manager.json
+          dest: /home/podman/containers/config/lldap/user-configs/lldap_password_manager.json
+        # yamllint enable rule:line-length
       notify:
         - Bootstrap LLDAP
 
