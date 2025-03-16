@@ -23,10 +23,9 @@ Environment=PROWLARR__APP__THEME=dark
 Environment=PROWLARR__APP__INSTANCENAME=Prowlarr
 Environment=PROWLARR__AUTH__METHOD=External
 Environment=PROWLARR__AUTH__REQUIRED=DisabledForLocalAddresses
-Environment=PROWLARR__SERVER__PORT=80
 
 # health check
-HealthCmd=curl http://127.0.0.1/ping
+HealthCmd=curl http://127.0.0.1:9696/ping
 HealthInterval=5s
 HealthRetries=3
 HealthStartPeriod=15s
@@ -36,7 +35,7 @@ HealthTimeout=30s
 Label=traefik.enable="true"
 Label=traefik.http.routers.prowlarr.rule="Host(`prowlarr.{{ ansible_facts['fqdn'] }}`)"
 Label=traefik.http.routers.prowlarr.middlewares="secured"
-Label=traefik.http.services.prowlarr.loadbalancer.server.port=80
+Label=traefik.http.services.prowlarr.loadbalancer.server.port=9696
 
 # secrets
 Secret=prowlarr-api-key,type=env,target=PROWLARR__AUTH__APIKEY
