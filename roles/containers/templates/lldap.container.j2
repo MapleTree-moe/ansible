@@ -55,7 +55,7 @@ Secret=lldap-key-seed,type=mount,uid=1000
 Secret=lldap-ldap-user-pass,type=mount,uid=1000
 
 # volumes
-Volume=%h/containers/lldap:/bootstrap:ro,Z
+Volume=%h/containers/config/lldap:/bootstrap:ro,Z
 
 [Install]
 WantedBy=default.target
