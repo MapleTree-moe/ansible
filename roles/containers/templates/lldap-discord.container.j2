@@ -17,7 +17,7 @@ Restart=on-failure
 ContainerName=lldap-discord
 Exec=python main.py
 Image={{ services['lldap-discord']['image'] }}
-Network=frontend.network:ip=172.16.0.5
+Network=frontend.network
 WorkingDir=/usr/src/app
 
 # environmental variables
