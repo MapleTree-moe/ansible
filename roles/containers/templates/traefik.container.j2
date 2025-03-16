@@ -19,7 +19,7 @@ Sockets=traefik-web.socket traefik-websecure.socket
 [Container]
 ContainerName=traefik
 Image={{ services['traefik']['image'] }}
-Network=frontend.network:ip=172.16.0.2
+Network=frontend.network
 SecurityLabelType=traefik.process
 
 # environmental variables

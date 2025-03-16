@@ -24,7 +24,7 @@ Restart=on-failure
 [Container]
 ContainerName=authelia
 Image={{ services['authelia']['image'] }}
-Network=frontend.network:ip=172.16.0.6
+Network=frontend.network
 Network=backend.network
 
 # environmental variables
