@@ -7,3 +7,11 @@
 ---
 ### common role configuration variables
 common_nvidia_enabled: false
+
+containers_services_enabled:
+  - traefik
+  - lldap
+  - authelia
+  - sonarr
+  - radarr
+  - prowlarr

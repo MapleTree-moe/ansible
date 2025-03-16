@@ -15,10 +15,6 @@ containers_database_list: [] # do NOT change
 
 containers_services_enabled:
   - traefik
-  - whoami
-  - lldap
-  - authelia
-  - sonarr
 
 containers_authelia_smtp_host: smtp.example.com
 containers_authelia_smtp_port: 25

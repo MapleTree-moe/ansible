@@ -6,6 +6,7 @@
 ###
 ---
 # TODOs: automatic dependency resolution
+#        automatic state backup for volumes
 #        low priority - create local vault with secrets
 - name: CONTAINERS | PODMAN | Check if podman.socket is required
   # SECURITY: a podman socket proxy could be useful to boost security
