@@ -28,7 +28,7 @@ services: # noqa var-naming
   prowlarr:
     image: ghcr.io/onedr0p/prowlarr:1.32.2@sha256:fa01195217ab1a7aac3aa516fcc50ff886ea26c177b2546ebe364e7b2cf1a282
   qbittorrent:
-    image: ghcr.io/onedr0p/qbittorrent:5.0.4@sha256:3b7e6671b4e6b8ab1366ca8a038776638c77cc8110dc74c257eb14568d43c614
+    image: ghcr.io/onedr0p/qbittorrent:5.0.4@sha256:17e3e5f1c7e7fe81434f9d1f5f2e00da9a67f6dbfda1c988c0619932cb856047
   radarr:
     image: ghcr.io/onedr0p/radarr:5.19.3@sha256:7218cd42b646bb773a2c683b95860c51103c3ca7e0b9171b4bc549b95ddc6896
   redis:
