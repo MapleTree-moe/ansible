@@ -7,6 +7,8 @@
 ---
 # TODOs: automatic dependency resolution
 #        automatic state backup for volumes
+#        isolated service networks and mesh (consul?)
+#        gpg encrypted secrets? (seems difficult)
 #        low priority - create local vault with secrets
 - name: CONTAINERS | PODMAN | Check if podman.socket is required
   # SECURITY: a podman socket proxy could be useful to boost security
@@ -110,25 +112,16 @@
 
 - name: CONTAINERS | FILESYSTEM | Create containers storage area
   ansible.builtin.file:
-    path:
-      #  - /home/podman/containers/backup
-      - /home/podman/containers/config
+    path: /home/podman/containers/config
     state: directory
     owner: podman
     group: podman
     mode: "0750"
 
 - name: CONTAINERS | Import image versions from variable file
-  # this is a hack to get renovate to automatically update our quadlet image
-  # versions
   ansible.builtin.include_vars:
     file: compose.yaml
 
-# TODO: it would be nice to one day have every container network isolated except
-#       for the services it needs.
-# SECURITY TODO: podman by default stores secrets unencrypted in a file, just
-#                encoded. we should transition to either gpg or a proper secrets
-#                store.
 - name: CONTAINERS | Configure podman and deploy services
   vars:
     podman_fail_if_too_old: true
@@ -142,7 +135,7 @@
       block:
         - name: CONTAINERS | PODMAN | Install the container networks
           vars:
-            # FIXME: linux-system-roles/podman #208 PR #209
+            # BUG: linux-system-roles/podman #208 PR #209
             # podman_containers_conf:
             #   containers:
             #     container_name_as_hostname: true
