@@ -4,7 +4,7 @@ ansible-vault==2.1.0
 bcrypt==4.3.0
 cryptography==44.0.2
 passlib==1.7.4
-pre-commit==4.1.0
+pre-commit==4.2.0
 python-dateutil==2.9.0.post0
 requests==2.32.3
 yamllint==1.36.2
