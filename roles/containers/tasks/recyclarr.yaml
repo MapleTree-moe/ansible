@@ -34,7 +34,7 @@
         group: 100999 # DO NOT CHANGE: based on uid in podman user namespace
         mode: "0640"
 
-- name: CONTAINERS | TRAEFIK | Install containers
+- name: CONTAINERS | RECYCLARR | Install containers
   vars:
     podman_quadlet_specs:
       # list order determined by dependencies - do NOT modify
