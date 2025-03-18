@@ -16,9 +16,13 @@ services: # noqa var-naming
   authelia:
     image: docker.io/authelia/authelia:4.39@sha256:e325963609cc928861ffe8130c09111862df88dd8fcafbcd2c47e5ff0a4ae268
   bazarr:
-    image: ghcr.io/onedr0p/bazarr:1.5.1@sha256:b8fa3c3c2a5b7fe045e8f8eb95feac3c50b37837478ecc11d49db8fa8ddff683
+    image: ghcr.io/hotio/bazarr:release@sha256:c26127b0f76e5505bfe275d3301be5d3e47bcc2d59d7d2f50ce5c858bfb01728
   db-backup:
     image: docker.io/tiredofit/db-backup:4.1.16@sha256:26541bb600bc817d9a69edd46141b03e6e6ff7612ac011f3a0264882f8435765
+  jellyfin:
+    image: ghcr.io/hotio/jellyfin:release@sha256:f02d3a5b3850aeedafbfadda318d98437a49a058d8fdcff7e46740fd260d954a
+  jellyseerr:
+    image: ghcr.io/hotio/jellyseerr:release@sha256:b27ee547feb11eb572b9fedac71dd2367f125f9e7c2c56669519adbfa33aebf4
   lldap-discord:
     image: docker.io/watlingj/lldap-discord:1.0.2@sha256:e3d99fef4b3c04de5d6c6e701c3819b6c87a734babd23931b591f8c906bf1c27
   lldap:
@@ -26,19 +30,19 @@ services: # noqa var-naming
   postgres:
     image: docker.io/postgres:17.4@sha256:c522082e582d6267630d0ac3a857e262f4994012e2f841fc9eb65e7bd0500e20
   prowlarr:
-    image: ghcr.io/onedr0p/prowlarr:1.32.2@sha256:fa01195217ab1a7aac3aa516fcc50ff886ea26c177b2546ebe364e7b2cf1a282
+    image: ghcr.io/hotio/prowlarr:release@sha256:41bae5abd4054b91a3ec71d017cbf278bf8b68de67185c40d4e894f5c6d88098
   qbittorrent:
-    image: ghcr.io/onedr0p/qbittorrent:5.0.4@sha256:17e3e5f1c7e7fe81434f9d1f5f2e00da9a67f6dbfda1c988c0619932cb856047
+    image: ghcr.io/hotio/qbittorrent:release@sha256:c1574de2ab1c98d7bef3e9af6a351053115c830cd35a073c35be3ba992c0a7a2
   radarr:
-    image: ghcr.io/onedr0p/radarr:5.19.3@sha256:7218cd42b646bb773a2c683b95860c51103c3ca7e0b9171b4bc549b95ddc6896
+    image: ghcr.io/hotio/radarr:release@sha256:74d5b402fe418fe1fc96069e3302f235122f3a7b84a392c1d5307fd0ad112e89
   recyclarr:
     image: ghcr.io/recyclarr/recyclarr:7.4.1@sha256:759540877f95453eca8a26c1a93593e783a7a824c324fbd57523deffb67f48e1
   redis:
     image: docker.io/redis:7@sha256:5250fed70d8a66f4901a8beace6f85bee9550c0fc6fd42d10e2c1cd24cf93a0d
   sabnzbd:
-    image: ghcr.io/onedr0p/sabnzbd:4.4.1@sha256:36674664a94760ae934c09b1d97546a3e79a0f110edda88085e74778c26d68e3
+    image: ghcr.io/hotio/sabnzbd:release@sha256:7cb3cfee078b2062b19d2eb3e82e62118819e16bc9d69e153e0f41964dc8f71c
   sonarr:
-    image: ghcr.io/onedr0p/sonarr:4.0.13@sha256:b2217e5c81155ba002e0497932c2de197b8f5c1ac9c9fff7210e9a6381caab41
+    image: ghcr.io/hotio/sonarr:release@sha256:6151721d4ce6f34538a7ccf071b0a6f0857470fd1508dff6dcae5ce217a372b2
   traefik:
     image: docker.io/traefik:v3.3.4@sha256:cc11989f418e2cfe5e60fc40c92c1813be847f58eda15eced7d5ac890255ad9e
   whoami:
