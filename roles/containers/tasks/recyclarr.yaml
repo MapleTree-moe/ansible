@@ -1,0 +1,44 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### containers - recyclarr - deploy recyclarr to target system
+###
+---
+- name: CONTAINERS | RECYCLARR | Check dependencies
+  when: "'radarr' not in containers_services_enabled or
+         'sonarr' not in containers_services_enabled"
+  ansible.builtin.fail:
+    # yamllint disable rule:line-length
+    msg: |
+      !!!ERROR!!!
+      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/tasks/recyclarr.yaml:9
+      !!!ERROR!!! recyclarr has unsatisfied dependencies. please review.
+      !!!ERROR!!!
+    # yamllint enable rule:line-length
+
+- name: CONTAINERS | RECYCLARR | Install configuration file
+  block:
+    - name: CONTAINERS | RECYCLARR | FILES | Create configuration directory
+      ansible.builtin.file:
+        path: /home/podman/containers/config/recyclarr
+        state: directory
+        owner: podman
+        group: podman
+        mode: "0755"
+    - name: CONTAINERS | RECYCLARR | FILES | Template configuration file
+      ansible.builtin.template:
+        src: config/recyclarr/recyclarr.yaml.j2
+        dest: /home/podman/containers/config/recyclarr/recyclarr.yaml
+        owner: podman
+        group: podman
+        mode: "0640"
+
+- name: CONTAINERS | TRAEFIK | Install containers
+  vars:
+    podman_quadlet_specs:
+      # list order determined by dependencies - do NOT modify
+      - template_src: recyclarr.container.j2
+  ansible.builtin.include_role:
+    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
+    name: fedora.linux_system_roles.podman

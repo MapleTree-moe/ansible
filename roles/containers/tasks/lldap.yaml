@@ -8,11 +8,13 @@
 - name: CONTAINERS | LLDAP | Check dependencies
   when: "'traefik' not in containers_services_enabled"
   ansible.builtin.fail:
+    # yamllint disable rule:line-length
     msg: |
       !!!ERROR!!!
-      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/lldap.yaml:9
+      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/tasks/lldap.yaml:9
       !!!ERROR!!! lldap has unsatisfied dependencies. please review.
       !!!ERROR!!!
+    # yamllint enable rule:line-length
 
 - name: CONTAINERS | LLDAP | Generate secrets
   # here we generate new secrets but we wont deploy unless needed.
