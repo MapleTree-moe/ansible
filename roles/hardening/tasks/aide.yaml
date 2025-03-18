@@ -7,7 +7,9 @@
 ---
 - name: HARDENING | AIDE | Create AIDE Database update file
   ansible.builtin.command:
-    cmd: aide --update
+    # `aide --update` is just a combination of the check and init flags, we
+    # don't need a check to run as we know files have changed.
+    cmd: aide --init
     creates: /var/lib/aide/aide.db.new.gz
 
 - name: HARDENING | AIDE | Replace AIDE Database with update file
