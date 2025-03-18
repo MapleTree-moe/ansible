@@ -30,8 +30,8 @@
       ansible.builtin.template:
         src: config/recyclarr/recyclarr.yaml.j2
         dest: /home/podman/containers/config/recyclarr/recyclarr.yaml
-        owner: podman
-        group: podman
+        owner: 100999 # DO NOT CHANGE: based on uid in podman user namespace
+        group: 100999 # DO NOT CHANGE: based on uid in podman user namespace
         mode: "0640"
 
 - name: CONTAINERS | TRAEFIK | Install containers
