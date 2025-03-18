@@ -8,11 +8,13 @@
 - name: CONTAINERS | SONARR | Check dependencies
   when: "'traefik' not in containers_services_enabled"
   ansible.builtin.fail:
+    # yamllint disable rule:line-length
     msg: |
       !!!ERROR!!!
-      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/sonarr.yaml:9
+      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/tasks/sonarr.yaml:9
       !!!ERROR!!! sonarr has unsatisfied dependencies. please review.
       !!!ERROR!!!
+    # yamllint enable rule:line-length
 
 - name: CONTAINERS | SONARR | Generate secrets
   # while we generate new secrets in this step, they are NOT deployed later

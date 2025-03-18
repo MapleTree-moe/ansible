@@ -8,11 +8,13 @@
 - name: CONTAINERS | PROWLARR | Check dependencies
   when: "'traefik' not in containers_services_enabled"
   ansible.builtin.fail:
+    # yamllint disable rule:line-length
     msg: |
       !!!ERROR!!!
-      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/prowlarr.yaml:9
+      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/tasks/prowlarr.yaml:9
       !!!ERROR!!! prowlarr has unsatisfied dependencies. please review.
       !!!ERROR!!!
+    # yamllint enable rule:line-length
 
 - name: CONTAINERS | PROWLARR | Generate secrets
   # while we generate new secrets in this step, they are NOT deployed later

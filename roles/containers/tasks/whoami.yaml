@@ -8,11 +8,13 @@
 - name: CONTAINERS | WHOAMI | Check dependencies
   when: "'traefik' not in containers_services_enabled"
   ansible.builtin.fail:
+    # yamllint disable rule:line-length
     msg: |
       !!!ERROR!!!
-      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/whoami.yaml:9
+      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/tasks/whoami.yaml:9
       !!!ERROR!!! whoami has unsatisfied dependencies. please review.
       !!!ERROR!!!
+    # yamllint enable rule:line-length
 
 - name: CONTAINERS | WHOAMI | Install containers
   vars:

@@ -27,10 +27,8 @@ SecurityLabelType=traefik.process
 Environment=TRAEFIK_API="true"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt="true"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_EMAIL="admin@{{ ansible_facts['domain'] }}"
-
-# enable during testing
+# TODO: Disable after testing
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_CASERVER="https://acme-staging-v02.api.letsencrypt.org/directory"
-
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_STORAGE="/etc/traefik/acme.json"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_TLSCHALLENGE="true"
 Environment=TRAEFIK_ENTRYPOINTS_web_FORWARDEDHEADERS_INSECURE="false"
