@@ -9,6 +9,8 @@ sonarr:
   sonarr-main:
     api_key: !env_var SONARR_API_KEY
     base_url: http://sonarr:8989
+    delete_old_custom_formats: true
+    replace_existing_custom_formats: true
     media_naming:
       series: jellyfin
       season: default
@@ -71,6 +73,8 @@ radarr:
   radarr-main:
     api_key: !env_var RADARR_API_KEY
     base_url: http://radarr:7878
+    delete_old_custom_formats: true
+    replace_existing_custom_formats: true
     media_naming:
       folder: jellyfin
       movie:
