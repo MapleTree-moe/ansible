@@ -1,0 +1,17 @@
+# code: language=yaml
+
+###
+### mapletree.moe - system configuration management
+### recyclarr configuration file
+###
+---
+sonarr:
+  sonarr-main:
+    api_key: !env_var SONARR_API_KEY
+    base_url: http://sonarr:8989
+
+
+radarr:
+  radarr-main:
+    api_key: !env_var RADARR_API_KEY
+    base_url: http://radarr:7878
