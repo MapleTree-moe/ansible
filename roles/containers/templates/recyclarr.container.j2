@@ -13,6 +13,10 @@ Requires=sonarr.service radarr.service
 
 [Service]
 Restart=on-failure
+# this is just a way to get things sync'd on initial startup before going to
+# cron mode
+ExecStartPost=/bin/sh -c "sleep 3"
+ExecStartPost=/usr/bin/podman exec recyclarr recyclarr sync
 
 [Container]
 ContainerName=recyclarr
