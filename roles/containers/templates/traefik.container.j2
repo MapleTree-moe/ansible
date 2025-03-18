@@ -76,7 +76,6 @@ Label=traefik.http.routers.dashboard.tls="true"
 Label=traefik.http.routers.dashboard.tls.certresolver="letsencrypt"
 
 # middlewares
-# TODO: chain these headers with the authelia middleware
 Label=traefik.http.middlewares.securityHeaders.headers.browserXssFilter="true"
 Label=traefik.http.middlewares.securityHeaders.headers.contentTypeNosniff="true"
 Label=traefik.http.middlewares.securityHeaders.headers.customFrameOptionsValue="SAMEORIGIN"
