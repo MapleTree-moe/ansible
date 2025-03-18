@@ -28,7 +28,7 @@ services: # noqa var-naming
   lldap:
     image: docker.io/lldap/lldap:stable@sha256:4931eeeb841b1bbf5774161b5fd9dab88f41ffeb4b08ca656f0b7595cd7cb52a
   postgres:
-    image: docker.io/postgres:17.4@sha256:c522082e582d6267630d0ac3a857e262f4994012e2f841fc9eb65e7bd0500e20
+    image: docker.io/postgres:17.4@sha256:7f29c02ba9eeff4de9a9f414d803faa0e6fe5e8d15ebe217e3e418c82e652b35
   prowlarr:
     image: ghcr.io/hotio/prowlarr:release@sha256:41bae5abd4054b91a3ec71d017cbf278bf8b68de67185c40d4e894f5c6d88098
   qbittorrent:
