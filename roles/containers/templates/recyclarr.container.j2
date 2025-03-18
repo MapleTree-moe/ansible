@@ -1,0 +1,30 @@
+### {{ ansible_managed }} - {{ ansible_facts['fqdn'] }}
+###
+### mapletree.moe - podman quadlet file
+### https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
+###
+### commit: {{ lookup('pipe', 'git rev-parse --short HEAD') }}
+
+[Unit]
+Description=Recyclarr container
+Documentation=https://github.com/recyclarr/recyclarr
+After=podman-user-wait-network-online.service
+Requires=sonarr.service radarr.service
+
+[Service]
+Restart=on-failure
+
+[Container]
+ContainerName=recyclarr
+Image={{ services['recyclarr']['image'] }}
+Network=frontend.network
+
+# secrets
+Secret=radarr-api-key,type=env,target=RADARR_API_KEY
+Secret=sonarr-api-key,type=env,target=SONARR_API_KEY
+
+# volumes
+Volume=%h/containers/config/recyclarr/recyclarr.yaml:/config/recyclarr.yaml:Z
+
+[Install]
+WantedBy=default.target

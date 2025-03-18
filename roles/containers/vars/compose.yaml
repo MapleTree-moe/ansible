@@ -16,7 +16,7 @@ services: # noqa var-naming
   authelia:
     image: docker.io/authelia/authelia:4.39@sha256:e325963609cc928861ffe8130c09111862df88dd8fcafbcd2c47e5ff0a4ae268
   bazarr:
-    image: docker pull ghcr.io/onedr0p/bazarr:1.5.1@sha256:b8fa3c3c2a5b7fe045e8f8eb95feac3c50b37837478ecc11d49db8fa8ddff683
+    image: ghcr.io/onedr0p/bazarr:1.5.1@sha256:b8fa3c3c2a5b7fe045e8f8eb95feac3c50b37837478ecc11d49db8fa8ddff683
   db-backup:
     image: docker.io/tiredofit/db-backup:4.1.16@sha256:26541bb600bc817d9a69edd46141b03e6e6ff7612ac011f3a0264882f8435765
   lldap-discord:
@@ -31,6 +31,8 @@ services: # noqa var-naming
     image: ghcr.io/onedr0p/qbittorrent:5.0.4@sha256:17e3e5f1c7e7fe81434f9d1f5f2e00da9a67f6dbfda1c988c0619932cb856047
   radarr:
     image: ghcr.io/onedr0p/radarr:5.19.3@sha256:7218cd42b646bb773a2c683b95860c51103c3ca7e0b9171b4bc549b95ddc6896
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr:7.4.1@sha256:759540877f95453eca8a26c1a93593e783a7a824c324fbd57523deffb67f48e1
   redis:
     image: docker.io/redis:7@sha256:5250fed70d8a66f4901a8beace6f85bee9550c0fc6fd42d10e2c1cd24cf93a0d
   sabnzbd:
