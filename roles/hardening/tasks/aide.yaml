@@ -1,0 +1,25 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### hardening role - aide - update AIDE database
+###
+---
+- name: HARDENING | AIDE | Create AIDE Database update file
+  ansible.builtin.command:
+    cmd: aide --update
+    creates: /var/lib/aide/aide.db.new.gz
+
+- name: HARDENING | AIDE | Replace AIDE Database with update file
+  ansible.builtin.copy:
+    remote_src: true
+    src: /var/lib/aide/aide.db.new.gz
+    dest: /var/lib/aide/aide.db.gz
+    owner: root
+    group: root
+    mode: "0440"
+
+- name: HARDENING | AIDE | Delete update file
+  ansible.builtin.file:
+    path: /var/lib/aide/aide.db.new.gz
+    state: absent

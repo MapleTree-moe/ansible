@@ -21,7 +21,7 @@
             auto-routes: true
             dhcp: true
           ipv6:
-            enabled: false # TODO: enable ipv6 then modify "IPV6" comments
+            enabled: false # IPV6: enable ipv6 then modify "IPV6" comments
             auto-dns: false
             auto-gateway: false
             auto-routes: false
