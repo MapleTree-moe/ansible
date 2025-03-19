@@ -30,7 +30,6 @@
     podman_quadlet_specs:
       # list order determined by dependencies - do NOT modify
       - template_src: sonarr.volume.j2
-      - template_src: sonarr-backup.volume.j2
       - template_src: sonarr.container.j2
     podman_secrets:
       - name: sonarr-api-key

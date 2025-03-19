@@ -1,0 +1,27 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### containers - sabnzbd - deploy sabnzbd to target system
+###
+---
+- name: CONTAINERS | SABNZBD | Check dependencies
+  when: "'traefik' not in containers_services_enabled"
+  ansible.builtin.fail:
+    # yamllint disable rule:line-length
+    msg: |
+      !!!ERROR!!!
+      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/tasks/sabnzbd.yaml:9
+      !!!ERROR!!! sabnzbd has unsatisfied dependencies. please review.
+      !!!ERROR!!!
+    # yamllint enable rule:line-length
+
+- name: CONTAINERS | SABNZBD | Install containers
+  vars:
+    podman_quadlet_specs:
+      # list order determined by dependencies - do NOT modify
+      - template_src: sabnzbd.volume.j2
+      - template_src: sabnzbd.container.j2
+  ansible.builtin.include_role:
+    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
+    name: fedora.linux_system_roles.podman

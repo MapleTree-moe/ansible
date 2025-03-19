@@ -9,6 +9,7 @@
 Description=Prowlarr container
 Documentation=https://github.com/prowlarr/prowlarr
 After=podman-user-wait-network-online.service
+Wants=traefik.service
 
 [Service]
 Restart=on-failure
@@ -42,7 +43,7 @@ Secret=prowlarr-api-key,type=env,target=PROWLARR__AUTH__APIKEY
 
 # volumes
 Volume=prowlarr.volume:/config:Z
-Volume=prowlarr-backup.volume:/config/Backups:Z
+# Volume=prowlarr-backup.volume:/config/Backups:Z
 
 [Install]
 WantedBy=default.target
