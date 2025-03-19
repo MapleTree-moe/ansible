@@ -9,6 +9,7 @@
 Description=Sonarr container
 Documentation=https://github.com/Sonarr/Sonarr
 After=podman-user-wait-network-online.service
+Wants=traefik.service
 
 [Service]
 Restart=on-failure
@@ -42,7 +43,6 @@ Secret=sonarr-api-key,type=env,target=SONARR__AUTH__APIKEY
 
 # volumes
 Volume=sonarr.volume:/config:Z
-Volume=sonarr-backup.volume:/config/Backups:Z
 
 [Install]
 WantedBy=default.target
