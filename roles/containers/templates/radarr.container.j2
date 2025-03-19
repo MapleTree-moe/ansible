@@ -9,6 +9,7 @@
 Description=Radarr container
 Documentation=https://github.com/radarr/radarr
 After=podman-user-wait-network-online.service
+Wants=traefik.service
 
 [Service]
 Restart=on-failure
@@ -42,7 +43,6 @@ Secret=radarr-api-key,type=env,target=RADARR__AUTH__APIKEY
 
 # volumes
 Volume=radarr.volume:/config:Z
-Volume=radarr-backup.volume:/config/Backups:Z
 
 [Install]
 WantedBy=default.target

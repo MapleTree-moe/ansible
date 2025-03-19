@@ -30,7 +30,6 @@
     podman_quadlet_specs:
       # list order determined by dependencies - do NOT modify
       - template_src: radarr.volume.j2
-      - template_src: radarr-backup.volume.j2
       - template_src: radarr.container.j2
     podman_secrets:
       - name: radarr-api-key

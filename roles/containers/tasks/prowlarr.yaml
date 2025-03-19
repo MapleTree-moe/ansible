@@ -30,7 +30,6 @@
     podman_quadlet_specs:
       # list order determined by dependencies - do NOT modify
       - template_src: prowlarr.volume.j2
-      - template_src: prowlarr-backup.volume.j2
       - template_src: prowlarr.container.j2
     podman_secrets:
       - name: prowlarr-api-key
