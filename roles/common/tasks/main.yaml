@@ -24,7 +24,12 @@
     - name: COMMON | CLOUD-INIT | Check if cloud-init is in use
       ansible.builtin.stat:
         path: /etc/cloud
-      register: cloud_init
+      register: cloud_init_dir
+    - name: COMMON | CLOUD-INIT | Check if disabled file exists
+      ansible.builtin.stat:
+        path: /etc/cloud/cloud-init.disabled
+      register: cloud_init_file
+      when: cloud_init_dir.stat.exists
     - name: COMMON | CLOUD-INIT | Disable cloud-init
       ansible.builtin.file:
         path: /etc/cloud/cloud-init.disabled
@@ -32,18 +37,18 @@
         owner: root
         group: root
         mode: "0644"
-      when: cloud_init.stat.exists
-
-# new systems that aren't conversions need to have their subscriptions
-# activated prior to steps that will install software.
-- name: COMMON | REDHAT | Configure RedHat services
-  when: common_redhat_enabled
-  ansible.builtin.include_tasks:
-    file: redhat.yaml
+      when:
+        - cloud_init_dir.stat.exists
+        - not cloud_init_file.stat.exists
 
 - name: COMMON | Configure system network
   ansible.builtin.include_tasks:
     file: network.yaml
+
+- name: COMMON | REDHAT | Configure RedHat services
+  when: common_redhat_enabled
+  ansible.builtin.include_tasks:
+    file: redhat.yaml
 
 - name: COMMON | PACKAGES | Configure packages and updates
   ansible.builtin.include_tasks:
