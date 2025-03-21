@@ -5,6 +5,33 @@
 ### common role - network - configure system networking
 ###
 ---
+- name: COMMON | NETWORK | Set system hostname from inventory file
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
+    # RHEL/EL/CentOS 7+ use 'systemd' over 'redhat'
+    use: systemd
+
+- name: COMMON | NETWORK | Configure hosts file
+  block:
+    # yamllint disable rule:line-length
+    - name: COMMON | NETWORK | HOSTS | Set ipv4 localhosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "127.0.0.1 {{ hostvars[item].ansible_fqdn }} {{ hostvars[item].ansible_hostname }} localhost localhost.localdomain localhost4 localhost4.localdomain4"
+        regex: "127.0.0.1"
+    - name: COMMON | NETWORK | HOSTS | Set ipv6 localhosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "::1 {{ hostvars[item].ansible_fqdn }} {{ hostvars[item].ansible_hostname }} localhost localhost.localdomain localhost4 localhost4.localdomain4"
+        regex: "::1"
+    - name: COMMON | NETWORK | HOSTS | Set ansible hosts in file
+      ansible.builtin.lineinfile:
+        path: hosts
+        line: "{{ hostvars[item].ansible_all_ipv4_addresses.0 }} {{ hostvars[item].ansible_fqdn }} {{ hostvars[item].ansible_hostname }}"
+        regexp: "{{ hostvars[item].ansible_fqdn }}"
+      loop: "{{ groups['servers'] }}"
+    # yamllint enable rule:line-length
+
 # TODO: this sometimes seizes up in the CI/CD pipeline, why?
 - name: COMMON | NETWORK | NM | Configure DHCP and static DNS Servers
   vars:
@@ -44,6 +71,6 @@
 # fail since it first starts the service to check for a successful install
 - name: COMMON | NETWORK | HOSTS | Remove ipv6 localhost from /etc/hosts
   ansible.builtin.lineinfile:
-    dest: /etc/hosts
-    regexp: ^::1
+    path: /etc/hosts
+    regexp: "::1"
     state: absent

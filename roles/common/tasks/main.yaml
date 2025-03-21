@@ -8,6 +8,8 @@
 # the cloud we use does not natively provide RHEL images, so we use terraform to
 # install a RHEL clone and then convert the clone to genuine RHEL. this is not
 # technically supported by redhat.
+#
+# TODOs: Sudo configuration
 - name: COMMON | Convert RHEL Clones to genuine RHEL
   when:
     - common_convert_enabled
@@ -24,6 +26,10 @@
     owner: root
     group: root
     mode: "0644"
+  register: result
+  failed_when:
+    - result.rc != 0
+    - result.rc != 2 # don't fail if cloud init doesn't exist
 
 - name: COMMON | Configure system network
   ansible.builtin.include_tasks:
