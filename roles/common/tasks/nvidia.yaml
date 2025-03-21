@@ -11,7 +11,7 @@
   ansible.builtin.rpm_key:
     # yamllint disable-line rule:line-length
     key: https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/D42D0685.pub
-    fingerprint: 610C 7B14 E068 A878 070D A4E9 9CD0 A493 D42D 068
+    fingerprint: 610C 7B14 E068 A878 070D A4E9 9CD0 A493 D42D 0685
     state: present
 
 - name: NVIDIA | Install NVIDIA dnf software repository
