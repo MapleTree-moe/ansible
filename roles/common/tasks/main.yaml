@@ -34,6 +34,13 @@
         mode: "0644"
       when: cloud_init.stat.exists
 
+# new systems that aren't conversions need to have their subscriptions
+# activated prior to steps that will install software.
+- name: COMMON | REDHAT | Configure RedHat services
+  when: common_redhat_enabled
+  ansible.builtin.include_tasks:
+    file: redhat.yaml
+
 - name: COMMON | Configure system network
   ansible.builtin.include_tasks:
     file: network.yaml
@@ -51,11 +58,6 @@
   when: common_postfix_enabled
   ansible.builtin.include_tasks:
     file: postfix.yaml
-
-- name: COMMON | REDHAT | Configure RedHat services
-  when: common_redhat_enabled
-  ansible.builtin.include_tasks:
-    file: redhat.yaml
 
 - name: COMMON | TUNED | Configure system tuning based on system type
   ansible.builtin.include_tasks:
