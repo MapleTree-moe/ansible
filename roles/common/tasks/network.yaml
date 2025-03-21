@@ -17,12 +17,12 @@
     - name: COMMON | NETWORK | HOSTS | Set ipv4 localhosts
       ansible.builtin.lineinfile:
         path: /etc/hosts
-        line: "127.0.0.1 {{ hostvars[item].ansible_fqdn }} {{ hostvars[item].ansible_hostname }} localhost localhost.localdomain localhost4 localhost4.localdomain4"
+        line: "127.0.0.1 {{ ansible_facts['fqdn'] }} {{ ansible_facts['hostname'] }} localhost localhost.localdomain localhost4 localhost4.localdomain4"
         regex: "127.0.0.1"
     - name: COMMON | NETWORK | HOSTS | Set ipv6 localhosts
       ansible.builtin.lineinfile:
         path: /etc/hosts
-        line: "::1 {{ hostvars[item].ansible_fqdn }} {{ hostvars[item].ansible_hostname }} localhost localhost.localdomain localhost4 localhost4.localdomain4"
+        line: "::1 {{ ansible_facts['fqdn'] }} {{ ansible_facts['hostname'] }} localhost localhost.localdomain localhost4 localhost4.localdomain4"
         regex: "::1"
     - name: COMMON | NETWORK | HOSTS | Set ansible hosts in file
       ansible.builtin.lineinfile:
