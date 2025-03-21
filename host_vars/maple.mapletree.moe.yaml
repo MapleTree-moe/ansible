@@ -1,0 +1,13 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### kanade.mapletree.moe - host configuration
+###
+---
+### common role configuration variables
+common_nvidia_enabled: false
+
+containers_services_enabled:
+  - traefik
+  - whoami
