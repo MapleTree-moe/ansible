@@ -19,17 +19,20 @@
 
 # disable cloud-init after first boot configuration
 # https://cloudinit.readthedocs.io/en/stable/howto/disable_cloud_init.html
-- name: COMMON | CLOUD-INIT | Create file disabling cloud-init
-  ansible.builtin.file:
-    path: /etc/cloud/cloud-init.disabled
-    state: touch
-    owner: root
-    group: root
-    mode: "0644"
-  register: result
-  failed_when:
-    - result.rc != 0
-    - result.rc != 2 # don't fail if cloud init doesn't exist
+- name: COMMON | Disable cloud-init if needed
+  block:
+    - name: COMMON | CLOUD-INIT | Check if cloud-init is in use
+      ansible.builtin.stat:
+        path: /etc/cloud
+      register: cloud_init
+    - name: COMMON | CLOUD-INIT | Disable cloud-init
+      ansible.builtin.file:
+        path: /etc/cloud/cloud-init.disabled
+        state: touch
+        owner: root
+        group: root
+        mode: "0644"
+      when: cloud_init.stat.exists
 
 - name: COMMON | Configure system network
   ansible.builtin.include_tasks:
