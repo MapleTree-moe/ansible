@@ -55,13 +55,13 @@
             auto-routes: false
             autoconf: false
             dhcp: false
-          dns-resolver:
-            config:
-              server:
-                - 1.1.1.1
-                - 1.0.0.1
-              options:
-                - use-vc
+      dns-resolver:
+        config:
+          server:
+            - 1.1.1.1
+            - 1.0.0.1
+          options:
+            - use-vc
   ansible.builtin.include_role:
     # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_network/
     name: fedora.linux_system_roles.network
