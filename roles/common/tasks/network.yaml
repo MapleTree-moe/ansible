@@ -24,12 +24,14 @@
         path: /etc/hosts
         line: "::1 {{ ansible_facts['fqdn'] }} {{ ansible_facts['hostname'] }} localhost localhost.localdomain localhost4 localhost4.localdomain4"
         regex: "::1"
-    - name: COMMON | NETWORK | HOSTS | Set ansible hosts in file
-      ansible.builtin.lineinfile:
-        path: /etc/hosts
-        line: "{{ hostvars[item].ansible_all_ipv4_addresses.0 }} {{ hostvars[item].ansible_fqdn }} {{ hostvars[item].ansible_hostname }}"
-        regexp: "{{ hostvars[item].ansible_fqdn }}"
-      loop: "{{ groups['servers'] }}"
+    # FIXME: this broke due to something with the variables, and it's also
+    # making a complete mess of the host files.
+    # - name: COMMON | NETWORK | HOSTS | Set ansible hosts in file
+    #   ansible.builtin.lineinfile:
+    #     path: /etc/hosts
+    #     line: "{{ hostvars[item].ansible_all_ipv4_addresses.0 }} {{ hostvars[item].ansible_fqdn }} {{ hostvars[item].ansible_hostname }}"
+    #     regexp: "{{ hostvars[item].ansible_fqdn }}"
+    #   loop: "{{ groups['servers'] }}"
     # yamllint enable rule:line-length
 
 - name: COMMON | NETWORK | NM | Configure DHCP and static DNS Servers
