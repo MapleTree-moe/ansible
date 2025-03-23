@@ -3,3 +3,29 @@
 ### mapletree.moe - smartd configuration file
 ### https://linux.die.net/man/5/smartd.conf
 ###
+
+#
+# enable drive monitoring and alerting
+#
+# DEFAULT blocks are appended to subsequent drive blocks.
+# this allows for email notifications on drive errors and failues without
+# spamming syslog.
+#
+DEFAULT -H -l selftest -l error -f -m admin@{{ ansible_facts['domain'] }} -M daily
+
+#
+# drive testing configuration
+#
+# these commands have two parts:
+#   `S` block configures short test to run daily at set time in 24H format
+#   `L` block configures long test to run sundays (7) at set time in 24H format
+#
+# NOTE: make sure to stagger testing so all drives aren't hit at once
+#
+# UPGRADE: RHEL10 will bring updated smartctl that can test nvme drives
+#          add the test schedule then
+#
+/dev/sda -s (S/../.././01|L/../../7/04)
+/dev/sdb -s (S/../.././02|L/../../7/06)
+/dev/nvme0n1
+/dev/nvme1n1

@@ -9,6 +9,10 @@
   # TODO: fill this in, looking for zfs, mdadm, and an ssd/nvme drive for trim
   #       what will we do if not detected? are some things okay but others arent
 
+- name: STORAGE | Install SMART monitoring daemon configuration file
+  ansible.builtin.tempfile:
+    path: /etc/smartmontools
+
 - name: STORAGE | Enable weekly scrubs
   when: storage_enabled
   vars:
