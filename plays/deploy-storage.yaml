@@ -1,0 +1,14 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### update containers configuration
+###
+---
+- name: STORAGE | Deploy storage configuration
+  hosts: all
+  become: true
+  tasks:
+    - name: STORAGE | Activate storage configuration
+      ansible.builtin.include_role:
+        name: storage

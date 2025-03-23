@@ -1,0 +1,30 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### storage role - configure system storage monitoring
+###
+---
+# - name: STORAGE | Ensure expected filesystems exist
+  # TODO: fill this in, looking for zfs, mdadm, and an ssd/nvme drive for trim
+  #       what will we do if not detected? are some things okay but others arent
+
+- name: STORAGE | Enable weekly scrubs
+  when: storage_enabled
+  vars:
+    systemd_enabled_units:
+      - fstrim.timer
+      - raid-check.timer
+      - "zfs-scrub-weekly@{{ storage_pool_name }}.timer"
+  ansible.builtin.include_role:
+    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_systemd/
+    name: fedora.linux_system_roles.systemd
+
+# - name: STORAGE | Install Directory Layout
+  # TODO: what are we looking for? we want it to be under the pool root
+  #       and probably encorporate media, cloud, databases, etc. this should
+  #       probably be a design document
+
+# - name: STORAGE | Implement container permissions
+  # TODO: we will need to map these over podmans namespace. test to make sure
+  #       namespace uid assignments are always consistent

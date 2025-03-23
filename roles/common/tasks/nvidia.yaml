@@ -28,6 +28,11 @@
     mode: "0644"
 
 # TODO: if nvidia decides we deserve a 570 precompiled kmod, update this
+
+# FIXME: this is installing a LOT of extraneous stuff, like xorg-server. that
+#        shouldn't happen with just a cuda driver installation. this needs to
+#        be fixed, and then the hardening rule override removed. this should
+#        just select the branch.
 - name: NVIDIA | Set nvidia driver to 565 branch to access precompiled kmod
   ansible.builtin.dnf:
     name: "@nvidia-driver:565"

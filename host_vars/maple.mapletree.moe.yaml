@@ -5,8 +5,8 @@
 ### kanade.mapletree.moe - host configuration
 ###
 ---
-### common role configuration variables
 common_nvidia_enabled: true
+storage_enabled: true
 
 containers_services_enabled:
   - traefik

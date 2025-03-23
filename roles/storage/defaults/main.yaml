@@ -1,0 +1,9 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### storage role - configure system storage monitoring
+###
+---
+storage_enabled: false
+storage_pool_name: data
