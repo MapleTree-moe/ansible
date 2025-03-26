@@ -1,0 +1,12 @@
+### {{ ansible_managed }} - {{ ansible_facts['fqdn'] }}
+###
+### mapletree.moe - podman quadlet file
+### https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
+###
+
+[Unit]
+Description=Kopia Config Volume
+Documentation=https://kopia.io/docs/
+
+[Volume]
+VolumeName=kopia-config

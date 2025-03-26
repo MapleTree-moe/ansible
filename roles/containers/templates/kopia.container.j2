@@ -1,0 +1,41 @@
+### {{ ansible_managed }} - {{ ansible_facts['fqdn'] }}
+###
+### mapletree.moe - podman quadlet file
+### https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
+###
+
+[Unit]
+Description=Kopia Container
+Documentation=https://kopia.io/docs/
+After=podman-user-wait-network-online.service
+
+[Service]
+Restart=on-failure
+
+[Container]
+ContainerName=kopia
+Image={{ services['kopia']['image'] }}
+Network=frontend.network
+{% if containers_kopia_repo_server %}
+Exec=server start --address=https://0.0.0.0:8080
+{% endif %}
+
+# labels
+{% if containers_kopia_repo_server %}
+Label=traefik.enable="true"
+Label=traefik.http.routers.kopia.rule="Host(`{{ ansible_facts['hostname'] }}.{{ ansible_facts['domain'] }}`)"
+Label=traefik.http.services.kopia.loadbalancer.server.scheme=https
+Label=traefik.http.services.kopia.loadbalancer.server.port=8080
+{% endif %}
+
+# secrets
+{% if containers_kopia_repo_server %}
+Secret=kopia-repo-password,type=env,target=KOPIA_PASSWORD
+{% endif %}
+
+Volume=kopia-cache.volume:/app/cache:Z
+Volume=kopia-config.volume:/app/config:Z
+Volume=kopia-logs.volume:/app/logs:Z
+
+[Install]
+WantedBy=default.target

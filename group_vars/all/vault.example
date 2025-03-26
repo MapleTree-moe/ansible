@@ -7,11 +7,8 @@
 ---
 ## NOTE: Prefix all variables here with vault_
 
-## bootloader
-vault_hardening_bootloader_password: "changeme"
-
 ## common
-vault_common_redhat_key: "super-secret-redhat-key"
+vault_common_redhat_key: "secret-activation-key"
 vault_common_redhat_org: "0123456789"
 vault_common_redhat_pass: "PASSWORD"
 vault_common_redhat_user: "USERNAME"
@@ -19,6 +16,12 @@ vault_common_relay_user: "USERNAME"
 vault_common_relay_pass: "PASSWORD"
 
 ## containers
-vault_containers_db_backup_s3_key_secret: mysecret
-vault_containers_db_backup_s3_key_id: mykeyid
-vault_containers_lldap_discord_bot_token: mydiscordtoken
+vault_containers_db_backup_s3_key_secret: "MY_SECRET"
+vault_containers_db_backup_s3_key_id: "MY_ID"
+vault_containers_db_backup_rocketchat_webhook_url: "https://example.com"
+vault_containers_kopia_s3_key_id: "MY_ID"
+vault_containers_kopia_s3_key_secret: "MY_SECRET"
+vault_containers_lldap_discord_bot_token: "BOT_TOKEN"
+
+## hardening
+vault_hardening_bootloader_password: "PASSWORD"

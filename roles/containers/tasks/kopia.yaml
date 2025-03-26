@@ -1,0 +1,60 @@
+# code: language=ansible
+
+###
+### mapletree.moe - system configuration management
+### containers - kopia - deploy kopia to the target system
+###
+---
+# TODOs: Automated monthly integrity check
+#        notifications
+- name: CONTAINERS | KOPIA | Check dependencies
+  when: "'traefik' not in containers_services_enabled"
+  ansible.builtin.fail:
+    # yamllint disable rule:line-length
+    msg: |
+      !!!ERROR!!!
+      !!!ERROR!!! {{ ansible_facts['fqdn'] }} - roles/containers/tasks/kopia.yaml:9
+      !!!ERROR!!! kopia has unsatisfied dependencies. please review.
+      !!!ERROR!!!
+    # yamllint enable rule:line-length
+
+- name: CONTAINERS | KOPIA | Install repository configuration file
+  block:
+    - name: CONTAINERS | KOPIA | FILES | Create configuration directory
+      ansible.builtin.file:
+        path: /home/podman/containers/config/kopia
+        state: directory
+        owner: podman
+        group: podman
+        mode: "0700"
+    - name: CONTAINERS | KOPIA | FILES | Template repository configuration
+      ansible.builtin.template:
+        src: config/kopia/repository.config.j2
+        dest: /home/podman/containers/config/kopia/repository.config
+        owner: podman
+        group: podman
+        mode: "0600"
+
+- name: CONTAINERS | KOPIA | Install primary repository encryption key
+  when: containers_kopia_repo_server
+  vars:
+    podman_secrets:
+      - name: kopia-repo-password
+        state: present
+        skip_existing: true # do not overwrite if secret exists
+        data: "{{ containers_kopia_repo_password }}"
+  ansible.builtin.include_role:
+    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
+    name: fedora.linux_system_roles.podman
+
+- name: CONTAINERS | KOPIA | Install container
+  vars:
+    podman_quadlet_specs:
+      # list order determined by dependencies - do NOT modify
+      - template_src: kopia-cache.volume.j2
+      - template_src: kopia-config.volume.j2
+      - template_src: kopia-logs.volume.j2
+      - template_src: kopia.container.j2
+  ansible.builtin.include_role:
+    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
+    name: fedora.linux_system_roles.podman

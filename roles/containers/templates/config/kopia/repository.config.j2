@@ -1,0 +1,22 @@
+{
+  "storage": {
+    "type": "s3",
+    "config": {
+      "bucket": "{{ containers_kopia_s3_bucket_name }}",
+      "endpoint": "{{ containers_kopia_s3_endpoint_url }}",
+      "accessKeyID": "{{ containers_kopia_s3_key_id }}",
+      "secretAccessKey": "{{ containers_kopia_s3_key_secret }}",
+      "sessionToken": ""
+    }
+  },
+  "caching": {
+    "cacheDirectory": "/app/cache",
+    "maxCacheSize": 5242880000,
+    "maxMetadataCacheSize": 5242880000,
+    "maxListCacheDuration": 30
+  },
+  "hostname": "{{ ansible_facts['domain'] }}",
+  "username": "{{ ansible_facts['hostname'] }}",
+  "enableActions": false,
+  "formatBlobCacheDuration": 900000000000
+}

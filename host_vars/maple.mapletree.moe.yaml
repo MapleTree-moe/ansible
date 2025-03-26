@@ -2,12 +2,17 @@
 
 ###
 ### mapletree.moe - system configuration management
-### kanade.mapletree.moe - host configuration
+### maple.mapletree.moe - host configuration
 ###
 ---
-common_nvidia_enabled: true
+common_nvidia_enabled: false
 storage_enabled: true
 
 containers_services_enabled:
   - traefik
-  - whoami
+  - lldap
+  - authelia
+  - sonarr
+  - radarr
+  - prowlarr
+  - recyclarr

@@ -10,10 +10,4 @@ common_nvidia_enabled: false
 
 containers_services_enabled:
   - traefik
-  - lldap
-  - authelia
   - whoami
-  - sonarr
-  - radarr
-  - prowlarr
-  - recyclarr

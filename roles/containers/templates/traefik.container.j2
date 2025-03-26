@@ -54,6 +54,10 @@ Environment=TRAEFIK_PROVIDERS_DOCKER_NETWORK="frontend"
 Environment=TRAEFIK_PROVIDERS_DOCKER_WATCH="true"
 Environment=TRAEFIK_PROVIDERS_FILE_FILENAME="/etc/traefik/tls_options.yaml"
 
+{% if containers_traefik_skip_https_verify %}
+Environment=TRAEFIK_SERVERSTRANSPORT_INSECURESKIPVERIFY=true
+{% endif %}
+
 # health check
 HealthCmd=traefik healthcheck
 HealthInterval=5s

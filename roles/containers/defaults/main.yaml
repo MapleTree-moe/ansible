@@ -32,6 +32,16 @@ containers_db_backup_s3_host: s3.host.example
 containers_db_backup_s3_key_id: my-key-id
 containers_db_backup_s3_key_secret: my-secret-key
 
+containers_kopia_repo_server: false
+# the following variables are only used for a kopia repo server
+containers_kopia_repo_password: PASSWORD
+containers_kopia_s3_bucket_name: example-bucket
+containers_kopia_s3_endpoint_url: s3.eu-central-003.backblazeb2.com
+containers_kopia_s3_key_id: vaulted-key
+containers_kopia_s3_key_secret: vaulted-key
+
 containers_lldap_base_dn_domain: example
 containers_lldap_base_dn_extension: com
 containers_lldap_discord_bot_token: TOKEN
+
+containers_traefik_skip_https_verify: false
