@@ -18,8 +18,7 @@ Image={{ services['kopia']['image'] }}
 Network=frontend.network
 {% if containers_enable_kopia_repo_server %}
 Exec=server start --address=https://0.0.0.0:8080 \
---tls-cert-file /app/config/certificate.pem \
---tls-key-file /app/config/certificate.key \
+--insecure \
 --no-ui \
 --content-cache-size-limit-mb {{ containers_kopia_content_cache }} \
 --metadata-cache-size-limit-mb {{ containers_kopia_metadata_cache }} \
@@ -27,11 +26,14 @@ Exec=server start --address=https://0.0.0.0:8080 \
 --server-control-password {{ containers_kopia_control_pass }}
 {% endif %}
 
+# --tls-cert-file /app/config/certificate.pem \
+# --tls-key-file /app/config/certificate.key \
+
 # labels
 {% if containers_enable_kopia_repo_server %}
 Label=traefik.enable="true"
 Label=traefik.http.routers.kopia.rule="Host(`{{ ansible_facts['hostname'] }}.{{ ansible_facts['domain'] }}`)"
-Label=traefik.http.services.kopia.loadbalancer.server.scheme=https
+#Label=traefik.http.services.kopia.loadbalancer.server.scheme=http
 Label=traefik.http.services.kopia.loadbalancer.server.port=8080
 {% endif %}
 
