@@ -17,7 +17,14 @@ ContainerName=kopia
 Image={{ services['kopia']['image'] }}
 Network=frontend.network
 {% if containers_kopia_repo_server %}
-Exec=server start --address=https://0.0.0.0:8080
+Exec=server start --address=https://0.0.0.0:8080 \
+--tls-cert-file /app/config/certificate.pem \
+--tls-key-file /app/config/certificate.key \
+--no-ui \
+--content-cache-size-limit-mb {{ containers_kopia_content_cache }} \
+--metadata-cache-size-limit-mb {{ containers_kopia_metadata_cache }} \
+--server-control-username {{ containers_kopia_control_user }} \
+--server-control-password {{ containers_kopia_control_pass }}
 {% endif %}
 
 # labels
@@ -40,6 +47,8 @@ Volume=kopia-logs.volume:/app/logs:Z
 
 {% if containers_kopia_repo_server %}
 Volume=/home/podman/containers/config/kopia/repository.config:/app/config/repository.config:Z
+Volume=/home/podman/containers/config/kopia/certificate.pem:/app/config/certificate.pem:Z
+Volume=/home/podman/containers/config/kopia/certificate.key:/app/config/certificate.key:Z
 {% endif %}
 
 [Install]

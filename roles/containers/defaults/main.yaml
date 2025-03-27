@@ -34,6 +34,10 @@ containers_db_backup_s3_key_secret: my-secret-key
 
 containers_kopia_repo_server: false
 # the following variables are only used for a kopia repo server
+containers_kopia_control_user: USERNAME
+containers_kopia_control_pass: PASSWORD
+containers_kopia_content_cache: 20000 # megabytes
+containers_kopia_metadata_cache: 10000 # megabytes
 containers_kopia_repo_password: PASSWORD
 containers_kopia_s3_bucket_name: example-bucket
 containers_kopia_s3_endpoint_url: s3.eu-central-003.backblazeb2.com

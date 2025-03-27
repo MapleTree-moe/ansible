@@ -35,17 +35,28 @@
         group: podman
         mode: "0600"
 
-- name: CONTAINERS | KOPIA | Install primary repository encryption key
+- name: CONTAINERS | KOPIA | Prepare for repository server deployment
   when: containers_kopia_repo_server
-  vars:
-    podman_secrets:
-      - name: kopia-repo-password
-        state: present
-        skip_existing: true # do not overwrite if secret exists
-        data: "{{ containers_kopia_repo_password }}"
-  ansible.builtin.include_role:
-    # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
-    name: fedora.linux_system_roles.podman
+  block:
+    - name: CONTAINERS | KOPIA | SERVER | Install secrets
+      vars:
+        podman_secrets:
+          - name: kopia-repo-password
+            state: present
+            skip_existing: true # do not overwrite if secret exists
+            data: "{{ containers_kopia_repo_password }}"
+      ansible.builtin.include_role:
+        # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
+        name: fedora.linux_system_roles.podman
+    - name: CONTAINERS | KOPIA | SERVER | Create OpenSSL Private Key
+      # this certificate will only be used internally, rsa 4096 is fine
+      community.crypto.openssl_privatekey:
+        path: /home/podman/containers/config/kopia/certificate.key
+    - name: CONTAINERS | KOPIA | SERVER | Generate self signed certificate
+      community.crypto.x509_certificate:
+        path: /home/podman/containers/config/kopia/certificate.pem
+        privatekey_path: /home/podman/containers/config/kopia/certificate.key
+        provider: selfsigned
 
 - name: CONTAINERS | KOPIA | Install container
   vars:
