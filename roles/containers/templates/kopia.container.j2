@@ -16,7 +16,7 @@ Restart=on-failure
 ContainerName=kopia
 Image={{ services['kopia']['image'] }}
 Network=frontend.network
-{% if containers_kopia_repo_server %}
+{% if containers_enable_kopia_repo_server %}
 Exec=server start --address=https://0.0.0.0:8080 \
 --tls-cert-file /app/config/certificate.pem \
 --tls-key-file /app/config/certificate.key \
@@ -28,7 +28,7 @@ Exec=server start --address=https://0.0.0.0:8080 \
 {% endif %}
 
 # labels
-{% if containers_kopia_repo_server %}
+{% if containers_enable_kopia_repo_server %}
 Label=traefik.enable="true"
 Label=traefik.http.routers.kopia.rule="Host(`{{ ansible_facts['hostname'] }}.{{ ansible_facts['domain'] }}`)"
 Label=traefik.http.services.kopia.loadbalancer.server.scheme=https
@@ -36,7 +36,7 @@ Label=traefik.http.services.kopia.loadbalancer.server.port=8080
 {% endif %}
 
 # secrets
-{% if containers_kopia_repo_server %}
+{% if containers_enable_kopia_repo_server %}
 Secret=kopia-repo-password,type=env,target=KOPIA_PASSWORD
 {% endif %}
 
@@ -45,7 +45,7 @@ Volume=kopia-cache.volume:/app/cache:Z
 Volume=kopia-config.volume:/app/config:Z
 Volume=kopia-logs.volume:/app/logs:Z
 
-{% if containers_kopia_repo_server %}
+{% if containers_enable_kopia_repo_server %}
 Volume=/home/podman/containers/config/kopia/repository.config:/app/config/repository.config:Z
 Volume=/home/podman/containers/config/kopia/certificate.pem:/app/config/certificate.pem:Z
 Volume=/home/podman/containers/config/kopia/certificate.key:/app/config/certificate.key:Z

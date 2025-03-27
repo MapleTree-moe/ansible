@@ -8,16 +8,18 @@
 ### common role configuration variables
 common_nvidia_enabled: false
 
+containers_enable_db_backup: false
+containers_enable_kopia_repo_server: true
+containers_services_enabled:
+  - traefik
+  - kopia
+
 containers_kopia_control_user: tokisaki@mapletree.moe
 containers_kopia_control_pass: "{{ vault_containers_kopia_control_pass }}"
-containers_kopia_repo_server: true
 containers_kopia_repo_password: "{{ vault_containers_kopia_repo_password }}"
 containers_kopia_s3_bucket_name: tokisaki-v3-repo
 containers_kopia_s3_endpoint_url: s3.eu-central-003.backblazeb2.com
 containers_kopia_s3_key_id: "{{ vault_containers_kopia_s3_key_id }}"
 containers_kopia_s3_key_secret: "{{ vault_containers_kopia_s3_key_secret }}"
-containers_traefik_skip_https_verify: true
 
-containers_services_enabled:
-  - traefik
-  - kopia
+containers_traefik_skip_https_verify: true

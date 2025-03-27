@@ -8,6 +8,8 @@
 # the db backup system will automatically configure itself, this just turns
 # it on or off
 containers_enable_db_backup: true
+containers_enable_kopia_repo_server: false
+
 # all containers which use databases and do NOT have their own backup systems
 # will have a task inside them that appends their information to the dict
 # which is then used to generate the final template for the backup
@@ -32,7 +34,6 @@ containers_db_backup_s3_host: s3.host.example
 containers_db_backup_s3_key_id: my-key-id
 containers_db_backup_s3_key_secret: my-secret-key
 
-containers_kopia_repo_server: false
 # the following variables are only used for a kopia repo server
 containers_kopia_control_user: USERNAME
 containers_kopia_control_pass: PASSWORD

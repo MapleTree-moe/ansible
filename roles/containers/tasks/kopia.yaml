@@ -36,7 +36,7 @@
         mode: "0600"
 
 - name: CONTAINERS | KOPIA | Prepare for repository server deployment
-  when: containers_kopia_repo_server
+  when: containers_enable_kopia_repo_server
   block:
     - name: CONTAINERS | KOPIA | SERVER | Install secrets
       vars:
