@@ -52,11 +52,17 @@
       # this certificate will only be used internally, rsa 4096 is fine
       community.crypto.openssl_privatekey:
         path: /home/podman/containers/config/kopia/certificate.key
+        owner: podman
+        group: podman
+        mode: "0600"
     - name: CONTAINERS | KOPIA | SERVER | Generate self signed certificate
       community.crypto.x509_certificate:
         path: /home/podman/containers/config/kopia/certificate.pem
         privatekey_path: /home/podman/containers/config/kopia/certificate.key
         provider: selfsigned
+        owner: podman
+        group: podman
+        mode: "0600"
 
 - name: CONTAINERS | KOPIA | Install container
   vars:
