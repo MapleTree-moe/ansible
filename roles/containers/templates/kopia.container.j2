@@ -17,7 +17,7 @@ ContainerName=kopia
 Image={{ services['kopia']['image'] }}
 Network=frontend.network
 {% if containers_enable_kopia_repo_server %}
-Exec=server start --address=https://0.0.0.0:8080 \
+Exec=server start --address=https://0.0.0.0:443 \
 --tls-cert-file /app/config/certificate.pem \
 --tls-key-file /app/config/certificate.key \
 --no-ui \
@@ -33,8 +33,8 @@ Label=traefik.enable="true"
 Label=traefik.http.routers.kopia.rule="Host(`{{ ansible_facts['hostname'] }}.{{ ansible_facts['domain'] }}`)"
 Label=traefik.http.routers.kopia.tls="true"
 Label=traefik.http.routers.kopia.tls.certresolver="letsencrypt"
-Label=traefik.http.services.kopia.loadbalancer.server.scheme=http
-Label=traefik.http.services.kopia.loadbalancer.server.port=8080
+Label=traefik.http.services.kopia.loadbalancer.server.scheme=https
+Label=traefik.http.services.kopia.loadbalancer.server.port=443
 {% endif %}
 
 # secrets
