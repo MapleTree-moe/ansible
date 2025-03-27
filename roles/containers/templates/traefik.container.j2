@@ -25,8 +25,9 @@ SecurityLabelType=traefik.process
 Environment=TRAEFIK_API="true"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt="true"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_EMAIL="admin@{{ ansible_facts['domain'] }}"
-# TODO: Disable after testing
+{% if containers_traefik_staging_ssl %}
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_CASERVER="https://acme-staging-v02.api.letsencrypt.org/directory"
+{% endif %}
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_STORAGE="/etc/traefik/acme.json"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt_ACME_TLSCHALLENGE="true"
 Environment=TRAEFIK_ENTRYPOINTS_web_FORWARDEDHEADERS_INSECURE="false"
@@ -53,7 +54,6 @@ Environment=TRAEFIK_PROVIDERS_DOCKER_ALLOWEMPTYSERVICES="true"
 Environment=TRAEFIK_PROVIDERS_DOCKER_NETWORK="frontend"
 Environment=TRAEFIK_PROVIDERS_DOCKER_WATCH="true"
 Environment=TRAEFIK_PROVIDERS_FILE_FILENAME="/etc/traefik/tls_options.yaml"
-
 {% if containers_traefik_skip_https_verify %}
 Environment=TRAEFIK_SERVERSTRANSPORT_INSECURESKIPVERIFY=true
 {% endif %}
@@ -67,13 +67,14 @@ HealthTimeout=30s
 
 # automatically configure traefik to proxy the web service
 Label=traefik.enable="true"
-
+{% if containers_traefik_enable_dashboard %}
 # configure the traefik dashboard
 Label=traefik.http.routers.dashboard.rule="Host(`traefik.{{ ansible_facts['fqdn'] }}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
 Label=traefik.http.routers.dashboard.service="api@internal"
 Label=traefik.http.routers.dashboard.middlewares="authelia@docker"
 Label=traefik.http.routers.dashboard.tls="true"
 Label=traefik.http.routers.dashboard.tls.certresolver="letsencrypt"
+{% endif %}
 
 # middlewares
 Label=traefik.http.middlewares.securityHeaders.headers.browserXssFilter="true"
@@ -87,7 +88,9 @@ Label=traefik.http.middlewares.securityHeaders.headers.referrerPolicy="same-orig
 Label=traefik.http.middlewares.securityHeaders.headers.stsIncludeSubdomains="true"
 Label=traefik.http.middlewares.securityHeaders.headers.stsPreload="true"
 Label=traefik.http.middlewares.securityHeaders.headers.stsSeconds="31536000"
+{% if containers_traefik_authelia_middleware %}
 Label=traefik.http.middlewares.secured.chain.middlewares="securityHeaders,authelia"
+{% endif %}
 
 # volumes
 Volume=/%t/podman/podman.sock:/var/run/docker.sock:ro

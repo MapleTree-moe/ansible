@@ -11,3 +11,5 @@ common_nvidia_enabled: false
 containers_services_enabled:
   - traefik
   - whoami
+
+containers_traefik_staging_ssl: true

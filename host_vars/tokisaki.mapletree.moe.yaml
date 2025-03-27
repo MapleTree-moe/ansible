@@ -22,4 +22,5 @@ containers_kopia_s3_endpoint_url: s3.eu-central-003.backblazeb2.com
 containers_kopia_s3_key_id: "{{ vault_containers_kopia_s3_key_id }}"
 containers_kopia_s3_key_secret: "{{ vault_containers_kopia_s3_key_secret }}"
 
+containers_traefik_enable_dashboard: false
 containers_traefik_skip_https_verify: true

@@ -16,3 +16,5 @@ containers_services_enabled:
   - radarr
   - prowlarr
   - recyclarr
+
+containers_traefik_staging_ssl: true
