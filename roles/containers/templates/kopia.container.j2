@@ -18,16 +18,14 @@ Image={{ services['kopia']['image'] }}
 Network=frontend.network
 {% if containers_enable_kopia_repo_server %}
 Exec=server start --address=https://0.0.0.0:8080 \
---insecure \
+--tls-cert-file /app/config/certificate.pem \
+--tls-key-file /app/config/certificate.key \
 --no-ui \
 --content-cache-size-limit-mb {{ containers_kopia_content_cache }} \
 --metadata-cache-size-limit-mb {{ containers_kopia_metadata_cache }} \
 --server-control-username {{ containers_kopia_control_user }} \
 --server-control-password {{ containers_kopia_control_pass }}
 {% endif %}
-
-# --tls-cert-file /app/config/certificate.pem \
-# --tls-key-file /app/config/certificate.key \
 
 # labels
 {% if containers_enable_kopia_repo_server %}
