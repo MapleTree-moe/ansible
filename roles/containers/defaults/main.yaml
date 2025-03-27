@@ -49,6 +49,7 @@ containers_lldap_base_dn_domain: example
 containers_lldap_base_dn_extension: com
 containers_lldap_discord_bot_token: TOKEN
 
+containers_traefik_enable_authelia: true
 containers_traefik_enable_dashboard: true
 containers_traefik_skip_https_verify: false
 containers_traefik_staging_ssl: false # use let's encrypt staging server
