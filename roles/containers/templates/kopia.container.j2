@@ -33,9 +33,14 @@ Label=traefik.http.services.kopia.loadbalancer.server.port=8080
 Secret=kopia-repo-password,type=env,target=KOPIA_PASSWORD
 {% endif %}
 
+# volumes
 Volume=kopia-cache.volume:/app/cache:Z
 Volume=kopia-config.volume:/app/config:Z
 Volume=kopia-logs.volume:/app/logs:Z
+
+{% if containers_kopia_repo_server %}
+Volume=/home/podman/containers/config/kopia/repository.config:/app/config/repository.config:Z
+{% endif %}
 
 [Install]
 WantedBy=default.target
