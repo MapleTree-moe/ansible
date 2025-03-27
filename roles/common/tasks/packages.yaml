@@ -11,6 +11,7 @@
       - dnf-automatic
       - dnf-utils # ensure this is available since CONVERT is optional task
       - git
+      - python3-cryptography # this is used in various roles
       - tmux
     state: present
     update_cache: true
