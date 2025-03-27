@@ -12,7 +12,7 @@ on:
   workflow_dispatch: # this playbook takes a WHILE so make it manual only
 
 env:
-  ANSIBLE_HOST_KEY_CHECKING: false  # needed for automation
+  ANSIBLE_HOST_KEY_CHECKING: false # needed for automation
 
 jobs:
   create-runner:
@@ -30,7 +30,7 @@ jobs:
           github_token: ${{ secrets.NAGATO_GITHUB_RUNNERS }}
           hcloud_token: ${{ secrets.HCLOUD_TOKEN }}
           enable_ipv6: false
-          server_type: cx22
+          server_type: cpx11
           ssh_key: ${{ vars.HCLOUD_SSH_KEY }}
           image: ubuntu-24.04
   deploy:
@@ -43,7 +43,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: "3.13"
       - name: Install Ansible & Dependencies
         shell: bash
         run: pip install -r requirements.txt
