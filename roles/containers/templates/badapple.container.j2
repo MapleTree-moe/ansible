@@ -17,6 +17,8 @@ Network=frontend.network
 # traefik configuration labels
 Label=traefik.enable="true"
 Label=traefik.http.routers.badapple.rule="Host(`badapple.{{ ansible_facts['domain'] }}`)"
+Label=traefik.http.routers.badapple.tls="true"
+Label=traefik.http.routers.badapple.tls.certresolver="letsencrypt"
 
 [Install]
 WantedBy=default.target

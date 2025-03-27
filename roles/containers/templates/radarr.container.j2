@@ -35,6 +35,8 @@ HealthTimeout=30s
 Label=traefik.enable="true"
 Label=traefik.http.routers.radarr.rule="Host(`radarr.{{ ansible_facts['fqdn'] }}`)"
 Label=traefik.http.routers.radarr.middlewares="secured"
+Label=traefik.http.routers.radarr.tls="true"
+Label=traefik.http.routers.radarr.tls.certresolver="letsencrypt"
 Label=traefik.http.services.radarr.loadbalancer.server.port=7878
 
 # secrets

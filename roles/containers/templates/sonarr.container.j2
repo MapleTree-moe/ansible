@@ -35,6 +35,8 @@ HealthTimeout=30s
 Label=traefik.enable="true"
 Label=traefik.http.routers.sonarr.rule="Host(`sonarr.{{ ansible_facts['fqdn'] }}`)"
 Label=traefik.http.routers.sonarr.middlewares="secured"
+Label=traefik.http.routers.sonarr.tls="true"
+Label=traefik.http.routers.sonarr.tls.certresolver="letsencrypt"
 Label=traefik.http.services.sonarr.loadbalancer.server.port=8989
 
 # secrets

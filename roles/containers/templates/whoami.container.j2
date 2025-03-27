@@ -19,6 +19,8 @@ Network=frontend.network
 Label=traefik.enable="true"
 Label=traefik.http.routers.whoami.rule="Host(`{{ ansible_fqdn }}`)"
 Label=traefik.http.routers.whoami.middlewares="secured"
+Label=traefik.http.routers.whoami.tls="true"
+Label=traefik.http.routers.whoami.tls.certresolver="letsencrypt"
 
 [Install]
 WantedBy=default.target

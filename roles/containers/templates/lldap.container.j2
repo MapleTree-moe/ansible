@@ -50,6 +50,8 @@ HealthTimeout=30s
 Label=traefik.enable="true"
 Label=traefik.http.routers.lldap.rule="Host(`lldap.{{ ansible_facts['fqdn'] }}`)"
 Label=traefik.http.routers.lldap.middlewares="secured"
+Label=traefik.http.routers.lldap.tls="true"
+Label=traefik.http.routers.lldap.tls.certresolver="letsencrypt"
 Label=traefik.http.services.lldap.loadbalancer.server.port=17170
 
 # secrets

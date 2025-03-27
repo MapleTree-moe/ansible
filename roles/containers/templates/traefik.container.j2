@@ -42,8 +42,8 @@ Environment=TRAEFIK_ENTRYPOINTS_websecure_FORWARDEDHEADERS_TRUSTEDIPS=172.16.0.0
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP_TLS="true"
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP_TLS_CERTRESOLVER="letsencrypt"
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP2_MAXCONCURRENTSTREAMS="250"
-Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP3="true"
 # TODO: Enable when traefik gets socket based HTTP3 support
+# Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP3="true"
 # Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP3_ADVERTISEDPORT="443"
 Environment=TRAEFIK_ENTRYPOINTS_web_PROXYPROTOCOL_INSECURE=false
 Environment=TRAEFIK_ENTRYPOINTS_websecure_PROXYPROTOCOL_TRUSTEDIPS=172.16.0.0/24
@@ -65,9 +65,9 @@ HealthRetries=3
 HealthStartPeriod=15s
 HealthTimeout=30s
 
+{% if containers_traefik_enable_dashboard %}
 # automatically configure traefik to proxy the web service
 Label=traefik.enable="true"
-{% if containers_traefik_enable_dashboard %}
 # configure the traefik dashboard
 Label=traefik.http.routers.dashboard.rule="Host(`traefik.{{ ansible_facts['fqdn'] }}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
 Label=traefik.http.routers.dashboard.service="api@internal"
