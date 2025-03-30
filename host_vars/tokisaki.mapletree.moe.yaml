@@ -14,8 +14,10 @@ containers_services_enabled:
   - traefik
   - kopia
 
+containers_kopia_content_cache: 25000 # megabytes
 containers_kopia_control_user: tokisaki@mapletree.moe
 containers_kopia_control_pass: "{{ vault_containers_kopia_control_pass }}"
+containers_kopia_metadata_cache: 25000 # megabytes
 containers_kopia_repo_password: "{{ vault_containers_kopia_repo_password }}"
 containers_kopia_s3_bucket_name: tokisaki-v3-repo
 containers_kopia_s3_endpoint_url: s3.eu-central-003.backblazeb2.com
