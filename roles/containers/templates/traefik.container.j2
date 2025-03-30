@@ -42,10 +42,15 @@ Environment=TRAEFIK_ENTRYPOINTS_websecure_FORWARDEDHEADERS_TRUSTEDIPS=172.16.0.0
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP_TLS="true"
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP_TLS_CERTRESOLVER="letsencrypt"
 Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP2_MAXCONCURRENTSTREAMS="250"
+{% if containers_enable_kopia_repo_server %}
+# SECURITY: note that this makes this server vulnerable to CVE-2024-28869, but
+#           not setting this can break large kopia syncs from clients.
+Environmnet=TRAEFIK_ENTRYPOINTS_websecure_TRANSPORT_RESPONDINGTIMEOUTS_READTIMEOUT=0
+{% endif %}
 # TODO: Enable when traefik gets socket based HTTP3 support
 # Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP3="true"
 # Environment=TRAEFIK_ENTRYPOINTS_websecure_HTTP3_ADVERTISEDPORT="443"
-Environment=TRAEFIK_ENTRYPOINTS_web_PROXYPROTOCOL_INSECURE=false
+Environment=TRAEFIK_ENTRYPOINTS_websecure_PROXYPROTOCOL_INSECURE=false
 Environment=TRAEFIK_ENTRYPOINTS_websecure_PROXYPROTOCOL_TRUSTEDIPS=172.16.0.0/24
 Environment=TRAEFIK_PING=true
 Environment=TRAEFIK_PROVIDERS_DOCKER="true"
