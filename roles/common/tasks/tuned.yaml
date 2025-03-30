@@ -7,8 +7,6 @@
 ---
 # NOTE: DISA STIG explicitly provides a rule for turning the tuned daemon OFF,
 #       however the potential performance benefits outweigh the security risks
-# TODO: we could probably pull the values out of tuned and just statically
-#       apply them and then avoid running the daemon
 - name: COMMON | TUNED | Set tuned to 'virtual-guest' on virtual systems
   when: ansible_facts['virtualization_role'] == "guest"
   vars:

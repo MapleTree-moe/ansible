@@ -6,7 +6,7 @@
 ###
 ---
 ### common role configuration variables
-common_postfix_enabled: true
+common_enable_postfix: true
 
 containers_services_enabled:
   - traefik

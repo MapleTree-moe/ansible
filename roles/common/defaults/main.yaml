@@ -5,20 +5,17 @@
 ### common role - default variable configuration
 ###
 ---
-common_nvidia_enabled: false # nvidia cuda driver installation
-common_postfix_enabled: false # postfix null-relay installation
-common_zfs_enabled: true # zfs kernel module installation
+common_enable_nvidia: false # nvidia cuda driver installation
+common_enable_postfix: false # postfix null-relay installation
+common_enable_zfs: false # zfs kernel module installation
 
-common_redhat_key: EXAMPLE_KEY
-common_redhat_org: 0123456789
-common_redhat_user: USERNAME
-common_redhat_pass: PASSWORD
 common_relay_sasl: example-sasl-package
 common_relay_host: smtp.example.com
 common_relay_post: 25
 common_relay_user: USERNAME
 common_relay_pass: PASSWORD
 common_relay_tls: encrypt
+
 common_mapletree_authorized_keys:
   - ssh-key-1
   - ssh-key-2

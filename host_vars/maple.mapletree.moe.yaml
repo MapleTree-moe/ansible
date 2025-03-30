@@ -5,7 +5,9 @@
 ### maple.mapletree.moe - host configuration
 ###
 ---
-common_postfix_enabled: true
+common_enable_postfix: true
+common_enable_zfs: true
+
 storage_enabled: true
 
 containers_services_enabled:

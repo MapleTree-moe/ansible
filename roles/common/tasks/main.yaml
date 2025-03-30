@@ -40,12 +40,12 @@
     file: packages.yaml
 
 - name: COMMON | Install nvidia compute driver and container utilities
-  when: common_nvidia_enabled
+  when: common_enable_nvidia
   ansible.builtin.include_tasks:
     file: nvidia.yaml
 
 - name: COMMON | Enable Postfix acting as a null-relay on target host
-  when: common_postfix_enabled
+  when: common_enable_postfix
   ansible.builtin.include_tasks:
     file: postfix.yaml
 
@@ -58,6 +58,6 @@
     file: users.yaml
 
 - name: COMMON | Install ZFS kernel module and tools
-  when: common_zfs_enabled
+  when: common_enable_zfs
   ansible.builtin.include_tasks:
     file: zfs.yaml
