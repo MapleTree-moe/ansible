@@ -6,7 +6,7 @@
 ###
 ---
 ### common role configuration variables
-common_nvidia_enabled: false
+common_postfix_enabled: true
 
 containers_services_enabled:
   - traefik

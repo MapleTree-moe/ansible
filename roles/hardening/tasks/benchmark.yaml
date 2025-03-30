@@ -98,10 +98,6 @@
     rhel9cis_rule_1_1_2_7_3: false
     rhel9cis_rule_1_1_2_7_4: false
 
-    # BUG: this is a bug due to how we deploy RHEL. our GPG key doesn't match
-    #      what is expected despite being valid. ansible-lockdown/RHEL9-CIS#292
-    rhel9cis_rule_1_2_1_1: false
-
     # rules 5.1.4 to 5.1.22 are sshd configuration.
     # we handle this in the sshd subtask, disable them. our policy is stricter.
     rhel9cis_rule_5_1_4: false
@@ -131,7 +127,7 @@
 
     # FIXME: this rule is generating a false positive on the root path that
     #        can't be duplicated by hand. needs investigation
-    rhel9cis_rule_5_4_2_5: false
+    # rhel9cis_rule_5_4_2_5: false
 
     # rules 6.2.2.1.x configure offsite logging, which we don't use yet
     rhel9cis_rule_6_2_2_1_1: false

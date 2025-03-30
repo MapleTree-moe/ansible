@@ -6,7 +6,7 @@
 ###
 ---
 ### common role configuration variables
-common_nvidia_enabled: false
+common_postfix_enabled: true
 
 containers_enable_db_backup: false
 containers_enable_kopia_repo_server: true

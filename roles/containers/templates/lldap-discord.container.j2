@@ -19,7 +19,7 @@ Image={{ services['lldap-discord']['image'] }}
 Network=frontend.network
 WorkingDir=/usr/src/app
 
-# environmental variables
+# environment variables
 Environment=LDAP_SERVER_URL=ldap://lldap:3890
 Environment=LDAP_BIND_DN=uid=admin,ou=people,dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
 Environment=LDAP_BASE_DN=dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}

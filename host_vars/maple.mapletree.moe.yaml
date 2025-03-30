@@ -5,7 +5,7 @@
 ### maple.mapletree.moe - host configuration
 ###
 ---
-common_nvidia_enabled: false
+common_postfix_enabled: true
 storage_enabled: true
 
 containers_services_enabled:

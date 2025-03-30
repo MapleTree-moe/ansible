@@ -5,10 +5,8 @@
 ### common role - default variable configuration
 ###
 ---
-common_convert_enabled: true # convert system to RHEL
-common_redhat_enabled: true # redhat subscription + insights installation
-common_nvidia_enabled: true # nvidia cuda driver installation
-common_postfix_enabled: true # postfix null-relay installation
+common_nvidia_enabled: false # nvidia cuda driver installation
+common_postfix_enabled: false # postfix null-relay installation
 common_zfs_enabled: true # zfs kernel module installation
 
 common_redhat_key: EXAMPLE_KEY

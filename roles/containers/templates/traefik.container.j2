@@ -20,7 +20,7 @@ Image={{ services['traefik']['image'] }}
 Network=frontend.network
 SecurityLabelType=traefik.process
 
-# environmental variables
+# environment variables
 # https://doc.traefik.io/traefik/reference/static-configuration/env/
 Environment=TRAEFIK_API="true"
 Environment=TRAEFIK_CERTIFICATESRESOLVERS_letsencrypt="true"

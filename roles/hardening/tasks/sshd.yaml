@@ -88,7 +88,6 @@
     sshd_manage_firewall: true
     sshd_manage_selinux: true
     sshd_skip_defaults: true
-    # FIXME: this doesn't seem to work on RHEL9 so we have to manual override
     sshd_sysconfig: true
     sshd_sysconfig_override_crypto_policy: true # this policy is stricter
     sshd_sysconfig_use_strong_rng: true

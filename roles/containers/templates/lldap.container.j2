@@ -23,7 +23,7 @@ Image={{ services['lldap']['image'] }}
 Network=frontend.network
 Network=backend.network
 
-# environmental variables
+# environment variables
 Environment=UID=1000
 Environment=GID=1000
 Environment=LLDAP_LDAP_BASE_DN=dc={{ containers_lldap_base_dn_domain }},dc={{ containers_lldap_base_dn_extension }}
@@ -34,7 +34,7 @@ Environment=LLDAP_JWT_SECRET_FILE=/run/secrets/lldap-jwt-secret
 Environment=LLDAP_LDAP_USER_EMAIL=admin@{{ ansible_facts['domain'] }}
 Environment=LLDAP_LDAP_USER_PASS_FILE=/run/secrets/lldap-ldap-user-pass
 
-# bootstrap environmental variables
+# bootstrap environment variables
 Environment=LLDAP_URL=http://localhost:17170
 Environment=LLDAP_ADMIN_USERNAME=admin
 Environment=LLDAP_ADMIN_PASSWORD_FILE=/run/secrets/lldap-ldap-user-pass

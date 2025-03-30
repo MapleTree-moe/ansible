@@ -27,7 +27,7 @@ Image={{ services['authelia']['image'] }}
 Network=frontend.network
 Network=backend.network
 
-# environmental variables
+# environment variables
 Environment=AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE=/run/secrets/authelia-encryption-key
 Environment=AUTHELIA_ACCESS_CONTROL_DEFAULT_POLICY=deny
 Environment=AUTHELIA_THEME=dark

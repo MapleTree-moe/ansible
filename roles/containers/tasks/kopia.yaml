@@ -5,8 +5,6 @@
 ### containers - kopia - deploy kopia to the target system
 ###
 ---
-# TODOs: Automated monthly integrity check
-#        notifications
 - name: CONTAINERS | KOPIA | Check dependencies
   when: "'traefik' not in containers_services_enabled"
   ansible.builtin.fail:
