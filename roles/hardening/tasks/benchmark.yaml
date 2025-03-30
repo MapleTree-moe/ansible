@@ -11,10 +11,6 @@
 
 # WARNING: do NOT upgrade this module without testing it first. it can break
 #          podman rootless!
-- name: HARDENING | BENCHMARK | Disable graphics rules on NVIDIA equiped systems
-  ansible.builtin.set_fact:
-    rhel9cis_rule_2_1_20: false
-  when: common_nvidia_enabled
 
 - name: HARDENING | BENCHMARK | Execute external role
   vars:

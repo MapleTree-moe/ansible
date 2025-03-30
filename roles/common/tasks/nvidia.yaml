@@ -27,23 +27,19 @@
     gpgkey: https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/D42D0685.pub
     mode: "0644"
 
-# TODO: if nvidia decides we deserve a 570 precompiled kmod, update this
-
-# FIXME: this is installing a LOT of extraneous stuff, like xorg-server. that
-#        shouldn't happen with just a cuda driver installation. this needs to
-#        be fixed, and then the hardening rule override removed. this should
-#        just select the branch.
-- name: NVIDIA | Set nvidia driver to 565 branch to access precompiled kmod
-  ansible.builtin.dnf:
-    name: "@nvidia-driver:565"
-    state: present
+- name: NVIDIA | Set nvidia driver to 570 branch to access precompiled kmod
+  ansible.builtin.command:
+    cmd: dnf module enable -y nvidia-driver:570
+  register: result
+  changed_when:
+    - '"Enabling module streams" in result.stdout'
 
 - name: NVIDIA | Install NVIDIA drivers and container-tools
   ansible.builtin.dnf:
-    # TODO: when 570 kABI package is available explicitly include it
     name:
-      - nvidia-driver-cuda
       - nvidia-container-toolkit
+      - nvidia-driver-cuda
+      - nvidia-kmod-common
     state: present
 
 # NOTE: enabling the driver won't cause any problems even if the system
