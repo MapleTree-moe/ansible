@@ -46,6 +46,6 @@ services: # noqa var-naming
   sonarr:
     image: ghcr.io/hotio/sonarr:release@sha256:6151721d4ce6f34538a7ccf071b0a6f0857470fd1508dff6dcae5ce217a372b2
   traefik:
-    image: docker.io/traefik:v3.3.4@sha256:cc11989f418e2cfe5e60fc40c92c1813be847f58eda15eced7d5ac890255ad9e
+    image: docker.io/traefik:v3.3.5@sha256:104204dadedf5d1284f8ef8f97f705649ac81aa6f7a6c9abf13e2c59245b8abc
   whoami:
     image: docker.io/traefik/whoami:v1.11@sha256:200689790a0a0ea48ca45992e0450bc26ccab5307375b41c84dfc4f2475937ab
