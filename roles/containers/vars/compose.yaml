@@ -42,7 +42,7 @@ services: # noqa var-naming
   redis:
     image: docker.io/redis:7@sha256:bd41d55aae1ecff61b2fafd0d66761223fe94a60373eb6bb781cfbb570a84079
   sabnzbd:
-    image: ghcr.io/hotio/sabnzbd:release@sha256:7cb3cfee078b2062b19d2eb3e82e62118819e16bc9d69e153e0f41964dc8f71c
+    image: ghcr.io/hotio/sabnzbd:release@sha256:e0d2db59b5b977a9ff304f3f5e99df858c7b14bc0781b2bf00a36abe5fbda37a
   sonarr:
     image: ghcr.io/hotio/sonarr:release@sha256:6151721d4ce6f34538a7ccf071b0a6f0857470fd1508dff6dcae5ce217a372b2
   traefik:
