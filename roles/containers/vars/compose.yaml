@@ -34,7 +34,7 @@ services: # noqa var-naming
   prowlarr:
     image: ghcr.io/hotio/prowlarr:release@sha256:41bae5abd4054b91a3ec71d017cbf278bf8b68de67185c40d4e894f5c6d88098
   qbittorrent:
-    image: ghcr.io/hotio/qbittorrent:release@sha256:3d76fe7aff54e39b82093dab6f0fd71108db7419f257ea5014cc92a5ea04a9ad
+    image: ghcr.io/hotio/qbittorrent:release@sha256:1295bda9199d054cccfa3d3334cfb106cf64a83daf366cfb67b27ec6637e93f6
   radarr:
     image: ghcr.io/hotio/radarr:release@sha256:de9473026ff2f8c89f798660e47c00d24f6d262b1d1aaa71cce02255298d5f4f
   recyclarr:
