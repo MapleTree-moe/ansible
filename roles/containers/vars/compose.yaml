@@ -40,7 +40,7 @@ services: # noqa var-naming
   recyclarr:
     image: ghcr.io/recyclarr/recyclarr:7.4.1@sha256:759540877f95453eca8a26c1a93593e783a7a824c324fbd57523deffb67f48e1
   redis:
-    image: docker.io/redis:7@sha256:bd41d55aae1ecff61b2fafd0d66761223fe94a60373eb6bb781cfbb570a84079
+    image: docker.io/redis:7@sha256:fbdbaea47b9ae4ecc2082ecdb4e1cea81e32176ffb1dcf643d422ad07427e5d9
   sabnzbd:
     image: ghcr.io/hotio/sabnzbd:release@sha256:64b83a706ad5a578b73f7b7851ba18366bf5233b39d8ef721f237012e8191cde
   sonarr:
