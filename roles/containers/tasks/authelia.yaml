@@ -17,11 +17,15 @@
       !!!ERROR!!!
     # yamllint enable rule:line-length
 
-- name: CONTAINERS | AUTHELIA | Generate secrets
-  # while we generate new secrets in this step, they are NOT deployed later
-  # unless they are needed
+- name: CONTAINERS | AUTHELIA | Set service facts
   ansible.builtin.set_fact:
+    current_service:
+      name: authelia
+      db_name: authelia
+      db_user: authelia
+      db_pass: authelia
     # yamllint disable rule:line-length
+    # here we generate new secrets but we wont deploy unless needed.
     authelia_encryption_key: "{{ lookup('community.general.random_string', special=false, length=64) }}"
     authelia_oidc_hmac_secret: "{{ lookup('community.general.random_string', special=false, length=64) }}"
     authelia_reset_password_jwt_secret: "{{ lookup('community.general.random_string', special=false, length=64) }}"
@@ -51,10 +55,10 @@
       # list order determined by dependencies - do NOT modify
       - name: authelia-db
         type: volume
-        template_src: authelia/db.volume.j2
+        template_src: general/postgres.volume.j2
       - name: authelia-db
         type: container
-        template_src: authelia/db.container.j2
+        template_src: general/postgres.container.j2
       - name: authelia-redis
         type: volume
         template_src: authelia/redis.volume.j2
@@ -94,8 +98,8 @@
     authelia_db:
       - type: pgsql
         host: authelia-db
-        name: authelia
-        user: authelia
-        pass: authelia
+        name: "{{ current_service['db_name'] }}"
+        user: "{{ current_service['db_user'] }}"
+        pass: "{{ current_service['db_pass'] }}"
   ansible.builtin.set_fact:
     containers_database_list: "{{ containers_database_list + authelia_db }}"

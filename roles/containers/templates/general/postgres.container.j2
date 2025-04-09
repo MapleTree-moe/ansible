@@ -1,0 +1,36 @@
+### {{ ansible_managed }} - {{ ansible_facts['fqdn'] }}
+###
+### mapletree.moe - podman quadlet file
+### https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
+###
+
+[Unit]
+Description={{ current_service['name'] }}-db container
+Documentation=https://hub.docker.com/_/postgres
+After=podman-user-wait-network-online.service
+
+[Service]
+Restart=on-failure
+
+[Container]
+ContainerName={{ current_service['name'] }}-db
+Image={{ services['postgres']['image'] }}
+Network=backend.network
+
+# health check
+HealthCmd=pg_isready -U {{ current_service['db_user'] }} -d {{ current_service['db_name'] }}
+HealthInterval=5s
+HealthRetries=3
+HealthStartPeriod=15s
+HealthTimeout=30s
+
+# environment variables
+Environment=POSTGRES_DB={{ current_service['db_name'] }}
+# SECURITY: one day it would be nice to use secrets for these
+Environment=POSTGRES_PASSWORD={{ current_service['db_pass'] }}
+Environment=POSTGRES_USER={{ current_service['db_user'] }}
+
+Volume={{ current_service['name'] }}-db.volume:/var/lib/postgresql/data:Z
+
+[Install]
+WantedBy=default.target

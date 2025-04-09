@@ -5,8 +5,8 @@
 ###
 
 [Unit]
-Description=Authelia Redis Volume
-Documentation=https://hub.docker.com/_/redis
+Description={{ current_service['name'] }}-db volume
+Documentation=https://hub.docker.com/_/postgres
 
 [Volume]
-VolumeName=authelia-redis
+VolumeName={{ current_service['name'] }}-db

@@ -16,10 +16,15 @@
       !!!ERROR!!!
     # yamllint enable rule:line-length
 
-- name: CONTAINERS | LLDAP | Generate secrets
-  # here we generate new secrets but we wont deploy unless needed.
+- name: CONTAINERS | LLDAP | Set service facts
   ansible.builtin.set_fact:
+    current_service:
+      name: lldap
+      db_name: lldap
+      db_user: lldapuser
+      db_pass: lldappass
     # yamllint disable rule:line-length
+    # here we generate new secrets but we wont deploy unless needed.
     lldap_bind_user_pass: "{{ lookup('community.general.random_string', special=false, length=64) }}"
     lldap_jwt_secret: "{{ lookup('community.general.random_string', special=false, length=64) }}"
     lldap_key_seed: "{{ lookup('community.general.random_string', special=false, length=64) }}"
@@ -64,10 +69,10 @@
       # list order determined by dependencies - do NOT modify
       - name: lldap-db
         type: volume
-        template_src: lldap/db.volume.j2
+        template_src: general/postgres.volume.j2
       - name: lldap-db
         type: container
-        template_src: lldap/db.container.j2
+        template_src: general/postgres.container.j2
       - name: lldap
         type: container
         template_src: lldap/main.container.j2
@@ -108,8 +113,8 @@
     lldap_db:
       - type: pgsql
         host: lldap-db
-        name: lldap
-        user: lldapuser
-        pass: lldappass
+        name: "{{ current_service['db_name'] }}"
+        user: "{{ current_service['db_user'] }}"
+        pass: "{{ current_service['db_pass'] }}"
   ansible.builtin.set_fact:
     containers_database_list: "{{ containers_database_list + lldap_db }}"
