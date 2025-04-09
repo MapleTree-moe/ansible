@@ -10,6 +10,8 @@ common_enable_postfix: true
 
 containers_services_enabled:
   - traefik
+  - lldap
+  - authelia
   - whoami
 
 containers_traefik_staging_ssl: true

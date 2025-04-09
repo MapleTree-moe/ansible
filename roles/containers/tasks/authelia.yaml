@@ -49,11 +49,21 @@
   vars:
     podman_quadlet_specs:
       # list order determined by dependencies - do NOT modify
-      - template_src: authelia-db.volume.j2
-      - template_src: authelia-db.container.j2
-      - template_src: authelia-redis.volume.j2
-      - template_src: authelia-redis.container.j2
-      - template_src: authelia.container.j2
+      - name: authelia-db
+        type: volume
+        template_src: authelia/db.volume.j2
+      - name: authelia-db
+        type: container
+        template_src: authelia/db.container.j2
+      - name: authelia-redis
+        type: volume
+        template_src: authelia/redis.volume.j2
+      - name: authelia-redis
+        type: container
+        template_src: authelia/redis.container.j2
+      - name: authelia
+        type: container
+        template_src: authelia/main.container.j2
     podman_secrets:
       - name: authelia-encryption-key
         state: present

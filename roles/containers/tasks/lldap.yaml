@@ -62,10 +62,18 @@
   vars:
     podman_quadlet_specs:
       # list order determined by dependencies - do NOT modify
-      - template_src: lldap-db.volume.j2
-      - template_src: lldap-db.container.j2
-      - template_src: lldap.container.j2
-      - template_src: lldap-discord.container.j2
+      - name: lldap-db
+        type: volume
+        template_src: lldap/db.volume.j2
+      - name: lldap-db
+        type: container
+        template_src: lldap/db.container.j2
+      - name: lldap
+        type: container
+        template_src: lldap/main.container.j2
+      - name: lldap-discord
+        type: container
+        template_src: lldap/discord.container.j2
     podman_secrets:
       - name: lldap-bind-user-pass
         state: present
