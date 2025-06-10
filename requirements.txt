@@ -6,5 +6,5 @@ cryptography==44.0.2
 passlib==1.7.4
 pre-commit==4.2.0
 python-dateutil==2.9.0.post0
-requests==2.32.3
+requests==2.32.4
 yamllint==1.37.0
