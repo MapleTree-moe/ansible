@@ -22,7 +22,7 @@ services: # noqa var-naming
   jellyfin:
     image: ghcr.io/hotio/jellyfin:release@sha256:1538ea7db24f233fa67c25ac5a774b13a5c10159c62adcd8f84c41db437d51f2
   jellyseerr:
-    image: ghcr.io/hotio/jellyseerr:release@sha256:56e52b1384dcbc6b762c2307c7a1a07ae16c687568954cfbffb64d0b4e809f47
+    image: ghcr.io/hotio/jellyseerr:release@sha256:68881f9e5d906681dfd085d8d6027d485585067c2b52a287b342f56c951dea6d
   kopia:
     image: docker.io/kopia/kopia:latest@sha256:615b786bdb46d5a9301338983e8077e5be0f1c643b7a3188c8732989104accf4
   lldap-discord:
