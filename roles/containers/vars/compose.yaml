@@ -44,7 +44,7 @@ services: # noqa var-naming
   sabnzbd:
     image: ghcr.io/hotio/sabnzbd:release@sha256:64b83a706ad5a578b73f7b7851ba18366bf5233b39d8ef721f237012e8191cde
   sonarr:
-    image: ghcr.io/hotio/sonarr:release@sha256:a025214e9b933835e8b7778fbf96062e7c2baa97b1e379dd2dd2bb32f9a7df29
+    image: ghcr.io/hotio/sonarr:release@sha256:89c0795ff5fba253a56872cb12834f58085d94035e222875bd25002218682e49
   traefik:
     image: docker.io/traefik:v3.3.5@sha256:104204dadedf5d1284f8ef8f97f705649ac81aa6f7a6c9abf13e2c59245b8abc
   whoami:
