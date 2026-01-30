@@ -18,7 +18,7 @@ services: # noqa var-naming
   bazarr:
     image: ghcr.io/hotio/bazarr:release@sha256:7e076e992aed467e1c0a6ea7b3dcbfa19899658ae4b84718582e02f4887acf41
   db-backup:
-    image: docker.io/tiredofit/db-backup:4.1.16@sha256:26541bb600bc817d9a69edd46141b03e6e6ff7612ac011f3a0264882f8435765
+    image: docker.io/tiredofit/db-backup:4.1.21@sha256:36e7888e4887e57e3ab3ec5ecd4782f345226084df6d3fdd93b2d3e4a2162274
   jellyfin:
     image: ghcr.io/hotio/jellyfin:release@sha256:9768184ee30bd955aff1f29c5a8ec13146f229d67bded52c57db66a9a17c8f8f
   jellyseerr:
