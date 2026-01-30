@@ -28,7 +28,7 @@ services: # noqa var-naming
   lldap-discord:
     image: docker.io/watlingj/lldap-discord:1.0.2@sha256:e3d99fef4b3c04de5d6c6e701c3819b6c87a734babd23931b591f8c906bf1c27
   lldap:
-    image: docker.io/lldap/lldap:stable@sha256:4931eeeb841b1bbf5774161b5fd9dab88f41ffeb4b08ca656f0b7595cd7cb52a
+    image: docker.io/lldap/lldap:stable@sha256:9e605a66c02514bfcffd1b67cafb1e98d50992216bb2871d7ae44622047dd09d
   postgres:
     image: docker.io/postgres:17.4@sha256:fe3f571d128e8efadcd8b2fde0e2b73ebab6dbec33f6bfe69d98c682c7d8f7bd
   prowlarr:
