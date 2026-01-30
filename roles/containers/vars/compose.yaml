@@ -14,7 +14,7 @@
 # yamllint disable rule:line-length
 services: # noqa var-naming
   authelia:
-    image: docker.io/authelia/authelia:4.39@sha256:e325963609cc928861ffe8130c09111862df88dd8fcafbcd2c47e5ff0a4ae268
+    image: docker.io/authelia/authelia:4.39@sha256:d23ee3c721d465b4749cc58541cda4aebe5aa6f19d7b5ce0afebb44ebee69591
   bazarr:
     image: ghcr.io/hotio/bazarr:release@sha256:7e076e992aed467e1c0a6ea7b3dcbfa19899658ae4b84718582e02f4887acf41
   db-backup:
