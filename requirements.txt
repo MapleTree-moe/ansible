@@ -1,5 +1,5 @@
 ansible==12.2.0
-ansible-lint==25.2.1
+ansible-lint==25.12.2
 ansible-vault==2.1.0
 bcrypt==4.3.0
 cryptography==44.0.2
