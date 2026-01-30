@@ -20,7 +20,7 @@ services: # noqa var-naming
   db-backup:
     image: docker.io/tiredofit/db-backup:4.1.16@sha256:26541bb600bc817d9a69edd46141b03e6e6ff7612ac011f3a0264882f8435765
   jellyfin:
-    image: ghcr.io/hotio/jellyfin:release@sha256:1538ea7db24f233fa67c25ac5a774b13a5c10159c62adcd8f84c41db437d51f2
+    image: ghcr.io/hotio/jellyfin:release@sha256:9768184ee30bd955aff1f29c5a8ec13146f229d67bded52c57db66a9a17c8f8f
   jellyseerr:
     image: ghcr.io/hotio/jellyseerr:release@sha256:56e52b1384dcbc6b762c2307c7a1a07ae16c687568954cfbffb64d0b4e809f47
   kopia:
