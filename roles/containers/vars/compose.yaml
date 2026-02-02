@@ -24,7 +24,7 @@ services: # noqa var-naming
   jellyseerr:
     image: ghcr.io/hotio/jellyseerr:release@sha256:56e52b1384dcbc6b762c2307c7a1a07ae16c687568954cfbffb64d0b4e809f47
   kopia:
-    image: docker.io/kopia/kopia:latest@sha256:615b786bdb46d5a9301338983e8077e5be0f1c643b7a3188c8732989104accf4
+    image: docker.io/kopia/kopia:latest@sha256:4dcc208c1b191770bf4d0854f8deec06b4a16b35be4b63abdcfa9755cee7960e
   lldap-discord:
     image: docker.io/watlingj/lldap-discord:1.0.2@sha256:e3d99fef4b3c04de5d6c6e701c3819b6c87a734babd23931b591f8c906bf1c27
   lldap:
