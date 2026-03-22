@@ -16,7 +16,7 @@ services: # noqa var-naming
   authelia:
     image: docker.io/authelia/authelia:4.39@sha256:edbce01c5125249e4f4faea01e0f76f0031d64b4a1d0c2514a0ca69cb126d05f
   bazarr:
-    image: ghcr.io/hotio/bazarr:release@sha256:7e076e992aed467e1c0a6ea7b3dcbfa19899658ae4b84718582e02f4887acf41
+    image: ghcr.io/hotio/bazarr:release@sha256:004b1072983d1af766fc11d048121ded9d296fdd64ea304762afa9dfcaf51edb
   db-backup:
     image: docker.io/tiredofit/db-backup:4.1.100@sha256:78e3cb669ee9648c1a4ab7e8421c6e89d01b659bfa5963f7611a2347b2009eab
   jellyfin:
