@@ -5,7 +5,7 @@
 ### common role - users & groups - configure standard users and groups
 ###
 ---
-- name: GROUPS | GROUPS | Ensure group 'mapletree' - GID '1001' exists
+- name: COMMON | GROUPS | Ensure group 'mapletree' - GID '1001' exists
   ansible.builtin.group:
     name: mapletree
     gid: 1001

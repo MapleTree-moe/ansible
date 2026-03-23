@@ -11,5 +11,5 @@
 - name: PLAYBOOK | Deploy compliance policy to infrastructure
   ansible.builtin.import_playbook: plays/deploy-hardening.yaml
 
-- name: PLAYBOOK | Deploy containers to infrastructue
+- name: PLAYBOOK | Deploy containers to infrastructure
   ansible.builtin.import_playbook: plays/deploy-podman.yaml

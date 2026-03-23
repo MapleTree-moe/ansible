@@ -60,7 +60,7 @@
       loop: "{{ compliance_kernel_blacklist }}"
       notify: Restart System
 
-- name: KERNEL | SYSCTL | Configure restrictive variables
+- name: HARDENING | KERNEL | SYSCTL | Configure restrictive variables
   ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
