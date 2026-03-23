@@ -14,12 +14,12 @@
     - name: COMMON | CLOUD-INIT | Check if cloud-init is in use
       ansible.builtin.stat:
         path: /etc/cloud
-      register: cloud_init_dir
+      register: common_cloud_init_dir
     - name: COMMON | CLOUD-INIT | Check if disabled file exists
       ansible.builtin.stat:
         path: /etc/cloud/cloud-init.disabled
-      register: cloud_init_file
-      when: cloud_init_dir.stat.exists
+      register: common_cloud_init_file
+      when: common_cloud_init_dir.stat.exists
     - name: COMMON | CLOUD-INIT | Disable cloud-init
       ansible.builtin.file:
         path: /etc/cloud/cloud-init.disabled
@@ -28,8 +28,8 @@
         group: root
         mode: "0644"
       when:
-        - cloud_init_dir.stat.exists
-        - not cloud_init_file.stat.exists
+        - common_cloud_init_dir.stat.exists
+        - not common_cloud_init_file.stat.exists
 
 - name: COMMON | Configure system network
   ansible.builtin.include_tasks:

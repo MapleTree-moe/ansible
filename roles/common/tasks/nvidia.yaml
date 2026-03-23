@@ -30,9 +30,9 @@
 - name: NVIDIA | Set nvidia driver to 570 branch to access precompiled kmod
   ansible.builtin.command:
     cmd: dnf module enable -y nvidia-driver:570
-  register: result
+  register: common_nvidia_result
   changed_when:
-    - '"Enabling module streams" in result.stdout'
+    - '"Enabling module streams" in common_nvidia_result.stdout'
 
 - name: NVIDIA | Install NVIDIA drivers and container-tools
   ansible.builtin.dnf:

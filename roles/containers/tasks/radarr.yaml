@@ -23,7 +23,7 @@
     # radarr's api key is 32 characters
     # Sonarr/src/NzbDrone.Core/Configuration/ConfigFileProvider.cs:463
     # yamllint disable-line rule:line-length
-    radarr_api_key: "{{ lookup('community.general.random_string', special=false, length=32) }}"
+    containers_radarr_api_key: "{{ lookup('community.general.random_string', special=false, length=32) }}"
 
 - name: CONTAINERS | RADARR | Install containers
   vars:
@@ -35,7 +35,7 @@
       - name: radarr-api-key
         state: present
         skip_existing: true # do not overwrite if secret exists
-        data: "{{ radarr_api_key }}"
+        data: "{{ containers_radarr_api_key }}"
   ansible.builtin.include_role:
     # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
     name: fedora.linux_system_roles.podman

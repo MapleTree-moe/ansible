@@ -18,18 +18,18 @@
 
 - name: CONTAINERS | LLDAP | Set service facts
   ansible.builtin.set_fact:
-    current_service:
+    containers_current_service:
       name: lldap
       db_name: lldap
       db_user: lldapuser
       db_pass: lldappass
     # yamllint disable rule:line-length
     # here we generate new secrets but we wont deploy unless needed.
-    lldap_bind_user_pass: "{{ lookup('community.general.random_string', special=false, length=64) }}"
-    lldap_jwt_secret: "{{ lookup('community.general.random_string', special=false, length=64) }}"
-    lldap_key_seed: "{{ lookup('community.general.random_string', special=false, length=64) }}"
-    lldap_ldap_user_pass: "{{ lookup('community.general.random_string', special=false, length=64) }}"
-    lldap_password_manager_pass: "{{ lookup('community.general.random_string', special=false, length=64) }}"
+    containers_lldap_bind_user_pass: "{{ lookup('community.general.random_string', special=false, length=64) }}"
+    containers_lldap_jwt_secret: "{{ lookup('community.general.random_string', special=false, length=64) }}"
+    containers_lldap_key_seed: "{{ lookup('community.general.random_string', special=false, length=64) }}"
+    containers_lldap_ldap_user_pass: "{{ lookup('community.general.random_string', special=false, length=64) }}"
+    containers_lldap_password_manager_pass: "{{ lookup('community.general.random_string', special=false, length=64) }}"
     # yamllint enable rule:line-length
 
 - name: CONTAINERS | LLDAP | Deploy files for automated bootstrapping
@@ -83,7 +83,7 @@
       - name: lldap-bind-user-pass
         state: present
         skip_existing: true # do not overwrite if secret exists
-        data: "{{ lldap_bind_user_pass }}"
+        data: "{{ containers_lldap_bind_user_pass }}"
       - name: lldap-discord-bot-token
         state: present
         skip_existing: true # do not overwrite if secret exists
@@ -91,19 +91,19 @@
       - name: lldap-jwt-secret
         state: present
         skip_existing: true # do not overwrite if secret exists
-        data: "{{ lldap_jwt_secret }}"
+        data: "{{ containers_lldap_jwt_secret }}"
       - name: lldap-key-seed
         state: present
         skip_existing: true # do not overwrite if secret exists
-        data: "{{ lldap_key_seed }}"
+        data: "{{ containers_lldap_key_seed }}"
       - name: lldap-ldap-user-pass
         state: present
         skip_existing: true # do not overwrite if secret exists
-        data: "{{ lldap_ldap_user_pass }}"
+        data: "{{ containers_lldap_ldap_user_pass }}"
       - name: lldap-password-manager-pass
         state: present
         skip_existing: true # do not overwrite if secret exists
-        data: "{{ lldap_password_manager_pass }}"
+        data: "{{ containers_lldap_password_manager_pass }}"
   ansible.builtin.include_role:
     # https://galaxy.ansible.com/ui/repo/published/fedora/linux_system_roles/docs/README_podman/
     name: fedora.linux_system_roles.podman
@@ -113,8 +113,8 @@
     lldap_db:
       - type: pgsql
         host: lldap-db
-        name: "{{ current_service['db_name'] }}"
-        user: "{{ current_service['db_user'] }}"
-        pass: "{{ current_service['db_pass'] }}"
+        name: "{{ containers_current_service['db_name'] }}"
+        user: "{{ containers_current_service['db_user'] }}"
+        pass: "{{ containers_current_service['db_pass'] }}"
   ansible.builtin.set_fact:
     containers_database_list: "{{ containers_database_list + lldap_db }}"

@@ -19,17 +19,17 @@
 
 - name: CONTAINERS | AUTHELIA | Set service facts
   ansible.builtin.set_fact:
-    current_service:
+    containers_current_service:
       name: authelia
       db_name: authelia
       db_user: authelia
       db_pass: authelia
     # yamllint disable rule:line-length
     # here we generate new secrets but we wont deploy unless needed.
-    authelia_encryption_key: "{{ lookup('community.general.random_string', special=false, length=64) }}"
-    authelia_oidc_hmac_secret: "{{ lookup('community.general.random_string', special=false, length=64) }}"
-    authelia_reset_password_jwt_secret: "{{ lookup('community.general.random_string', special=false, length=64) }}"
-    authelia_session_secret: "{{ lookup('community.general.random_string', special=false, length=64) }}"
+    containers_authelia_encryption_key: "{{ lookup('community.general.random_string', special=false, length=64) }}"
+    containers_authelia_oidc_hmac_secret: "{{ lookup('community.general.random_string', special=false, length=64) }}"
+    containers_authelia_reset_password_jwt_secret: "{{ lookup('community.general.random_string', special=false, length=64) }}"
+    containers_authelia_session_secret: "{{ lookup('community.general.random_string', special=false, length=64) }}"
     # yamllint enable rule:line-length
 
 - name: CONTAINERS | AUTHELIA | Install configuration file
@@ -72,19 +72,19 @@
       - name: authelia-encryption-key
         state: present
         skip_existing: true # do not overwrite if secret exists
-        data: "{{ authelia_encryption_key }}"
+        data: "{{ containers_authelia_encryption_key }}"
       - name: authelia-session-secret
         state: present
         skip_existing: true # do not overwrite if secret exists
-        data: "{{ authelia_session_secret }}"
+        data: "{{ containers_authelia_session_secret }}"
       - name: authelia-oidc-hmac-secret
         state: present
         skip_existing: true # do not overwrite if secret exists
-        data: "{{ authelia_oidc_hmac_secret }}"
+        data: "{{ containers_authelia_oidc_hmac_secret }}"
       - name: authelia-reset-password-jwt-secret
         state: present
         skip_existing: true # do not overwrite if secret exists
-        data: "{{ authelia_reset_password_jwt_secret }}"
+        data: "{{ containers_authelia_reset_password_jwt_secret }}"
       - name: authelia-smtp-password
         state: present
         skip_existing: true # do not overwrite if secret exists
@@ -98,8 +98,8 @@
     authelia_db:
       - type: pgsql
         host: authelia-db
-        name: "{{ current_service['db_name'] }}"
-        user: "{{ current_service['db_user'] }}"
-        pass: "{{ current_service['db_pass'] }}"
+        name: "{{ containers_current_service['db_name'] }}"
+        user: "{{ containers_current_service['db_user'] }}"
+        pass: "{{ containers_current_service['db_pass'] }}"
   ansible.builtin.set_fact:
     containers_database_list: "{{ containers_database_list + authelia_db }}"

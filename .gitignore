@@ -2,5 +2,6 @@
 *.retry
 .env
 .vault_key
+.venv
 .vscode
 roles-vendor

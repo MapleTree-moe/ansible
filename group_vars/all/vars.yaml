@@ -8,7 +8,7 @@
 ### common role configuration variables
 # postfix null-relay configuration
 common_relay_sasl: "cyrus-sasl-plain"
-common_relay_host: "mail.smtp2go.com"
+common_relay_host: "smtp.migadu.com"
 common_relay_port: "587"
 common_relay_user: "{{ vault_common_relay_user }}"
 common_relay_pass: "{{ vault_common_relay_pass }}"
@@ -25,7 +25,7 @@ hardening_bootloader_password: "{{ vault_hardening_bootloader_password }}"
 #
 # global container configuration
 #
-containers_authelia_smtp_host: mail.smtp2go.com
+containers_authelia_smtp_host: smtp.migadu.com
 containers_authelia_smtp_port: 587
 containers_authelia_smtp_user: "{{ vault_common_relay_user }}"
 containers_authelia_smtp_pass: "{{ vault_common_relay_pass }}"
