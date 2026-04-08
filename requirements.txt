@@ -2,7 +2,7 @@ ansible==13.4.0
 ansible-lint==26.3.0
 ansible-vault==4.1.0
 bcrypt==5.0.0
-cryptography==46.0.5
+cryptography==46.0.7
 passlib==1.7.4
 pre-commit==4.5.1
 python-dateutil==2.9.0.post0
